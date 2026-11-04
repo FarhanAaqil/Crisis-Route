@@ -7,6 +7,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.base import BaseHTTPMiddleware
 
+from app.api.allocation import router as allocation_router
 from app.api.health import router as health_router
 from app.api.resources import router as resources_router
 from app.api.scenarios import router as scenarios_router
@@ -49,6 +50,7 @@ app.add_middleware(BaseHTTPMiddleware, dispatch=audit_logging_middleware)
 app.include_router(health_router, prefix=settings.api_prefix)
 app.include_router(scenarios_router, prefix=settings.api_prefix)
 app.include_router(resources_router, prefix=settings.api_prefix)
+app.include_router(allocation_router, prefix=settings.api_prefix)
 
 
 @app.get("/")
