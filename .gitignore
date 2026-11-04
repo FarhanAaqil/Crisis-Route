@@ -63,3 +63,7 @@ artifacts/runs/
 *.swo
 .DS_Store
 Thumbs.db
+
+# Research Blueprint (local only)
+CrisisRoute — Master Research Blueprint.md
+CrisisRoute - Master Research Blueprint.md

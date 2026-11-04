@@ -1,0 +1,157 @@
+{
+  "scenario_id": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+  "name": "Kerala Monsoon 2026 - Wayanad & Periyar Basin Rapid Response",
+  "description": "Seeded benchmark scenario for monsoon flood and landslide relief operations in Kerala, India",
+  "created_at": "2026-11-04T06:00:00Z",
+  "snapshot_id": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "region": {
+    "name": "Wayanad-Periyar Relief Corridor",
+    "country": "India",
+    "bbox": [75.9000, 11.4500, 76.4000, 11.9500],
+    "crs": "EPSG:4326"
+  },
+  "time_horizon_hours": 24.0,
+  "commodities": [
+    {
+      "id": "COM-WATER-10L",
+      "name": "Packaged Potable Water (10L Can)",
+      "unit_weight_kg": 10.0,
+      "priority_weight": 5.0
+    },
+    {
+      "id": "COM-MRE-RATIONS",
+      "name": "Emergency Dry Food & Nutrition Kit",
+      "unit_weight_kg": 2.5,
+      "priority_weight": 4.0
+    },
+    {
+      "id": "COM-MED-TRAUMA",
+      "name": "Essential Medical & Waterborne Disease Kit",
+      "unit_weight_kg": 5.0,
+      "priority_weight": 5.0
+    },
+    {
+      "id": "COM-SHELTER-TARPS",
+      "name": "Reinforced Tarpaulin & Rope Pack",
+      "unit_weight_kg": 8.0,
+      "priority_weight": 3.0
+    }
+  ],
+  "depots": [
+    {
+      "id": "DEPOT-KALPETTA",
+      "name": "Kalpetta Civil Station Forward Depot",
+      "coordinates": [76.0825, 11.6080],
+      "inventory": {
+        "COM-WATER-10L": 1200,
+        "COM-MRE-RATIONS": 2500,
+        "COM-MED-TRAUMA": 400,
+        "COM-SHELTER-TARPS": 600
+      }
+    },
+    {
+      "id": "DEPOT-MANANTHAVADY",
+      "name": "Mananthavady North Staging Warehouse",
+      "coordinates": [76.0035, 11.8030],
+      "inventory": {
+        "COM-WATER-10L": 800,
+        "COM-MRE-RATIONS": 1800,
+        "COM-MED-TRAUMA": 300,
+        "COM-SHELTER-TARPS": 450
+      }
+    }
+  ],
+  "vehicles": [
+    {
+      "id": "VEH-KSRTC-4WD-01",
+      "name": "Heavy 4WD Relief Truck 01",
+      "depot_id": "DEPOT-KALPETTA",
+      "capacity_kg": 3500.0,
+      "average_speed_kmh": 32.0
+    },
+    {
+      "id": "VEH-KSRTC-4WD-02",
+      "name": "Heavy 4WD Relief Truck 02",
+      "depot_id": "DEPOT-KALPETTA",
+      "capacity_kg": 3500.0,
+      "average_speed_kmh": 32.0
+    },
+    {
+      "id": "VEH-MED-VAN-01",
+      "name": "All-Terrain Medical Ambulance Van",
+      "depot_id": "DEPOT-KALPETTA",
+      "capacity_kg": 1200.0,
+      "average_speed_kmh": 40.0
+    },
+    {
+      "id": "VEH-DEF-TRUCK-03",
+      "name": "Defence Heavy Logistic Carrier",
+      "depot_id": "DEPOT-MANANTHAVADY",
+      "capacity_kg": 4000.0,
+      "average_speed_kmh": 30.0
+    }
+  ],
+  "demand_nodes": [
+    {
+      "id": "NODE-MEPPADI-ISOLATED",
+      "name": "Meppadi Landslide Cutoff Camp",
+      "vulnerable_group": "tribal_hamlet",
+      "population": 650,
+      "coordinates": [76.1280, 11.5510],
+      "demand": {
+        "COM-WATER-10L": 250,
+        "COM-MRE-RATIONS": 500,
+        "COM-MED-TRAUMA": 80,
+        "COM-SHELTER-TARPS": 120
+      }
+    },
+    {
+      "id": "NODE-CHOORALMALA-SHELTER",
+      "name": "Chooralmala Valley Community Centre",
+      "vulnerable_group": "tea_plantation_workers",
+      "population": 820,
+      "coordinates": [76.1700, 11.5350],
+      "demand": {
+        "COM-WATER-10L": 350,
+        "COM-MRE-RATIONS": 700,
+        "COM-MED-TRAUMA": 100,
+        "COM-SHELTER-TARPS": 160
+      }
+    },
+    {
+      "id": "NODE-VYTHIRI-HEALTH-POST",
+      "name": "Vythiri High Inundation Health Sub-Center",
+      "vulnerable_group": "elderly_cluster",
+      "population": 410,
+      "coordinates": [76.0410, 11.5520],
+      "demand": {
+        "COM-WATER-10L": 180,
+        "COM-MRE-RATIONS": 320,
+        "COM-MED-TRAUMA": 90,
+        "COM-SHELTER-TARPS": 70
+      }
+    },
+    {
+      "id": "NODE-PANAMARAM-FLOOD-CAMP",
+      "name": "Panamaram River Overflow Shelter",
+      "vulnerable_group": "general_evacuees",
+      "population": 1100,
+      "coordinates": [76.0710, 11.7240],
+      "demand": {
+        "COM-WATER-10L": 450,
+        "COM-MRE-RATIONS": 900,
+        "COM-MED-TRAUMA": 110,
+        "COM-SHELTER-TARPS": 200
+      }
+    }
+  ],
+  "equity_parameters": {
+    "min_group_service_floor_alpha": 0.40,
+    "beta_tail_risk_weight": 0.30
+  },
+  "solver_parameters": {
+    "time_limit_seconds": 30,
+    "scenario_samples_s": 50,
+    "random_seed": 42
+  }
+}
