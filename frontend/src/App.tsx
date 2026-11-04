@@ -142,7 +142,7 @@ export const App: React.FC = () => {
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
         {activeTab === 'dashboard' && (
           <div role="tabpanel" id="panel-dashboard" aria-labelledby="tab-dashboard">
-            <Dashboard />
+            <Dashboard currentRole={activeRole} />
           </div>
         )}
 
