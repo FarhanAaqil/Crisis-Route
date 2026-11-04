@@ -85,6 +85,16 @@ export interface PlanDetail {
   };
 }
 
+export interface AuditEventRecord {
+  event_id: string;
+  timestamp: string;
+  user_id: string;
+  action: string;
+  resource_type: string;
+  resource_id: string;
+  details: Record<string, any>;
+}
+
 const BASE_URL = 'http://localhost:8000/api/v1';
 
 export async function fetchHealth(): Promise<SystemHealth> {
@@ -161,5 +171,16 @@ export async function submitPlanApproval(
 export async function exportPlan(scenarioId: string, planId: string): Promise<any> {
   const res = await fetch(`${BASE_URL}/scenarios/${scenarioId}/plans/${planId}/export`);
   if (!res.ok) throw new Error('Export plan failed');
+  return res.json();
+}
+
+export async function fetchAuditLogs(limit: number = 100): Promise<AuditEventRecord[]> {
+  const res = await fetch(`${BASE_URL}/audit?limit=${limit}`, {
+    headers: {
+      'X-User-Role': 'analyst',
+      'X-User-Id': 'analyst-frontend',
+    },
+  });
+  if (!res.ok) throw new Error('Failed to fetch audit trail');
   return res.json();
 }

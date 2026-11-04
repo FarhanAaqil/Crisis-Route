@@ -41,19 +41,23 @@ export const ObservationEditor: React.FC<ObservationEditorProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-white border rounded-lg space-y-4 text-xs font-sans shadow-xs">
-      <div className="flex justify-between items-center border-b pb-2">
+    <form onSubmit={handleSubmit} className="p-4 bg-white border border-slate-200 rounded-lg space-y-4 text-xs font-sans shadow-xs">
+      <div className="flex justify-between items-center border-b border-slate-200 pb-2">
         <h4 className="font-bold text-slate-800 text-sm">Submit Field Road Observation</h4>
         <code className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono">{edgeId}</code>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-slate-600 font-medium mb-1">Observed Status</label>
+          <label htmlFor="obs-status" className="block text-slate-700 font-semibold mb-1">
+            Observed Status
+          </label>
           <select
+            id="obs-status"
+            aria-label="Observed road passability status"
             value={status}
             onChange={(e) => setStatus(e.target.value as ObservationFormData['status'])}
-            className="w-full border rounded px-2 py-1.5 bg-white"
+            className="w-full border border-slate-300 rounded px-2.5 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[40px]"
           >
             <option value="passable">Passable (Usable)</option>
             <option value="impassable">Impassable (Blocked / Submerged)</option>
@@ -63,11 +67,15 @@ export const ObservationEditor: React.FC<ObservationEditorProps> = ({
         </div>
 
         <div>
-          <label className="block text-slate-600 font-medium mb-1">Source Type</label>
+          <label htmlFor="obs-source" className="block text-slate-700 font-semibold mb-1">
+            Source Type
+          </label>
           <select
+            id="obs-source"
+            aria-label="Observation reporting source"
             value={sourceType}
             onChange={(e) => setSourceType(e.target.value as ObservationFormData['source_type'])}
-            className="w-full border rounded px-2 py-1.5 bg-white"
+            className="w-full border border-slate-300 rounded px-2.5 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[40px]"
           >
             <option value="field_patrol">Disaster Field Patrol</option>
             <option value="drone_recon">UAV / Drone Recon</option>
@@ -77,58 +85,68 @@ export const ObservationEditor: React.FC<ObservationEditorProps> = ({
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
-          <label className="block text-slate-600 font-medium mb-1">
+          <label htmlFor="obs-credibility" className="block text-slate-700 font-semibold mb-1">
             Source Credibility Weight ({credibility.toFixed(2)})
           </label>
           <input
+            id="obs-credibility"
+            aria-label="Source credibility weight slider"
             type="range"
             min="0.30"
             max="1.00"
             step="0.05"
             value={credibility}
             onChange={(e) => setCredibility(parseFloat(e.target.value))}
-            className="w-full"
+            className="w-full accent-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <div>
-          <label className="block text-slate-600 font-medium mb-1">Standing Water Depth (cm)</label>
+          <label htmlFor="obs-water-depth" className="block text-slate-700 font-semibold mb-1">
+            Standing Water Depth (cm)
+          </label>
           <input
+            id="obs-water-depth"
+            aria-label="Standing water depth in centimeters"
             type="number"
             min="0"
             max="250"
             value={waterDepth}
             onChange={(e) => setWaterDepth(parseFloat(e.target.value) || 0)}
-            className="w-full border rounded px-2 py-1"
+            className="w-full border border-slate-300 rounded px-2.5 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[40px]"
           />
         </div>
       </div>
 
       <div>
-        <label className="block text-slate-600 font-medium mb-1">Field Verification Notes</label>
+        <label htmlFor="obs-notes" className="block text-slate-700 font-semibold mb-1">
+          Field Verification Notes
+        </label>
         <textarea
+          id="obs-notes"
+          aria-label="Field verification notes"
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="e.g. Culvert damage reported 50m north of junction; 4WD trucks only."
-          className="w-full border rounded p-2 h-16"
+          className="w-full border border-slate-300 rounded p-2.5 h-16 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
 
-      <div className="flex justify-end space-x-2 pt-2 border-t">
+      <div className="flex justify-end space-x-2 pt-2 border-t border-slate-200">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="px-3 py-1.5 border rounded text-slate-600 hover:bg-slate-50"
+            className="px-4 py-2.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[44px] font-medium"
           >
             Cancel
           </button>
         )}
         <button
           type="submit"
-          className="px-4 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded"
+          className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 min-h-[44px]"
         >
           Publish &amp; Advance Graph Version
         </button>
