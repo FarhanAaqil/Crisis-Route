@@ -1,0 +1,23 @@
+{
+  "instance_id": "inst_ev12_11",
+  "event_id": 12,
+  "event_name": "Mahanadi Delta Storm Surge",
+  "region_name": "Odisha-Puri",
+  "hazard_type": "cyclone",
+  "split": "test",
+  "parameters": {
+    "coverage_rate": 0.42,
+    "staleness_mean_hours": 21.6,
+    "contradiction_rate": 0.06,
+    "demand_multiplier": 0.89,
+    "inventory_multiplier": 0.97
+  },
+  "network_summary": {
+    "edge_count": 0,
+    "blocked_edge_count": 0,
+    "observation_count": 0
+  },
+  "edges": [],
+  "observations": [],
+  "ground_truth": {}
+}

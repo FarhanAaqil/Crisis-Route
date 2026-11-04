@@ -36,3 +36,4 @@ The following capabilities are strictly excluded from the MVP scope:
 ## 4. Consequences
 - **Positive:** Enables fully reproducible experiments, deterministic audit trails, low operational overhead, and verifiable research hypotheses.
 - **Negative:** Requires pre-processing of regional road network extracts and synthetic/semi-synthetic hazard overlays before planning execution.
+

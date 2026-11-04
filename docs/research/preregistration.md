@@ -70,3 +70,4 @@ To guarantee that any change in decision regret is caused solely by probability 
   - **Test Split:** Events 11 and 12 (40 instances).
 - **Strict Leakage Guard:** Splitting is performed exclusively at the **disaster event level**. No road edge state, hazard raster pixel, or observation report from Events 11 or 12 may appear in training or calibration sets.
 - **Generator Parameters:** Ground-truth physical parameters (soil fragility constants, hazard intensity coefficients) are sealed in the generative benchmark module and isolated from all predictive model inputs.
+

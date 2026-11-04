@@ -55,3 +55,4 @@ CrisisRoute enforces strict separation of responsibilities to prevent unreviewed
 3. **Stale Evidence Warning:** Any edge whose latest observation exceeds the scenario staleness threshold ($a_e > \tau_{\text{stale}}$) is highlighted with an amber staleness banner and penalized in routing.
 4. **Safety Disclaimer:** Every UI view and printed plan displays the mandatory disclaimer:
    > *"CrisisRoute provides probabilistic decision support. It does not certify route safety or replace on-the-ground situational assessment."*
+

@@ -55,6 +55,8 @@ data/uploads/
 data/cache/
 artifacts/models/
 artifacts/runs/
+artifacts/snapshots/
+artifacts/graphs/
 
 # IDE & OS
 .vscode/

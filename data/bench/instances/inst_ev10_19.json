@@ -1,0 +1,23 @@
+{
+  "instance_id": "inst_ev10_19",
+  "event_id": 10,
+  "event_name": "Cachar Plains Prolonged Inundation",
+  "region_name": "Assam-Barak",
+  "hazard_type": "flood",
+  "split": "val",
+  "parameters": {
+    "coverage_rate": 0.66,
+    "staleness_mean_hours": 19.0,
+    "contradiction_rate": 0.13,
+    "demand_multiplier": 0.93,
+    "inventory_multiplier": 1.16
+  },
+  "network_summary": {
+    "edge_count": 0,
+    "blocked_edge_count": 0,
+    "observation_count": 0
+  },
+  "edges": [],
+  "observations": [],
+  "ground_truth": {}
+}

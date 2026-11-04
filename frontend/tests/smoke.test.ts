@@ -14,3 +14,4 @@ describe('Frontend Smoke and Contract Tests', () => {
     expect(analystRole).not.toBe(approverRole);
   });
 });
+

@@ -1,0 +1,23 @@
+{
+  "instance_id": "inst_ev08_14",
+  "event_id": 8,
+  "event_name": "Aluva Gateway Flood Surge",
+  "region_name": "Kerala-Periyar",
+  "hazard_type": "flood",
+  "split": "train",
+  "parameters": {
+    "coverage_rate": 0.35,
+    "staleness_mean_hours": 7.8,
+    "contradiction_rate": 0.05,
+    "demand_multiplier": 0.87,
+    "inventory_multiplier": 1.01
+  },
+  "network_summary": {
+    "edge_count": 0,
+    "blocked_edge_count": 0,
+    "observation_count": 0
+  },
+  "edges": [],
+  "observations": [],
+  "ground_truth": {}
+}

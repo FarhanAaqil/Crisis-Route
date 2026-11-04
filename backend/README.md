@@ -8,3 +8,4 @@ FastAPI modular monolith backend providing:
 - OR-Tools CP-SAT equitable robust allocation
 - Value-of-information edge recommendation
 - Audit event ledger
+

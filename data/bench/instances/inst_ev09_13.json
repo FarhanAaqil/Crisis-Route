@@ -1,0 +1,23 @@
+{
+  "instance_id": "inst_ev09_13",
+  "event_id": 9,
+  "event_name": "Silchar Barak River Breach",
+  "region_name": "Assam-Barak",
+  "hazard_type": "embankment_breach",
+  "split": "val",
+  "parameters": {
+    "coverage_rate": 0.72,
+    "staleness_mean_hours": 18.6,
+    "contradiction_rate": 0.13,
+    "demand_multiplier": 1.14,
+    "inventory_multiplier": 0.75
+  },
+  "network_summary": {
+    "edge_count": 0,
+    "blocked_edge_count": 0,
+    "observation_count": 0
+  },
+  "edges": [],
+  "observations": [],
+  "ground_truth": {}
+}

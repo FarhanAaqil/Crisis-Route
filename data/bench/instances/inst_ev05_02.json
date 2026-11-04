@@ -1,0 +1,23 @@
+{
+  "instance_id": "inst_ev05_02",
+  "event_id": 5,
+  "event_name": "Mananthavady North Overflow",
+  "region_name": "Kerala-Wayanad",
+  "hazard_type": "flood",
+  "split": "train",
+  "parameters": {
+    "coverage_rate": 0.79,
+    "staleness_mean_hours": 9.7,
+    "contradiction_rate": 0.13,
+    "demand_multiplier": 0.86,
+    "inventory_multiplier": 1.2
+  },
+  "network_summary": {
+    "edge_count": 0,
+    "blocked_edge_count": 0,
+    "observation_count": 0
+  },
+  "edges": [],
+  "observations": [],
+  "ground_truth": {}
+}

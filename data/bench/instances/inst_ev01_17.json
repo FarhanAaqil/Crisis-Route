@@ -1,0 +1,23 @@
+{
+  "instance_id": "inst_ev01_17",
+  "event_id": 1,
+  "event_name": "Wayanad Monsoon Flash Flood A",
+  "region_name": "Kerala-Wayanad",
+  "hazard_type": "flash_flood",
+  "split": "train",
+  "parameters": {
+    "coverage_rate": 0.68,
+    "staleness_mean_hours": 12.1,
+    "contradiction_rate": 0.13,
+    "demand_multiplier": 0.9,
+    "inventory_multiplier": 0.71
+  },
+  "network_summary": {
+    "edge_count": 0,
+    "blocked_edge_count": 0,
+    "observation_count": 0
+  },
+  "edges": [],
+  "observations": [],
+  "ground_truth": {}
+}

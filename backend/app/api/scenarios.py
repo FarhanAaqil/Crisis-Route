@@ -46,7 +46,8 @@ def _load_canonical_fixture() -> dict[str, Any]:
 
     if fixture_path.exists():
         with open(fixture_path, encoding="utf-8") as f:
-            return json.load(f)
+            data = json.load(f)
+            return dict(data) if isinstance(data, dict) else {}
     return {}
 
 

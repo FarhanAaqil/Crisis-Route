@@ -1,0 +1,23 @@
+{
+  "instance_id": "inst_ev07_02",
+  "event_id": 7,
+  "event_name": "Periyar River Lower Basin Overflow",
+  "region_name": "Kerala-Periyar",
+  "hazard_type": "flood",
+  "split": "train",
+  "parameters": {
+    "coverage_rate": 0.74,
+    "staleness_mean_hours": 21.3,
+    "contradiction_rate": 0.06,
+    "demand_multiplier": 1.24,
+    "inventory_multiplier": 0.92
+  },
+  "network_summary": {
+    "edge_count": 0,
+    "blocked_edge_count": 0,
+    "observation_count": 0
+  },
+  "edges": [],
+  "observations": [],
+  "ground_truth": {}
+}

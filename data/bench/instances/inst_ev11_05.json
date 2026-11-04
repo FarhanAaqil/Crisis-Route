@@ -1,0 +1,23 @@
+{
+  "instance_id": "inst_ev11_05",
+  "event_id": 11,
+  "event_name": "Puri Coastal Cyclone Inundation",
+  "region_name": "Odisha-Puri",
+  "hazard_type": "cyclone",
+  "split": "test",
+  "parameters": {
+    "coverage_rate": 0.8,
+    "staleness_mean_hours": 19.0,
+    "contradiction_rate": 0.15,
+    "demand_multiplier": 1.12,
+    "inventory_multiplier": 1.03
+  },
+  "network_summary": {
+    "edge_count": 0,
+    "blocked_edge_count": 0,
+    "observation_count": 0
+  },
+  "edges": [],
+  "observations": [],
+  "ground_truth": {}
+}

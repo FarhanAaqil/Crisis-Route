@@ -1,0 +1,23 @@
+{
+  "instance_id": "inst_ev06_07",
+  "event_id": 6,
+  "event_name": "Kalpetta Trunk Corridor Cutoff",
+  "region_name": "Kerala-Wayanad",
+  "hazard_type": "landslide",
+  "split": "train",
+  "parameters": {
+    "coverage_rate": 0.69,
+    "staleness_mean_hours": 18.1,
+    "contradiction_rate": 0.09,
+    "demand_multiplier": 1.18,
+    "inventory_multiplier": 0.71
+  },
+  "network_summary": {
+    "edge_count": 0,
+    "blocked_edge_count": 0,
+    "observation_count": 0
+  },
+  "edges": [],
+  "observations": [],
+  "ground_truth": {}
+}

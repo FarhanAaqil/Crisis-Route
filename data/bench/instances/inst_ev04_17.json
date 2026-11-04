@@ -1,0 +1,23 @@
+{
+  "instance_id": "inst_ev04_17",
+  "event_id": 4,
+  "event_name": "Panamaram River Basin Surge",
+  "region_name": "Kerala-Wayanad",
+  "hazard_type": "flood",
+  "split": "train",
+  "parameters": {
+    "coverage_rate": 0.63,
+    "staleness_mean_hours": 22.7,
+    "contradiction_rate": 0.13,
+    "demand_multiplier": 1.09,
+    "inventory_multiplier": 0.89
+  },
+  "network_summary": {
+    "edge_count": 0,
+    "blocked_edge_count": 0,
+    "observation_count": 0
+  },
+  "edges": [],
+  "observations": [],
+  "ground_truth": {}
+}
