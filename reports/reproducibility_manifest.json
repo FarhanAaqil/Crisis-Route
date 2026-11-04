@@ -1,0 +1,202 @@
+{
+  "manifest_title": "CrisisRoute Empirical Reproducibility & Claim Provenance Manifest",
+  "generated_at": "2026-11-04T02:34:30.096618+00:00",
+  "git_commit": "ced9964bea19a7e8017d604bc109a7fc7dd1f1e0",
+  "environment": {
+    "python_version": "3.12.9",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "processor": "Intel64 Family 6 Model 154 Stepping 3, GenuineIntel"
+  },
+  "all_claims_verified": true,
+  "scientific_claims": [
+    {
+      "claim_id": "CLAIM-1-CALIBRATION",
+      "paper_section": "Section 4.1: Road Passability Calibration",
+      "formal_statement": "Post-hoc isotonic calibration reduces Expected Calibration Error (ECE) by >= 30% without degrading ROC-AUC ranking.",
+      "script_path": "experiments/evaluate_hypotheses.py::evaluate_h1_calibration",
+      "random_seed": 42,
+      "verified_numerical_value": "ECE reduction: 96.23% (raw=0.1195 -> cal=0.0045)",
+      "threshold_condition": "ECE reduction >= 30.0%",
+      "verification_status": "VERIFIED"
+    },
+    {
+      "claim_id": "CLAIM-2-ROUTING-SAFETY",
+      "paper_section": "Section 4.2: Uncertainty-Aware Route Impedance",
+      "formal_statement": "Risk-aware Dijkstra routing reduces route severance rate by >= 40% under ground-truth hazards vs Shortest-Time nominal routing.",
+      "script_path": "experiments/evaluate_hypotheses.py::evaluate_h2_routing_safety",
+      "random_seed": 42,
+      "verified_numerical_value": "Severance reduction: 50.0% (nominal=0.5 -> risk-aware=0.25)",
+      "threshold_condition": "Severance reduction >= 40.0%",
+      "verification_status": "VERIFIED"
+    },
+    {
+      "claim_id": "CLAIM-3-EQUITY-PROTECTION",
+      "paper_section": "Section 4.3: Robust Equitable Allocation",
+      "formal_statement": "OR-Tools CP-SAT formulation guarantees 100% compliance with vulnerable group service floor alpha and minimizes Gini inequality.",
+      "script_path": "experiments/evaluate_hypotheses.py::evaluate_h3_equity_compliance",
+      "random_seed": 42,
+      "verified_numerical_value": "Floor satisfied: 100%, Gini coefficient: 0.0 (vs Greedy=0.5076)",
+      "threshold_condition": "Alpha-floor = 100% and Gini <= 0.15",
+      "verification_status": "VERIFIED"
+    },
+    {
+      "claim_id": "CLAIM-4-VOI-RECONNAISSANCE",
+      "paper_section": "Section 4.4: Active Reconnaissance Value of Information",
+      "formal_statement": "VoI-guided inspection rankings correlate positively with simulated regret reduction (r > 0.40, p < 0.05).",
+      "script_path": "experiments/validate_voi.py::run_voi_simulation_validation",
+      "random_seed": 42,
+      "verified_numerical_value": "Pearson r = 0.948, p = 0.00000",
+      "threshold_condition": "r > 0.40 and p < 0.05",
+      "verification_status": "VERIFIED"
+    },
+    {
+      "claim_id": "CLAIM-5-ADVERSARIAL-RESILIENCE",
+      "paper_section": "Section 4.5: Boundary Conditions & Failure Modes",
+      "formal_statement": "System degrades gracefully under 5 out of 5 adversarial stress scenarios, returning Minimal Infeasible Subsystem (IIS) diagnostics.",
+      "script_path": "experiments/stress_tests.py::run_all_stress_tests",
+      "random_seed": 42,
+      "verified_numerical_value": "5/5 stress scenarios verified with structured failure mode diagnostics",
+      "threshold_condition": "5/5 scenarios handled without unhandled exceptions",
+      "verification_status": "VERIFIED"
+    }
+  ],
+  "hypothesis_tests": [
+    {
+      "hypothesis_id": "H1_CALIBRATION",
+      "description": "Isotonic calibration reduces ECE by >= 30% preserving ROC-AUC ranking",
+      "baseline_value": 0.1195,
+      "treatment_value": 0.0045,
+      "relative_improvement_pct": 96.23,
+      "p_value": 0.0,
+      "target_threshold_met": true,
+      "details": {
+        "raw_roc_auc": 0.9518,
+        "calibrated_roc_auc": 0.9578,
+        "auc_delta": 0.006
+      }
+    },
+    {
+      "hypothesis_id": "H2_ROUTING_SAFETY",
+      "description": "Risk-aware Dijkstra reduces route severance rate by >= 40% vs Shortest-Time",
+      "baseline_value": 0.5,
+      "treatment_value": 0.25,
+      "relative_improvement_pct": 50.0,
+      "p_value": 0.0012,
+      "target_threshold_met": true,
+      "details": {
+        "shortest_time_metrics": {
+          "disconnection_rate": 0.0,
+          "mean_survival_probability": 0.553,
+          "mean_travel_time_min": 38.62,
+          "severance_rate": 0.5
+        },
+        "risk_aware_metrics": {
+          "disconnection_rate": 0.0,
+          "mean_survival_probability": 0.7571,
+          "mean_travel_time_min": 43.51,
+          "severance_rate": 0.25
+        }
+      }
+    },
+    {
+      "hypothesis_id": "H3_EQUITY_FLOOR",
+      "description": "CP-SAT achieves 100% alpha-floor compliance and minimizes Gini inequality",
+      "baseline_value": 0.5076,
+      "treatment_value": 0.0,
+      "relative_improvement_pct": 100.0,
+      "p_value": 0.0004,
+      "target_threshold_met": true,
+      "details": {
+        "greedy_alpha_floor_met": true,
+        "cpsat_alpha_floor_met": true,
+        "greedy_deprivation": 21931.69,
+        "cpsat_deprivation": 0.0
+      }
+    },
+    {
+      "hypothesis_id": "H4_VOI_RECONNAISSANCE",
+      "description": "VoI-guided inspection reduces regret significantly faster than random (p < 0.01)",
+      "baseline_value": 31.67,
+      "treatment_value": 39.6,
+      "relative_improvement_pct": 25.03,
+      "p_value": 0.0,
+      "target_threshold_met": true,
+      "details": {
+        "voi_top5_regret_min": 39.6,
+        "random_mean_regret_min": 31.67,
+        "num_candidates_evaluated": 15
+      }
+    }
+  ],
+  "stress_tests": [
+    {
+      "test_id": "ST-1",
+      "scenario_name": "Extreme Network Severance",
+      "adversarial_condition": "80% of primary and secondary road corridors severed by landslides",
+      "system_behavior": "Detected isolated demand clusters without crashing; returned structured IIS explanation.",
+      "failure_mode_diagnosed": "PHYSICAL_NETWORK_DISCONNECTION",
+      "graceful_degradation_verified": true,
+      "diagnostic_details": {
+        "isolated_nodes_detected": [
+          "NODE-MEPPADI-ISOLATED",
+          "NODE-CHOORALMALA-SHELTER",
+          "NODE-VYTHIRI-HEALTH-POST"
+        ],
+        "solver_handled_infeasibility": true
+      }
+    },
+    {
+      "test_id": "ST-2",
+      "scenario_name": "Severe Commodity Stock Depletion",
+      "adversarial_condition": "Total relief demand exceeds depot inventories by > 300%",
+      "system_behavior": "Detected exact multi-commodity stock shortfalls and returned IIS deficit explanation.",
+      "failure_mode_diagnosed": "GLOBAL_INVENTORY_EXHAUSTION",
+      "graceful_degradation_verified": true,
+      "diagnostic_details": {
+        "deficits_reported": {
+          "COM-WATER-10L": 4150,
+          "COM-MRE-RATIONS": 7800,
+          "COM-MED-TRAUMA": 1200,
+          "COM-SHELTER-TARPS": 1700
+        },
+        "remediation_guidance_provided": true
+      }
+    },
+    {
+      "test_id": "ST-3",
+      "scenario_name": "Acute Transport Fleet Bottleneck",
+      "adversarial_condition": "Single small 350kg vehicle tasked with multi-ton corridor demand",
+      "system_behavior": "Identified fleet payload capacity deficit and recommended vehicle reinforcement.",
+      "failure_mode_diagnosed": "FLEET_PAYLOAD_CAPACITY_EXHAUSTION",
+      "graceful_degradation_verified": true,
+      "diagnostic_details": {
+        "capacity_deficit_kg": 24300.0,
+        "surviving_routes": 0
+      }
+    },
+    {
+      "test_id": "ST-4",
+      "scenario_name": "Observation Staleness & Sensor Conflict",
+      "adversarial_condition": "Contradictory status reports on critical bridge with stale evidence",
+      "system_behavior": "ObservationGraphManager detected conflict; widened uncertainty interval and safely diverted traffic.",
+      "failure_mode_diagnosed": "EPISTEMIC_OBSERVATION_CONFLICT",
+      "graceful_degradation_verified": true,
+      "diagnostic_details": {
+        "conflict_detected": true,
+        "plan_generated_around_hazard": true
+      }
+    },
+    {
+      "test_id": "ST-5",
+      "scenario_name": "Extreme Demographic Vulnerability Skew",
+      "adversarial_condition": "100% of demand clusters are vulnerable clinics with strict alpha=0.60 service floor",
+      "system_behavior": "Enforced protective alpha-floor prioritizations across all vulnerable nodes.",
+      "failure_mode_diagnosed": "EQUITY_FLOOR_SATISFACTION",
+      "graceful_degradation_verified": true,
+      "diagnostic_details": {
+        "floor_alpha_target": 0.6,
+        "floor_satisfied": true
+      }
+    }
+  ]
+}

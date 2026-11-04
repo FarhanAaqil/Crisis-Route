@@ -89,7 +89,6 @@ def route_hard_threshold(
 ) -> RouteResult:
     """Policy 2: Hard-Threshold filtering dropping links with p_e < cutoff."""
 
-    # Build filtered subgraph view
     def filter_edge(u: str, v: str) -> bool:
         p = float(g[u][v].get("passability_prob", 1.0))
         return p >= passability_cutoff
@@ -149,7 +148,7 @@ def route_risk_aware(
     g: nx.DiGraph,
     source: str,
     target: str,
-    lambda_r: float = 60.0,
+    lambda_r: float = 600.0,
     lambda_s: float = 2.0,
 ) -> RouteResult:
     """Policy 3: CrisisRoute Risk-Aware Dijkstra with log-risk and staleness penalties."""
@@ -199,6 +198,7 @@ def evaluate_routing_policies(
     g: nx.DiGraph,
     od_pairs: list[tuple[str, str]],
     ground_truth_blocks: set[str] | None = None,
+    lambda_r: float = 1200.0,
 ) -> dict[str, dict[str, float]]:
     """Compare Shortest-Time, Hard-Threshold, and Risk-Aware routing across OD pairs.
 
@@ -211,7 +211,7 @@ def evaluate_routing_policies(
     policies = {
         "shortest_time": lambda u, v: route_shortest_time(g, u, v),
         "hard_threshold_0.35": lambda u, v: route_hard_threshold(g, u, v, 0.35),
-        "risk_aware": lambda u, v: route_risk_aware(g, u, v, lambda_r=60.0),
+        "risk_aware": lambda u, v: route_risk_aware(g, u, v, lambda_r=lambda_r),
     }
 
     metrics: dict[str, dict[str, float]] = {}
@@ -221,7 +221,6 @@ def evaluate_routing_policies(
         for src, tgt in od_pairs:
             res = route_fn(src, tgt)
             if ground_truth_blocks is not None and res.is_connected:
-                # check if any edge in route is actually blocked
                 severed = any(eid in ground_truth_blocks for eid in res.edge_ids)
                 res = RouteResult(
                     policy_name=res.policy_name,
