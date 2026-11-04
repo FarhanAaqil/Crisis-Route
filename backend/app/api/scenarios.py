@@ -339,3 +339,72 @@ def approve_or_reject_plan(
     )
 
     return plan
+
+
+class ScenarioApprovalPayload(BaseModel):
+    """Payload for direct scenario approval."""
+
+    decision: str = "APPROVE"
+    rationale: str
+
+
+class ScenarioApprovalResponse(BaseModel):
+    """Response model for scenario approval sign-off."""
+
+    status: str
+    approver_id: str
+    rationale: str
+    scenario_id: str
+    plan_id: str | None = None
+
+
+@router.post("/{scenario_id}/approve", response_model=ScenarioApprovalResponse)
+def approve_scenario(
+    scenario_id: UUID,
+    payload: ScenarioApprovalPayload,
+    current_user: CurrentUser = Depends(require_role([UserRole.APPROVER, UserRole.ADMIN])),
+) -> ScenarioApprovalResponse:
+    """Incident Lead direct scenario approval sign-off with audit trail."""
+    sid = str(scenario_id)
+    if sid not in SCENARIO_STORE:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Scenario {scenario_id} not found",
+        )
+
+    if not payload.rationale or len(payload.rationale.strip()) < 10:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="A written operational rationale of at least 10 characters is mandatory.",
+        )
+
+    decision = payload.decision.upper()
+    scenario = SCENARIO_STORE[sid]
+    if scenario.active_plan_id and str(scenario.active_plan_id) in PLAN_STORE:
+        plan = PLAN_STORE[str(scenario.active_plan_id)]
+        plan.approval_state.status = (
+            ApprovalStatus.APPROVED if decision == "APPROVE" else ApprovalStatus.REJECTED
+        )
+        plan.approval_state.reviewed_by = current_user.username
+        plan.approval_state.rationale = payload.rationale
+
+    record_audit_event(
+        user_id=current_user.user_id,
+        action="PLAN_APPROVAL",
+        resource_type="scenario",
+        resource_id=sid,
+        details={
+            "decision": decision,
+            "rationale": payload.rationale,
+            "approver": current_user.username,
+            "active_plan_id": str(scenario.active_plan_id) if scenario.active_plan_id else None,
+        },
+    )
+
+    return ScenarioApprovalResponse(
+        status="APPROVED" if decision == "APPROVE" else "REJECTED",
+        approver_id=current_user.user_id,
+        rationale=payload.rationale,
+        scenario_id=sid,
+        plan_id=str(scenario.active_plan_id) if scenario.active_plan_id else None,
+    )
