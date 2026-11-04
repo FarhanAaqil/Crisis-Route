@@ -50,3 +50,4 @@ export const MapPreview: React.FC<MapPreviewProps> = ({ regionName, bbox, edges 
     </div>
   );
 };
+

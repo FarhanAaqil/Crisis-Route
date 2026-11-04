@@ -34,3 +34,4 @@ describe('Import and Validation Component Contracts', () => {
     expect(snap.edge_count).toBeGreaterThan(0);
   });
 });
+
