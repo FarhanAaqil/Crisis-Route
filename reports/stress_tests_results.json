@@ -1,0 +1,71 @@
+[
+  {
+    "test_id": "ST-1",
+    "scenario_name": "Extreme Network Severance",
+    "adversarial_condition": "80% of primary and secondary road corridors severed by landslides",
+    "system_behavior": "Detected isolated demand clusters without crashing; returned structured IIS explanation.",
+    "failure_mode_diagnosed": "PHYSICAL_NETWORK_DISCONNECTION",
+    "graceful_degradation_verified": true,
+    "diagnostic_details": {
+      "isolated_nodes_detected": [
+        "NODE-MEPPADI-ISOLATED",
+        "NODE-CHOORALMALA-SHELTER",
+        "NODE-VYTHIRI-HEALTH-POST"
+      ],
+      "solver_handled_infeasibility": true
+    }
+  },
+  {
+    "test_id": "ST-2",
+    "scenario_name": "Severe Commodity Stock Depletion",
+    "adversarial_condition": "Total relief demand exceeds depot inventories by > 300%",
+    "system_behavior": "Detected exact multi-commodity stock shortfalls and returned IIS deficit explanation.",
+    "failure_mode_diagnosed": "GLOBAL_INVENTORY_EXHAUSTION",
+    "graceful_degradation_verified": true,
+    "diagnostic_details": {
+      "deficits_reported": {
+        "COM-WATER-10L": 4150,
+        "COM-MRE-RATIONS": 7800,
+        "COM-MED-TRAUMA": 1200,
+        "COM-SHELTER-TARPS": 1700
+      },
+      "remediation_guidance_provided": true
+    }
+  },
+  {
+    "test_id": "ST-3",
+    "scenario_name": "Acute Transport Fleet Bottleneck",
+    "adversarial_condition": "Single small 350kg vehicle tasked with multi-ton corridor demand",
+    "system_behavior": "Identified fleet payload capacity deficit and recommended vehicle reinforcement.",
+    "failure_mode_diagnosed": "FLEET_PAYLOAD_CAPACITY_EXHAUSTION",
+    "graceful_degradation_verified": true,
+    "diagnostic_details": {
+      "capacity_deficit_kg": 24300.0,
+      "surviving_routes": 0
+    }
+  },
+  {
+    "test_id": "ST-4",
+    "scenario_name": "Observation Staleness & Sensor Conflict",
+    "adversarial_condition": "Contradictory status reports on critical bridge with stale evidence",
+    "system_behavior": "ObservationGraphManager detected conflict; widened uncertainty interval and safely diverted traffic.",
+    "failure_mode_diagnosed": "EPISTEMIC_OBSERVATION_CONFLICT",
+    "graceful_degradation_verified": true,
+    "diagnostic_details": {
+      "conflict_detected": true,
+      "plan_generated_around_hazard": true
+    }
+  },
+  {
+    "test_id": "ST-5",
+    "scenario_name": "Extreme Demographic Vulnerability Skew",
+    "adversarial_condition": "100% of demand clusters are vulnerable clinics with strict alpha=0.60 service floor",
+    "system_behavior": "Enforced protective alpha-floor prioritizations across all vulnerable nodes.",
+    "failure_mode_diagnosed": "EQUITY_FLOOR_SATISFACTION",
+    "graceful_degradation_verified": true,
+    "diagnostic_details": {
+      "floor_alpha_target": 0.6,
+      "floor_satisfied": true
+    }
+  }
+]
