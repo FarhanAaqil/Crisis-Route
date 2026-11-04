@@ -1,0 +1,23 @@
+{
+  "instance_id": "inst_ev02_16",
+  "event_id": 2,
+  "event_name": "Chooralmala Valley Debris Flow",
+  "region_name": "Kerala-Wayanad",
+  "hazard_type": "landslide",
+  "split": "train",
+  "parameters": {
+    "coverage_rate": 0.37,
+    "staleness_mean_hours": 12.7,
+    "contradiction_rate": 0.15,
+    "demand_multiplier": 1.34,
+    "inventory_multiplier": 1.07
+  },
+  "network_summary": {
+    "edge_count": 0,
+    "blocked_edge_count": 0,
+    "observation_count": 0
+  },
+  "edges": [],
+  "observations": [],
+  "ground_truth": {}
+}

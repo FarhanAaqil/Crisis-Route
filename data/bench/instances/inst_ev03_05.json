@@ -1,0 +1,23 @@
+{
+  "instance_id": "inst_ev03_05",
+  "event_id": 3,
+  "event_name": "Vythiri Hillcrest Inundation",
+  "region_name": "Kerala-Wayanad",
+  "hazard_type": "landslide",
+  "split": "train",
+  "parameters": {
+    "coverage_rate": 0.5,
+    "staleness_mean_hours": 13.8,
+    "contradiction_rate": 0.12,
+    "demand_multiplier": 1.37,
+    "inventory_multiplier": 0.84
+  },
+  "network_summary": {
+    "edge_count": 0,
+    "blocked_edge_count": 0,
+    "observation_count": 0
+  },
+  "edges": [],
+  "observations": [],
+  "ground_truth": {}
+}

@@ -1,0 +1,257 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "CrisisRoute Decision Support API",
+    "version": "1.0.0",
+    "description": "Uncertainty-Aware Decision Support for Humanitarian Relief Routing and Equitable Allocation in Post-Disaster Environments"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8000/api/v1",
+      "description": "Local development and testing environment"
+    }
+  ],
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "System Health Status",
+        "description": "Returns operational status of the API, database connectivity, and graph engine readiness.",
+        "responses": {
+          "200": {
+            "description": "System operational",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "version": { "type": "string" },
+                    "graph_engine": { "type": "string" },
+                    "solver_engine": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenarios": {
+      "get": {
+        "summary": "List Scenarios",
+        "responses": {
+          "200": {
+            "description": "List of planning scenarios",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ScenarioSummary" }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Scenario",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ScenarioCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Scenario created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScenarioDetail" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenarios/{scenario_id}": {
+      "get": {
+        "summary": "Get Scenario Details",
+        "parameters": [
+          { "name": "scenario_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Scenario definition and pinned snapshot details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ScenarioDetail" }
+              }
+            }
+          },
+          "404": { "description": "Scenario not found" }
+        }
+      }
+    },
+    "/scenarios/{scenario_id}/observations": {
+      "get": {
+        "summary": "List Scenario Observations",
+        "parameters": [
+          { "name": "scenario_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of recorded road observations",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Observation" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Submit Road Observation",
+        "parameters": [
+          { "name": "scenario_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ObservationCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Observation registered and new graph version staged",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Observation" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenarios/{scenario_id}/routes": {
+      "post": {
+        "summary": "Compute Risk-Aware Routes",
+        "description": "Generates primary and Yen k-shortest diverse alternative routes with survival probabilities.",
+        "parameters": [
+          { "name": "scenario_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Computed route alternatives",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/scenarios/{scenario_id}/plans": {
+      "post": {
+        "summary": "Generate Robust Relief Plan",
+        "description": "Triggers CP-SAT solver for equitable allocation across sampled road states.",
+        "parameters": [
+          { "name": "scenario_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Generated plan with allocations, routes, and diagnostics",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Plan" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/plans/{plan_id}/approval": {
+      "post": {
+        "summary": "Approve or Reject Relief Plan",
+        "description": "Mandatory sign-off action by Incident Lead with operational justification.",
+        "parameters": [
+          { "name": "plan_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["decision", "rationale"],
+                "properties": {
+                  "decision": { "type": "string", "enum": ["APPROVE", "REJECT"] },
+                  "rationale": { "type": "string", "minLength": 10 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Plan decision recorded in audit log",
+            "content": {
+              "application/json": {
+                "schema": { "type": "object" }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ScenarioSummary": {
+        "type": "object",
+        "properties": {
+          "scenario_id": { "type": "string", "format": "uuid" },
+          "name": { "type": "string" },
+          "region_name": { "type": "string" },
+          "created_at": { "type": "string", "format": "date-time" },
+          "active_plan_id": { "type": "string", "nullable": true }
+        }
+      },
+      "ScenarioCreate": {
+        "type": "object",
+        "required": ["name", "region", "commodities", "depots", "vehicles", "demand_nodes"],
+        "properties": {
+          "name": { "type": "string" },
+          "region": { "type": "object" },
+          "commodities": { "type": "array" },
+          "depots": { "type": "array" },
+          "vehicles": { "type": "array" },
+          "demand_nodes": { "type": "array" }
+        }
+      },
+      "ScenarioDetail": {
+        "type": "object"
+      },
+      "Observation": {
+        "type": "object"
+      },
+      "ObservationCreate": {
+        "type": "object",
+        "required": ["edge_id", "status", "source_type"],
+        "properties": {
+          "edge_id": { "type": "string" },
+          "status": { "type": "string" },
+          "source_type": { "type": "string" }
+        }
+      },
+      "Plan": {
+        "type": "object"
+      }
+    }
+  }
+}
+

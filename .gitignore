@@ -55,6 +55,8 @@ data/uploads/
 data/cache/
 artifacts/models/
 artifacts/runs/
+artifacts/snapshots/
+artifacts/graphs/
 
 # IDE & OS
 .vscode/
@@ -63,3 +65,7 @@ artifacts/runs/
 *.swo
 .DS_Store
 Thumbs.db
+
+# Research Blueprint (local only)
+CrisisRoute — Master Research Blueprint.md
+CrisisRoute - Master Research Blueprint.md

@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://crisisroute.org/schemas/observation.json",
+  "title": "CrisisRoute Observation Specification",
+  "description": "Schema for physical road edge reports, closures, and condition evidence",
+  "type": "object",
+  "required": [
+    "observation_id",
+    "edge_id",
+    "timestamp",
+    "source_type",
+    "source_credibility",
+    "status",
+    "reported_by"
+  ],
+  "properties": {
+    "observation_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "edge_id": {
+      "type": "string"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": ["field_patrol", "drone_recon", "satellite_radar", "local_authority", "citizen_report"]
+    },
+    "source_credibility": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "status": {
+      "type": "string",
+      "enum": ["passable", "impassable", "partially_blocked", "debris_cleared"]
+    },
+    "confidence_interval": {
+      "type": "array",
+      "items": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+      "minItems": 2,
+      "maxItems": 2,
+      "description": "[lower_bound, upper_bound]"
+    },
+    "water_depth_cm": {
+      "type": "number",
+      "minimum": 0
+    },
+    "reported_by": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  }
+}
+

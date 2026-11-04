@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://crisisroute.org/schemas/plan.json",
+  "title": "CrisisRoute Decision Support Plan Specification",
+  "description": "Schema for generated route selections, robust resource allocations, VOI rankings, and approval trails",
+  "type": "object",
+  "required": [
+    "plan_id",
+    "scenario_id",
+    "snapshot_id",
+    "generated_at",
+    "solver_status",
+    "vehicle_routes",
+    "allocations",
+    "unmet_demands",
+    "equity_evaluation",
+    "reconnaissance_recommendations",
+    "approval_state"
+  ],
+  "properties": {
+    "plan_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "scenario_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "snapshot_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "solver_status": {
+      "type": "string",
+      "enum": ["OPTIMAL", "FEASIBLE", "NON_OPTIMAL_INCUMBENT", "INFEASIBLE", "MODEL_INVALID"]
+    },
+    "solve_time_seconds": {
+      "type": "number",
+      "minimum": 0
+    },
+    "vehicle_routes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["vehicle_id", "chosen_path", "survival_probability", "estimated_travel_time_min", "alternative_paths"],
+        "properties": {
+          "vehicle_id": { "type": "string" },
+          "chosen_path": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "survival_probability": {
+            "type": "number",
+            "minimum": 0.0,
+            "maximum": 1.0
+          },
+          "estimated_travel_time_min": {
+            "type": "number",
+            "minimum": 0.0
+          },
+          "alternative_paths": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["path", "survival_probability", "estimated_travel_time_min", "jaccard_overlap_with_primary"],
+              "properties": {
+                "path": { "type": "array", "items": { "type": "string" } },
+                "survival_probability": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+                "estimated_travel_time_min": { "type": "number", "minimum": 0.0 },
+                "jaccard_overlap_with_primary": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+              }
+            }
+          }
+        }
+      }
+    },
+    "allocations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["demand_node_id", "commodity_id", "vehicle_id", "quantity_delivered"],
+        "properties": {
+          "demand_node_id": { "type": "string" },
+          "commodity_id": { "type": "string" },
+          "vehicle_id": { "type": "string" },
+          "quantity_delivered": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "unmet_demands": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["demand_node_id", "commodity_id", "unmet_quantity", "vulnerable_group"],
+        "properties": {
+          "demand_node_id": { "type": "string" },
+          "commodity_id": { "type": "string" },
+          "unmet_quantity": { "type": "integer", "minimum": 0 },
+          "vulnerable_group": { "type": "string" }
+        }
+      }
+    },
+    "equity_evaluation": {
+      "type": "object",
+      "required": ["min_group_served_fraction", "group_breakdowns"],
+      "properties": {
+        "min_group_served_fraction": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0
+        },
+        "group_breakdowns": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["total_demand", "total_delivered", "served_fraction"],
+            "properties": {
+              "total_demand": { "type": "number" },
+              "total_delivered": { "type": "number" },
+              "served_fraction": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+            }
+          }
+        }
+      }
+    },
+    "reconnaissance_recommendations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["edge_id", "expected_regret_reduction", "inspection_cost", "voi_score"],
+        "properties": {
+          "edge_id": { "type": "string" },
+          "expected_regret_reduction": { "type": "number" },
+          "inspection_cost": { "type": "number", "exclusiveMinimum": 0 },
+          "voi_score": { "type": "number" },
+          "priority_rank": { "type": "integer", "minimum": 1 }
+        }
+      }
+    },
+    "approval_state": {
+      "type": "object",
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["DRAFT", "PENDING_APPROVAL", "APPROVED", "REJECTED"]
+        },
+        "reviewed_by": { "type": "string" },
+        "reviewed_at": { "type": "string", "format": "date-time" },
+        "rationale": { "type": "string" }
+      }
+    }
+  }
+}
+

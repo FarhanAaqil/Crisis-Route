@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://crisisroute.org/schemas/scenario.json",
+  "title": "CrisisRoute Scenario Specification",
+  "description": "Schema for post-disaster humanitarian logistics planning scenarios",
+  "type": "object",
+  "required": [
+    "scenario_id",
+    "name",
+    "region",
+    "time_horizon_hours",
+    "commodities",
+    "depots",
+    "vehicles",
+    "demand_nodes",
+    "equity_parameters",
+    "solver_parameters"
+  ],
+  "properties": {
+    "scenario_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique immutable identifier for the scenario instance"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 100
+    },
+    "description": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "snapshot_id": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 hash of the content-addressed input snapshot"
+    },
+    "region": {
+      "type": "object",
+      "required": ["name", "country", "bbox", "crs"],
+      "properties": {
+        "name": { "type": "string" },
+        "country": { "type": "string", "default": "India" },
+        "bbox": {
+          "type": "array",
+          "items": { "type": "number" },
+          "minItems": 4,
+          "maxItems": 4,
+          "description": "[min_lon, min_lat, max_lon, max_lat]"
+        },
+        "crs": { "type": "string", "default": "EPSG:4326" }
+      }
+    },
+    "time_horizon_hours": {
+      "type": "number",
+      "minimum": 1,
+      "maximum": 168
+    },
+    "commodities": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "unit_weight_kg", "priority_weight"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "unit_weight_kg": { "type": "number", "exclusiveMinimum": 0 },
+          "priority_weight": { "type": "number", "minimum": 1.0, "maximum": 10.0 }
+        }
+      }
+    },
+    "depots": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "coordinates", "inventory"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "coordinates": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 2,
+            "maxItems": 2,
+            "description": "[longitude, latitude]"
+          },
+          "inventory": {
+            "type": "object",
+            "additionalProperties": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "vehicles": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "depot_id", "capacity_kg", "average_speed_kmh"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "depot_id": { "type": "string" },
+          "capacity_kg": { "type": "number", "exclusiveMinimum": 0 },
+          "average_speed_kmh": { "type": "number", "exclusiveMinimum": 0 }
+        }
+      }
+    },
+    "demand_nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "name", "vulnerable_group", "coordinates", "demand"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "vulnerable_group": { "type": "string" },
+          "population": { "type": "integer", "minimum": 1 },
+          "coordinates": {
+            "type": "array",
+            "items": { "type": "number" },
+            "minItems": 2,
+            "maxItems": 2
+          },
+          "demand": {
+            "type": "object",
+            "additionalProperties": { "type": "integer", "minimum": 0 }
+          }
+        }
+      }
+    },
+    "equity_parameters": {
+      "type": "object",
+      "required": ["min_group_service_floor_alpha", "beta_tail_risk_weight"],
+      "properties": {
+        "min_group_service_floor_alpha": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Minimum fraction of demand served across any vulnerable group"
+        },
+        "beta_tail_risk_weight": {
+          "type": "number",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Weight on CVaR tail risk in CP-SAT objective"
+        }
+      }
+    },
+    "solver_parameters": {
+      "type": "object",
+      "required": ["time_limit_seconds", "scenario_samples_s", "random_seed"],
+      "properties": {
+        "time_limit_seconds": { "type": "integer", "minimum": 5, "maximum": 120, "default": 30 },
+        "scenario_samples_s": { "type": "integer", "minimum": 10, "maximum": 200, "default": 50 },
+        "random_seed": { "type": "integer", "default": 42 }
+      }
+    }
+  }
+}
+
