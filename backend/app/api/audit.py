@@ -34,3 +34,4 @@ def list_audit_events(
         events = [e for e in events if e.user_id == user_id]
 
     return events[:limit]
+

@@ -110,3 +110,4 @@ export const EquityMetrics: React.FC<EquityMetricsProps> = ({ equity }) => {
     </div>
   );
 };
+

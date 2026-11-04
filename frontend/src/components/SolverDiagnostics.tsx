@@ -127,3 +127,4 @@ export const SolverDiagnostics: React.FC<SolverDiagnosticsProps> = ({
     </div>
   );
 };
+

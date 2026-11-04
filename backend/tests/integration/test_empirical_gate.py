@@ -40,3 +40,4 @@ def test_phase_6_exit_criteria_empirical_gate():
     assert Path("reports/reproducibility_manifest.json").exists()
     assert Path("reports/empirical_study.md").exists()
     assert Path("reports/stress_tests.md").exists()
+

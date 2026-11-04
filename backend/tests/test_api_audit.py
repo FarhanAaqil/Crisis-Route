@@ -66,3 +66,4 @@ def test_audit_list_filtering():
     assert len(events) >= 1
     assert all(e["action"] == "APPROVAL_SIGN_OFF" for e in events)
     assert all(e["resource_type"] == "plan" for e in events)
+
