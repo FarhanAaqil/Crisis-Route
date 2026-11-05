@@ -149,27 +149,27 @@ export const AllocationDashboard: React.FC<AllocationDashboardProps> = ({
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6 font-sans">
       {/* Header & Optimization Control Bar */}
-      <div className="bg-slate-900 p-5 rounded-2xl shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="glass-card p-6 rounded-3xl shadow-glass-card border border-palette-frost/25 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-950/80 text-blue-300 border border-blue-800/60 font-mono">
+          <span className="text-xs font-semibold px-3 py-1 rounded-full glass-card-subtle text-palette-cream border border-palette-frost/30 font-mono">
             {activeScenario?.name || 'Regional Relief Corridor'}
           </span>
-          <h1 className="text-xl sm:text-2xl font-bold text-white mt-1 tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-palette-cream mt-1 tracking-tight">
             Relief Distribution &amp; Operational Dispatch
           </h1>
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-palette-frost mt-0.5">
             Automated CP-SAT equity optimization, route risk mitigation, and Incident Lead approval.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
+          <div className="flex glass-card-subtle p-1 rounded-2xl border border-palette-frost/25 text-xs">
             <button
               type="button"
-              className={`px-3 py-1.5 font-bold rounded-lg transition-all min-h-[36px] ${
+              className={`px-3.5 py-1.5 font-bold rounded-xl transition-all min-h-[36px] ${
                 mode === 'robust'
-                  ? 'bg-blue-600 shadow-md shadow-blue-600/30 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'glass-btn-primary shadow-glass-card text-palette-cream'
+                  : 'text-palette-frost hover:text-palette-cream'
               }`}
               onClick={() => setMode('robust')}
             >
@@ -177,10 +177,10 @@ export const AllocationDashboard: React.FC<AllocationDashboardProps> = ({
             </button>
             <button
               type="button"
-              className={`px-3 py-1.5 font-medium rounded-lg transition-all min-h-[36px] ${
+              className={`px-3.5 py-1.5 font-medium rounded-xl transition-all min-h-[36px] ${
                 mode === 'baseline'
-                  ? 'bg-blue-600 shadow-md shadow-blue-600/30 text-white'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'glass-btn-primary shadow-glass-card text-palette-cream'
+                  : 'text-palette-frost hover:text-palette-cream'
               }`}
               onClick={() => setMode('baseline')}
             >
@@ -192,20 +192,20 @@ export const AllocationDashboard: React.FC<AllocationDashboardProps> = ({
             type="button"
             disabled={optimizing}
             onClick={handleOptimize}
-            className={`px-5 py-2 text-xs sm:text-sm font-bold rounded-xl text-white shadow-lg transition-all flex items-center space-x-2 min-h-[44px] ${
+            className={`px-5 py-2 text-xs sm:text-sm font-bold rounded-2xl text-white shadow-glass-card transition-all flex items-center space-x-2 min-h-[44px] ${
               optimizing
-                ? 'bg-blue-900/60 cursor-not-allowed text-blue-300'
-                : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 shadow-blue-600/30'
+                ? 'bg-palette-steel/50 cursor-not-allowed text-palette-frost'
+                : 'glass-btn-primary hover:border-palette-frost/60 active:scale-95'
             }`}
           >
-            <Cpu className="w-4 h-4" />
+            <Cpu className="w-4 h-4 text-palette-frost" />
             <span>{optimizing ? 'Solving CP-SAT Model...' : 'Run Optimization'}</span>
           </button>
         </div>
       </div>
 
       {errorMsg && (
-        <div className="p-4 bg-rose-950/60 border border-rose-800 text-rose-300 rounded-xl text-xs font-medium">
+        <div className="p-4 bg-rose-950/60 border border-rose-800 text-rose-300 rounded-2xl text-xs font-medium shadow-glass-card">
           {errorMsg}
         </div>
       )}
@@ -266,14 +266,14 @@ export const AllocationDashboard: React.FC<AllocationDashboardProps> = ({
           <CriticalEdges recommendations={voiTargets} />
 
           {/* Incident Lead Operational Sign-Off Panel */}
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="glass-card rounded-3xl p-6 sm:p-7 shadow-glass-card space-y-4">
+            <div className="flex items-center justify-between border-b border-palette-slate/25 pb-3">
               <div>
-                <h3 className="text-base font-bold text-white flex items-center space-x-2">
+                <h3 className="text-base font-bold text-palette-cream flex items-center space-x-2">
                   <ShieldCheck className="w-5 h-5 text-amber-400" />
                   <span>Incident Lead Operational Sign-Off Gate</span>
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-palette-frost">
                   Every dispatch action requires explicit written operational rationale to seal into the cryptographic audit trail.
                 </p>
               </div>
@@ -293,7 +293,7 @@ export const AllocationDashboard: React.FC<AllocationDashboardProps> = ({
 
             <div className="space-y-3">
               <div>
-                <label htmlFor="plan-approval-rationale" className="block text-xs font-semibold text-slate-300 mb-1.5">
+                <label htmlFor="plan-approval-rationale" className="block text-xs font-semibold text-palette-cream mb-1.5">
                   Operational Rationale &amp; Risk Acceptance (Mandatory):
                 </label>
                 <textarea
@@ -302,7 +302,7 @@ export const AllocationDashboard: React.FC<AllocationDashboardProps> = ({
                   value={approvalRationale}
                   onChange={(e) => setApprovalRationale(e.target.value)}
                   placeholder="Provide operational justification, address potential road blockages, and confirm ground patrol verification before authorizing convoy dispatch..."
-                  className="w-full bg-slate-950 border border-slate-700/80 rounded-xl p-3 text-xs text-slate-100 placeholder-slate-500 h-24 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-inner"
+                  className="w-full glass-input rounded-2xl p-3.5 text-xs text-palette-cream placeholder-palette-slate h-24 focus:outline-none focus:ring-2 focus:ring-palette-frost shadow-inner"
                 />
               </div>
 
@@ -310,7 +310,7 @@ export const AllocationDashboard: React.FC<AllocationDashboardProps> = ({
                 <button
                   type="button"
                   onClick={() => handleApproval('APPROVE')}
-                  className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 active:scale-95 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-600/30 focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[44px] transition-all flex items-center justify-center space-x-2"
+                  className="px-6 py-2.5 bg-gradient-to-r from-emerald-600/90 to-emerald-500/90 hover:from-emerald-500 hover:to-emerald-400 active:scale-95 text-white text-xs font-bold rounded-2xl shadow-glass-card border border-emerald-400/30 focus:outline-none focus:ring-2 focus:ring-emerald-400 min-h-[44px] transition-all flex items-center justify-center space-x-2"
                 >
                   <CheckCircle2 className="w-4 h-4" />
                   <span>Approve &amp; Seal Relief Plan</span>
@@ -319,9 +319,9 @@ export const AllocationDashboard: React.FC<AllocationDashboardProps> = ({
                 <button
                   type="button"
                   onClick={() => handleApproval('REJECT')}
-                  className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700 text-xs font-semibold rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-slate-500 min-h-[44px] transition-all flex items-center justify-center space-x-2"
+                  className="px-6 py-2.5 glass-card-subtle hover:bg-palette-steel/50 active:scale-95 text-palette-cream border border-palette-frost/25 text-xs font-semibold rounded-2xl shadow-glass-card focus:outline-none focus:ring-2 focus:ring-palette-frost min-h-[44px] transition-all flex items-center justify-center space-x-2"
                 >
-                  <XCircle className="w-4 h-4 text-slate-400" />
+                  <XCircle className="w-4 h-4 text-palette-frost" />
                   <span>Reject &amp; Request What-If Revision</span>
                 </button>
               </div>

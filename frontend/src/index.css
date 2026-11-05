@@ -4,13 +4,70 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Custom operational crisis styling */
+/* Custom Glassmorphism & Tactical Palette Styling */
 html, body {
   margin: 0;
   padding: 0;
   height: 100%;
+  background-color: #2E3A44;
+  color: #F6F4EE;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
 .maplibregl-canvas {
   outline: none;
+}
+
+@layer components {
+  /* High-end Frosted Glass Surface */
+  .glass-card {
+    background: rgba(46, 58, 68, 0.65);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 1px solid rgba(176, 194, 198, 0.22);
+    box-shadow: 0 12px 36px 0 rgba(24, 32, 38, 0.45), inset 0 1px 0 0 rgba(246, 244, 238, 0.15);
+  }
+
+  /* Secondary / Nested Frosted Card */
+  .glass-card-subtle {
+    background: rgba(76, 95, 107, 0.32);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(176, 194, 198, 0.16);
+    box-shadow: 0 4px 16px 0 rgba(24, 32, 38, 0.25), inset 0 1px 0 0 rgba(246, 244, 238, 0.1);
+  }
+
+  /* Deep Frosted Glass Sidebar / Header */
+  .glass-nav {
+    background: rgba(46, 58, 68, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-color: rgba(126, 147, 156, 0.25);
+  }
+
+  /* Tactile Frosted Glass Button */
+  .glass-btn-primary {
+    background: linear-gradient(135deg, rgba(76, 95, 107, 0.85) 0%, rgba(46, 58, 68, 0.95) 100%);
+    border: 1px solid rgba(176, 194, 198, 0.4);
+    box-shadow: 0 4px 18px 0 rgba(30, 40, 48, 0.35), inset 0 1px 0 0 rgba(246, 244, 238, 0.25);
+    color: #F6F4EE;
+  }
+  .glass-btn-primary:hover {
+    background: linear-gradient(135deg, rgba(126, 147, 156, 0.9) 0%, rgba(76, 95, 107, 0.95) 100%);
+    border-color: rgba(221, 228, 225, 0.6);
+    box-shadow: 0 6px 24px 0 rgba(176, 194, 198, 0.25), inset 0 1px 0 0 rgba(246, 244, 238, 0.35);
+  }
+
+  /* Glass Form Controls */
+  .glass-input {
+    background: rgba(46, 58, 68, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(126, 147, 156, 0.35);
+    color: #F6F4EE;
+  }
+  .glass-input:focus {
+    border-color: #B0C2C6;
+    box-shadow: 0 0 0 2px rgba(176, 194, 198, 0.25);
+    outline: none;
+  }
 }

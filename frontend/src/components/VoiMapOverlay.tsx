@@ -13,50 +13,50 @@ export const VoiMapOverlay: React.FC<VoiMapOverlayProps> = ({
   onSelectTarget,
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
-      <div className="flex items-center justify-between pb-2 mb-3 border-b border-slate-100">
+    <div className="glass-card rounded-3xl p-6 shadow-glass-card border border-palette-frost/25 font-sans">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center pb-3 mb-4 border-b border-palette-slate/25 gap-2">
         <div>
-          <h3 className="text-sm font-bold text-slate-800">Reconnaissance Priority Overlay</h3>
-          <p className="text-[11px] text-slate-500">
+          <h3 className="text-base font-bold text-palette-cream">Reconnaissance Priority Overlay</h3>
+          <p className="text-xs text-palette-frost mt-0.5">
             Field drone dispatch guidance ranked by regret reduction per reconnaissance unit.
           </p>
         </div>
-        <span className="text-[11px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+        <span className="text-xs font-mono font-bold px-3 py-1 rounded-xl glass-card-subtle text-palette-cream border border-palette-frost/25 self-start sm:self-auto">
           EVPI/EVSI Guided
         </span>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2.5">
         {targets.map((tgt) => {
           const isSelected = selectedEdgeId === tgt.edge_id;
           return (
             <div
               key={tgt.edge_id}
               onClick={() => onSelectTarget(tgt.edge_id)}
-              className={`p-2.5 rounded-lg border text-xs cursor-pointer transition-all ${
+              className={`p-3.5 rounded-2xl border text-xs cursor-pointer transition-all ${
                 isSelected
-                  ? 'border-blue-500 bg-blue-50/70 shadow-sm'
-                  : 'border-slate-200 hover:border-slate-300 hover:bg-slate-50'
+                  ? 'glass-card border-palette-frost shadow-glass-glow'
+                  : 'glass-card-subtle hover:border-palette-frost/40'
               }`}
             >
-              <div className="flex items-center justify-between mb-1">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-bold px-1.5 py-0.2 rounded bg-slate-800 text-white text-[10px]">
+              <div className="flex items-center justify-between mb-1.5">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold px-2 py-0.5 rounded-md bg-palette-deep/90 text-palette-cream border border-palette-frost/30 text-[10px] font-mono">
                     #{tgt.priority_rank}
                   </span>
-                  <span className="font-mono font-semibold text-slate-800">{tgt.edge_id}</span>
+                  <span className="font-mono font-bold text-palette-cream">{tgt.edge_id}</span>
                 </div>
-                <span className="font-mono font-bold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded border border-amber-200 text-[10px]">
+                <span className="font-mono font-bold text-amber-300 bg-amber-950/60 px-2 py-0.5 rounded-lg border border-amber-800/40 text-[11px]">
                   VoI: {tgt.voi_score.toFixed(3)}
                 </span>
               </div>
 
-              <div className="flex items-center justify-between text-[11px] text-slate-600 mt-1">
+              <div className="flex items-center justify-between text-[11px] text-palette-frost mt-1 font-mono">
                 <span>
-                  Regret Reduction: <b className="text-slate-800">-{tgt.expected_regret_reduction.toFixed(1)}m</b>
+                  Regret Reduction: <b className="text-palette-cream">-{tgt.expected_regret_reduction.toFixed(1)}m</b>
                 </span>
                 <span>
-                  Cost: <b className="text-slate-800">${tgt.inspection_cost}</b>
+                  Cost: <b className="text-palette-cream">${tgt.inspection_cost}</b>
                 </span>
               </div>
             </div>
@@ -66,4 +66,3 @@ export const VoiMapOverlay: React.FC<VoiMapOverlayProps> = ({
     </div>
   );
 };
-

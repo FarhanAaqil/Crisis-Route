@@ -45,22 +45,22 @@ export const ModelStatus: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6 space-y-6 font-sans text-xs">
-      <header className="border-b border-slate-800 pb-4">
+      <header className="border-b border-palette-slate/25 pb-4">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-blue-300 bg-blue-950/80 border border-blue-800/60 px-2 py-0.5 rounded text-[11px]">
+              <span className="font-semibold text-palette-cream bg-palette-steel/50 border border-palette-frost/30 px-3 py-0.5 rounded-full text-[11px]">
                 {activeScenario?.name || 'Regional Hazard Corridor'}
               </span>
             </div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white mt-1">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-palette-cream mt-1 tracking-tight">
               Passability Model Calibration Status
             </h1>
-            <p className="text-slate-400 text-xs">
+            <p className="text-palette-frost text-xs mt-0.5">
               Empirical reliability diagrams, ECE tracking, and distribution shift guards
             </p>
           </div>
-          <span className="font-mono bg-emerald-950/80 text-emerald-300 border border-emerald-800/60 px-2.5 py-1 rounded-lg font-bold text-[11px]">
+          <span className="font-mono bg-palette-deep/80 text-palette-cream border border-palette-frost/30 px-3 py-1.5 rounded-xl font-bold text-[11px] shadow-glass-card">
             Active: {metrics.model_version}
           </span>
         </div>
@@ -68,51 +68,51 @@ export const ModelStatus: React.FC = () => {
 
       {/* Primary Verification Metrics Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-lg hover:-translate-y-1 hover:border-slate-700 transition-all duration-300">
-          <div className="flex items-center justify-between text-slate-400 font-medium">
+        <div className="p-4 glass-card rounded-2xl shadow-glass-card hover:-translate-y-1 hover:border-palette-frost/40 hover:shadow-glass-glow transition-all duration-300">
+          <div className="flex items-center justify-between text-palette-frost font-medium">
             <span>Brier Score (MSE)</span>
             <Target className="w-4 h-4 text-emerald-400" />
           </div>
-          <div className="text-2xl font-bold text-white mt-1 font-mono">
+          <div className="text-2xl font-extrabold text-palette-cream mt-1 font-mono">
             {metrics.brier_score.toFixed(3)}
           </div>
-          <span className="text-[10px] text-emerald-400 font-semibold flex items-center space-x-1 mt-1">
-            <CheckCircle2 className="w-3 h-3" />
+          <span className="text-[10px] text-emerald-300 font-semibold flex items-center space-x-1 mt-1">
+            <CheckCircle2 className="w-3 h-3 text-emerald-400" />
             <span>Verified Target (&lt; 0.15)</span>
           </span>
         </div>
 
-        <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-lg hover:-translate-y-1 hover:border-slate-700 transition-all duration-300">
-          <div className="flex items-center justify-between text-slate-400 font-medium">
+        <div className="p-4 glass-card rounded-2xl shadow-glass-card hover:-translate-y-1 hover:border-palette-frost/40 hover:shadow-glass-glow transition-all duration-300">
+          <div className="flex items-center justify-between text-palette-frost font-medium">
             <span>Expected Calibration Error</span>
-            <Activity className="w-4 h-4 text-blue-400" />
+            <Activity className="w-4 h-4 text-palette-frost" />
           </div>
-          <div className="text-2xl font-bold text-blue-400 mt-1 font-mono">
+          <div className="text-2xl font-extrabold text-palette-frost mt-1 font-mono">
             {metrics.expected_calibration_error.toFixed(3)}
           </div>
-          <span className="text-[10px] text-slate-400 block mt-1">10 Equal-Width Bins</span>
+          <span className="text-[10px] text-palette-slate block mt-1">10 Equal-Width Bins</span>
         </div>
 
-        <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-lg hover:-translate-y-1 hover:border-slate-700 transition-all duration-300">
-          <div className="flex items-center justify-between text-slate-400 font-medium">
+        <div className="p-4 glass-card rounded-2xl shadow-glass-card hover:-translate-y-1 hover:border-palette-frost/40 hover:shadow-glass-glow transition-all duration-300">
+          <div className="flex items-center justify-between text-palette-frost font-medium">
             <span>ROC-AUC Discrimination</span>
-            <BarChart2 className="w-4 h-4 text-indigo-400" />
+            <BarChart2 className="w-4 h-4 text-palette-frost" />
           </div>
-          <div className="text-2xl font-bold text-white mt-1 font-mono">
+          <div className="text-2xl font-extrabold text-palette-cream mt-1 font-mono">
             {metrics.roc_auc.toFixed(3)}
           </div>
-          <span className="text-[10px] text-slate-400 block mt-1">Ranking Invariant</span>
+          <span className="text-[10px] text-palette-slate block mt-1">Ranking Invariant</span>
         </div>
 
-        <div className="p-4 bg-slate-900 border border-slate-800 rounded-xl shadow-lg hover:-translate-y-1 hover:border-slate-700 transition-all duration-300">
-          <div className="flex items-center justify-between text-slate-400 font-medium">
+        <div className="p-4 glass-card rounded-2xl shadow-glass-card hover:-translate-y-1 hover:border-palette-frost/40 hover:shadow-glass-glow transition-all duration-300">
+          <div className="flex items-center justify-between text-palette-frost font-medium">
             <span>Corridor Segment Health</span>
-            <ShieldCheck className="w-4 h-4 text-cyan-400" />
+            <ShieldCheck className="w-4 h-4 text-palette-sage" />
           </div>
-          <div className="text-2xl font-bold text-white mt-1 font-mono">
+          <div className="text-2xl font-extrabold text-palette-cream mt-1 font-mono">
             {summary ? summary.total_edges : metrics.total_samples} Links
           </div>
-          <span className="text-[10px] text-slate-400 block mt-1">
+          <span className="text-[10px] text-palette-frost block mt-1">
             {summary
               ? `${summary.passable_count} Pass | ${summary.moderate_count} Mod | ${summary.critical_count} Crit`
               : 'Empirical Holdout Evaluation'}
@@ -120,18 +120,18 @@ export const ModelStatus: React.FC = () => {
         </div>
       </div>
 
-      {/* Reliability Diagram Table */}
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3 shadow-xl">
-        <div className="flex justify-between items-center border-b border-slate-800 pb-3">
+      {/* Reliability Diagram Table with Glassmorphism */}
+      <div className="glass-card rounded-3xl p-6 space-y-4 shadow-glass-card">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center border-b border-palette-slate/25 pb-3 gap-2">
           <div>
-            <h3 className="font-bold text-white text-sm">
+            <h3 className="font-bold text-palette-cream text-sm">
               Reliability Table (Calibration vs. Empirical Accuracy)
             </h3>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-palette-frost">
               Evaluated using post-hoc isotonic calibration against ground truth flood inspection records.
             </p>
           </div>
-          <span className="font-mono text-[11px] bg-slate-800 text-slate-300 px-2.5 py-1 rounded-lg border border-slate-700">
+          <span className="font-mono text-[11px] glass-card-subtle text-palette-cream px-3 py-1 rounded-xl border border-palette-frost/25 self-start sm:self-auto">
             N = {metrics.total_samples} Evaluated
           </span>
         </div>
@@ -139,7 +139,7 @@ export const ModelStatus: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full text-left font-mono">
             <thead>
-              <tr className="border-b border-slate-800 text-slate-400 text-[11px]">
+              <tr className="border-b border-palette-slate/25 text-palette-frost text-[11px]">
                 <th className="py-2.5 px-3">Bin Interval</th>
                 <th className="py-2.5 px-3">Mean Confidence</th>
                 <th className="py-2.5 px-3">Empirical Accuracy</th>
@@ -147,24 +147,24 @@ export const ModelStatus: React.FC = () => {
                 <th className="py-2.5 px-3">Calibration Gap (|Gap|)</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800 text-[11px]">
+            <tbody className="divide-y divide-palette-slate/20 text-[11px]">
               {metrics.reliability_diagram.map((bin) => {
                 const gap = Math.abs(bin.calibration_gap);
                 const isWellCalibrated = gap <= 0.03;
                 return (
-                  <tr key={bin.bin_index} className="hover:bg-slate-800/50 transition-colors">
-                    <td className="py-2 px-3 font-semibold text-slate-300">
+                  <tr key={bin.bin_index} className="hover:bg-palette-steel/25 transition-colors">
+                    <td className="py-2.5 px-3 font-semibold text-palette-cream">
                       [{bin.bin_range[0].toFixed(1)} - {bin.bin_range[1].toFixed(1)})
                     </td>
-                    <td className="py-2 px-3 text-blue-400">{(bin.confidence * 100).toFixed(1)}%</td>
-                    <td className="py-2 px-3 text-slate-200">{(bin.accuracy * 100).toFixed(1)}%</td>
-                    <td className="py-2 px-3 text-slate-400">{bin.count}</td>
-                    <td className="py-2 px-3">
+                    <td className="py-2.5 px-3 text-palette-frost">{(bin.confidence * 100).toFixed(1)}%</td>
+                    <td className="py-2.5 px-3 text-palette-cream">{(bin.accuracy * 100).toFixed(1)}%</td>
+                    <td className="py-2.5 px-3 text-palette-frost/80">{bin.count}</td>
+                    <td className="py-2.5 px-3">
                       <span
-                        className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
+                        className={`inline-block px-2.5 py-0.5 rounded-md text-[10px] font-bold ${
                           isWellCalibrated
-                            ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/40'
-                            : 'bg-amber-950/80 text-amber-300 border border-amber-800/40'
+                            ? 'bg-emerald-950/70 text-emerald-300 border border-emerald-800/40'
+                            : 'bg-amber-950/70 text-amber-300 border border-amber-800/40'
                         }`}
                       >
                         {gap.toFixed(3)}

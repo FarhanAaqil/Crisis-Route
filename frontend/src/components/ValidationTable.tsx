@@ -29,52 +29,55 @@ export const ValidationTable: React.FC<ValidationTableProps> = ({
   quarantineRecords,
 }) => {
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 font-sans">
       {/* Metrics Banner */}
-      <div className="grid grid-cols-3 gap-4">
-        <div className="p-3 bg-slate-50 border rounded-md">
-          <div className="text-xs text-slate-500 font-medium">Total Ingested Rows</div>
-          <div className="text-xl font-bold text-slate-800">{totalRows}</div>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="p-4 glass-card rounded-2xl shadow-glass-card border border-palette-frost/25">
+          <div className="text-xs text-palette-frost font-medium">Total Ingested Rows</div>
+          <div className="text-2xl font-bold text-palette-cream mt-1 font-mono">{totalRows}</div>
         </div>
-        <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-md">
-          <div className="text-xs text-emerald-700 font-medium">Valid Parsed Rows</div>
-          <div className="text-xl font-bold text-emerald-800">{validRows}</div>
+        <div className="p-4 glass-card rounded-2xl shadow-glass-card border border-palette-frost/25">
+          <div className="text-xs text-emerald-400 font-medium">Valid Parsed Rows</div>
+          <div className="text-2xl font-bold text-emerald-300 mt-1 font-mono">{validRows}</div>
         </div>
-        <div className={`p-3 border rounded-md ${quarantinedRows > 0 ? 'bg-amber-50 border-amber-300' : 'bg-slate-50'}`}>
-          <div className="text-xs text-amber-700 font-medium">Quarantined (Retained)</div>
-          <div className="text-xl font-bold text-amber-800">{quarantinedRows}</div>
+        <div className={`p-4 glass-card rounded-2xl shadow-glass-card border ${quarantinedRows > 0 ? 'border-amber-500/40' : 'border-palette-frost/25'}`}>
+          <div className="text-xs text-amber-400 font-medium">Quarantined (Retained)</div>
+          <div className="text-2xl font-bold text-amber-300 mt-1 font-mono">{quarantinedRows}</div>
         </div>
       </div>
 
       {/* Quarantine Table */}
       {quarantinedRows > 0 ? (
-        <div className="border rounded-md overflow-hidden">
-          <div className="bg-amber-100/60 px-4 py-2 text-xs font-semibold text-amber-900 border-b">
-            Quarantine Buffer — Malformed rows isolated for audit (Never silently dropped)
+        <div className="glass-card rounded-3xl overflow-hidden border border-amber-500/30 shadow-glass-card">
+          <div className="bg-amber-950/60 px-5 py-3 text-xs font-semibold text-amber-300 border-b border-amber-800/40 flex items-center justify-between">
+            <span>Quarantine Buffer — Malformed rows isolated for audit (Never silently dropped)</span>
+            <span className="text-[10px] font-mono bg-amber-900/60 text-amber-200 px-2 py-0.5 rounded-full border border-amber-700/50">
+              Zero Silent Data Loss
+            </span>
           </div>
-          <div className="max-h-60 overflow-y-auto">
+          <div className="max-h-64 overflow-y-auto">
             <table className="w-full text-left text-xs border-collapse">
-              <thead className="bg-slate-50 border-b text-slate-600">
+              <thead className="bg-palette-deep/80 border-b border-palette-slate/25 text-palette-frost font-mono text-[11px]">
                 <tr>
-                  <th className="p-2 font-medium">Row #</th>
-                  <th className="p-2 font-medium">File</th>
-                  <th className="p-2 font-medium">Error Code</th>
-                  <th className="p-2 font-medium">Reason</th>
-                  <th className="p-2 font-medium">Invalid Input</th>
+                  <th className="p-3">Row #</th>
+                  <th className="p-3">File</th>
+                  <th className="p-3">Error Code</th>
+                  <th className="p-3">Reason</th>
+                  <th className="p-3">Invalid Input</th>
                 </tr>
               </thead>
-              <tbody className="divide-y text-slate-700">
+              <tbody className="divide-y divide-palette-slate/20 text-palette-cream">
                 {quarantineRecords.map((item) => (
-                  <tr key={item.quarantine_id} className="hover:bg-amber-50/40">
-                    <td className="p-2 font-mono font-bold text-slate-800">{item.row_index}</td>
-                    <td className="p-2">{item.file_name}</td>
-                    <td className="p-2 text-red-600 font-mono font-semibold">
+                  <tr key={item.quarantine_id} className="hover:bg-palette-steel/20 transition-colors">
+                    <td className="p-3 font-mono font-bold text-palette-frost">{item.row_index}</td>
+                    <td className="p-3 text-palette-cream">{item.file_name}</td>
+                    <td className="p-3 text-rose-400 font-mono font-semibold">
                       {item.errors.map((e) => e.error_code).join(', ')}
                     </td>
-                    <td className="p-2 text-slate-600">
+                    <td className="p-3 text-palette-frost/90">
                       {item.errors.map((e) => e.message).join(' | ')}
                     </td>
-                    <td className="p-2 font-mono text-slate-500 truncate max-w-xs">
+                    <td className="p-3 font-mono text-palette-slate truncate max-w-xs">
                       {JSON.stringify(item.errors.map((e) => e.invalid_value))}
                     </td>
                   </tr>
@@ -84,11 +87,10 @@ export const ValidationTable: React.FC<ValidationTableProps> = ({
           </div>
         </div>
       ) : (
-        <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs rounded-md">
+        <div className="p-4 bg-emerald-950/50 border border-emerald-800 text-emerald-300 text-xs rounded-2xl shadow-glass-card">
           Zero parsing errors. All {validRows} records validated and ready for snapshot sealing.
         </div>
       )}
     </div>
   );
 };
-

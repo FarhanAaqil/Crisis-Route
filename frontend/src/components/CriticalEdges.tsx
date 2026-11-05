@@ -12,9 +12,9 @@ export const CriticalEdges: React.FC<CriticalEdgesProps> = ({
 }) => {
   if (!recommendations || recommendations.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
-        <h3 className="text-base font-semibold text-slate-800 mb-2">Critical Reconnaissance Edges</h3>
-        <p className="text-sm text-slate-500">
+      <div className="glass-card rounded-3xl p-6 shadow-glass-card border border-palette-frost/25 font-sans">
+        <h3 className="text-base font-bold text-palette-cream mb-1.5">Critical Reconnaissance Edges</h3>
+        <p className="text-xs text-palette-frost">
           No critical hazard bottlenecks identified. All active routes meet reliability thresholds.
         </p>
       </div>
@@ -22,62 +22,55 @@ export const CriticalEdges: React.FC<CriticalEdgesProps> = ({
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-4">
-      <div className="flex items-center justify-between mb-3">
+    <div className="glass-card rounded-3xl p-6 shadow-glass-card border border-palette-frost/25 font-sans">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 border-b border-palette-slate/25 pb-3 gap-2">
         <div>
-          <h3 className="text-base font-semibold text-slate-800">Value of Information (VOI) Ranking</h3>
-          <p className="text-xs text-slate-500">
+          <h3 className="text-base font-bold text-palette-cream">Value of Information (VOI) Ranking</h3>
+          <p className="text-xs text-palette-frost mt-0.5">
             Top bottleneck road edges prioritized for field drone / ground inspection.
           </p>
         </div>
-        <span className="text-xs font-semibold px-2 py-0.5 rounded bg-amber-100 text-amber-800 border border-amber-200">
-          {recommendations.length} Targets
+        <span className="text-xs font-mono font-bold px-3 py-1 rounded-xl glass-card-subtle text-palette-cream border border-palette-frost/25 self-start sm:self-auto">
+          {recommendations.length} Bottlenecks Identified
         </span>
       </div>
 
       <div className="overflow-x-auto">
-        <table className="min-w-full text-left text-sm">
-          <thead className="bg-slate-50 border-b border-slate-200 text-xs font-semibold text-slate-600 uppercase">
+        <table className="min-w-full text-left text-xs font-mono">
+          <thead className="bg-palette-deep/80 border-b border-palette-slate/25 text-palette-frost text-[11px]">
             <tr>
-              <th className="py-2 px-3">Rank</th>
-              <th className="py-2 px-3">Edge ID</th>
-              <th className="py-2 px-3">VOI Score</th>
-              <th className="py-2 px-3">Regret Reduction</th>
-              <th className="py-2 px-3">Inspection Cost</th>
-              <th className="py-2 px-3 text-right">Action</th>
+              <th className="py-3 px-3">Rank</th>
+              <th className="py-3 px-3">Edge ID</th>
+              <th className="py-3 px-3">VOI Score</th>
+              <th className="py-3 px-3">Regret Reduction</th>
+              <th className="py-3 px-3">Inspection Cost</th>
+              <th className="py-3 px-3 text-right">Action</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-palette-slate/20 text-palette-cream">
             {recommendations.map((rec) => (
               <tr
                 key={rec.edge_id}
-                className="hover:bg-slate-50 transition-colors cursor-pointer"
+                className="hover:bg-palette-steel/20 transition-colors cursor-pointer"
                 onClick={() => onSelectEdge && onSelectEdge(rec.edge_id)}
               >
-                <td className="py-2.5 px-3 font-semibold text-slate-700">#{rec.priority_rank}</td>
-                <td className="py-2.5 px-3 font-mono text-xs text-blue-700 font-medium">
+                <td className="py-2.5 px-3 font-semibold text-palette-cream">#{rec.priority_rank}</td>
+                <td className="py-2.5 px-3 text-palette-frost font-bold">
                   {rec.edge_id}
                 </td>
-                <td className="py-2.5 px-3">
-                  <span className="font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 text-xs">
-                    {rec.voi_score.toFixed(3)}
-                  </span>
+                <td className="py-2.5 px-3 font-bold text-amber-300">
+                  {rec.voi_score.toFixed(3)}
                 </td>
-                <td className="py-2.5 px-3 text-slate-600">
-                  -{rec.expected_regret_reduction.toFixed(1)} min
+                <td className="py-2.5 px-3 text-palette-sage">
+                  -{rec.expected_regret_reduction.toFixed(1)}m
                 </td>
-                <td className="py-2.5 px-3 text-slate-500">${rec.inspection_cost.toFixed(0)}</td>
+                <td className="py-2.5 px-3 text-palette-frost">
+                  ${rec.inspection_cost.toFixed(1)}
+                </td>
                 <td className="py-2.5 px-3 text-right">
-                  <button
-                    type="button"
-                    className="text-xs bg-slate-100 hover:bg-slate-200 text-slate-800 font-medium py-1 px-2.5 rounded transition-colors"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (onSelectEdge) onSelectEdge(rec.edge_id);
-                    }}
-                  >
-                    Inspect
-                  </button>
+                  <span className="px-2.5 py-1 text-[10px] font-bold rounded-lg glass-card-subtle text-palette-frost hover:text-palette-cream border border-palette-frost/25 inline-block">
+                    Inspect Corridor
+                  </span>
                 </td>
               </tr>
             ))}
@@ -87,4 +80,3 @@ export const CriticalEdges: React.FC<CriticalEdgesProps> = ({
     </div>
   );
 };
-
