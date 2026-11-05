@@ -87,3 +87,4 @@ export const CriticalEdges: React.FC<CriticalEdgesProps> = ({
     </div>
   );
 };
+

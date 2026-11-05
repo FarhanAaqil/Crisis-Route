@@ -58,3 +58,4 @@ Please open an issue on GitHub detailing:
 2. Benchmark instance ID or scenario parameters;
 3. Expected vs. observed behavior;
 4. Full stack trace or solver diagnostic output.
+

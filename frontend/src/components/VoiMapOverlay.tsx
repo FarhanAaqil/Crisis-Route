@@ -66,3 +66,4 @@ export const VoiMapOverlay: React.FC<VoiMapOverlayProps> = ({
     </div>
   );
 };
+

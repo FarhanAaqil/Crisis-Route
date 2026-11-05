@@ -90,3 +90,4 @@ The operational performance of CrisisRoute is stable across a wide envelope of h
 4. **Phase 4 Equity Audit:** Verify vulnerable group service floor $\alpha \ge 40\%$ across all isolated clusters.
 5. **Phase 5 Drone Reconnaissance:** Dispatch aerial reconnaissance units to top-ranked VoI links before heavy convoy release.
 6. **Phase 6 Approver Sign-Off:** Incident Lead enters written operational justification and commits cryptographic sign-off.
+

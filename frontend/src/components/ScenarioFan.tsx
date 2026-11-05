@@ -112,3 +112,4 @@ export const ScenarioFan: React.FC<ScenarioFanProps> = ({
     </div>
   );
 };
+

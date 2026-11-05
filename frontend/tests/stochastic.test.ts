@@ -58,3 +58,4 @@ describe('Phase 5 Frontend Stochastic Fan and VoI Overlay Components', () => {
     expect(html).toContain('#2');
   });
 });
+

@@ -113,3 +113,4 @@ export const AllocationTable: React.FC<AllocationTableProps> = ({
     </div>
   );
 };
+

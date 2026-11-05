@@ -93,3 +93,4 @@ describe('WCAG 2.1 AA Accessibility & Viewport Conformance', () => {
     expect(html).toContain('min-h-[44px]');
   });
 });
+
