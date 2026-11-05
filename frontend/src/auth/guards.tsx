@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type Role = 'analyst' | 'field_analyst' | 'approver';
+export type Role = 'analyst' | 'field_analyst' | 'approver' | 'admin';
 
 interface RoleGuardProps {
   currentRole: Role;
