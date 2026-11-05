@@ -21,6 +21,7 @@ export interface AppContextValue {
   isLoadingScenarios: boolean;
   reloadScenarios: () => Promise<void>;
   notify: (msg: string, type?: 'success' | 'error' | 'info') => void;
+  isOnline: boolean;
 }
 
 const defaultScenario: ScenarioSummary = {
@@ -43,6 +44,7 @@ const defaultContextValue: AppContextValue = {
   isLoadingScenarios: false,
   reloadScenarios: async () => {},
   notify: () => {},
+  isOnline: true,
 };
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -53,7 +55,19 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   const [activeRole, setActiveRole] = useState<UserRole>('analyst');
   const [activePlan, setActivePlan] = useState<PlanDetail | null>(null);
   const [isLoadingScenarios, setIsLoadingScenarios] = useState<boolean>(true);
+  const [isOnline, setIsOnline] = useState<boolean>(true);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const notify = useCallback((message: string, type: 'success' | 'error' | 'info' = 'info') => {
     const id = `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
@@ -120,6 +134,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         isLoadingScenarios,
         reloadScenarios,
         notify,
+        isOnline,
       }}
     >
       {children}
