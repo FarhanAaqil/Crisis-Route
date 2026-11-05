@@ -105,7 +105,7 @@ export const SolverDiagnostics: React.FC<SolverDiagnosticsProps> = ({
                     key={cid}
                     className="text-xs bg-rose-100 text-rose-800 font-mono px-2 py-0.5 rounded border border-rose-300"
                   >
-                    {cid}: -{deficit} units
+                    {cid}: -{String(deficit)} units
                   </span>
                 ))}
               </div>
@@ -116,7 +116,7 @@ export const SolverDiagnostics: React.FC<SolverDiagnosticsProps> = ({
             <div className="mt-3 pt-2.5 border-t border-rose-200/70 text-xs text-slate-700">
               <span className="font-bold text-slate-800 block mb-1">Recommended Remediation:</span>
               <ul className="list-disc list-inside space-y-0.5 text-slate-600">
-                {infeasibilityDiagnostic.remediation_suggestions.map((sug, i) => (
+                {infeasibilityDiagnostic.remediation_suggestions.map((sug: string, i: number) => (
                   <li key={i}>{sug}</li>
                 ))}
               </ul>

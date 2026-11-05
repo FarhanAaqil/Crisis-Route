@@ -34,24 +34,42 @@ export const AuditLogViewer: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <label htmlFor="audit-filter" className="text-xs font-semibold text-slate-600">
-            Filter Action:
-          </label>
-          <select
-            id="audit-filter"
-            aria-label="Filter audit logs by action"
-            value={filterAction}
-            onChange={(e) => setFilterAction(e.target.value)}
-            className="text-xs border border-slate-300 rounded px-2.5 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <label htmlFor="audit-filter" className="text-xs font-semibold text-slate-600">
+              Filter Action:
+            </label>
+            <select
+              id="audit-filter"
+              aria-label="Filter audit logs by action"
+              value={filterAction}
+              onChange={(e) => setFilterAction(e.target.value)}
+              className="text-xs border border-slate-300 rounded px-2.5 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="ALL">All Actions ({logs.length})</option>
+              {uniqueActions.map((act) => (
+                <option key={act} value={act}>
+                  {act}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setLoading(true);
+              fetchAuditLogs(100)
+                .then((data) => {
+                  setLogs(data);
+                  setLoading(false);
+                })
+                .catch(() => setLoading(false));
+            }}
+            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded border border-slate-300 transition"
           >
-            <option value="ALL">All Actions ({logs.length})</option>
-            {uniqueActions.map((act) => (
-              <option key={act} value={act}>
-                {act}
-              </option>
-            ))}
-          </select>
+            ↻ Refresh
+          </button>
         </div>
       </div>
 
