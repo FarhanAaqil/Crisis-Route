@@ -47,7 +47,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # Copy backend application source
 COPY backend/app/ /app/app/
-COPY backend/contracts/ /app/contracts/
+COPY contracts/ /app/contracts/
 COPY experiments/ /app/experiments/
 COPY data/ /app/data/
 
