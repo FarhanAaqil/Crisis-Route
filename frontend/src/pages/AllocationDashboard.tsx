@@ -19,6 +19,7 @@ import { SolverDiagnostics } from '../components/SolverDiagnostics';
 import { RouteComparison } from '../components/RouteComparison';
 import { ScenarioFan } from '../components/ScenarioFan';
 import { VoiMapOverlay } from '../components/VoiMapOverlay';
+import { Cpu, CheckCircle2, XCircle, ShieldCheck } from 'lucide-react';
 
 export interface AllocationDashboardProps {
   scenarioId?: string;
@@ -148,27 +149,27 @@ export const AllocationDashboard: React.FC<AllocationDashboardProps> = ({
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6 font-sans">
       {/* Header & Optimization Control Bar */}
-      <div className="bg-white p-5 rounded-lg shadow-sm border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-slate-900 p-5 rounded-2xl shadow-xl border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <span className="text-xs font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-800">
+          <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-blue-950/80 text-blue-300 border border-blue-800/60 font-mono">
             {activeScenario?.name || 'Regional Relief Corridor'}
           </span>
-          <h1 className="text-xl font-bold text-slate-800 mt-1">
+          <h1 className="text-xl sm:text-2xl font-bold text-white mt-1 tracking-tight">
             Relief Distribution &amp; Operational Dispatch
           </h1>
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-slate-400">
             Automated CP-SAT equity optimization, route risk mitigation, and Incident Lead approval.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
+          <div className="flex bg-slate-950 p-1 rounded-xl border border-slate-800 text-xs">
             <button
               type="button"
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+              className={`px-3 py-1.5 font-bold rounded-lg transition-all min-h-[36px] ${
                 mode === 'robust'
-                  ? 'bg-white shadow-sm text-blue-700'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-blue-600 shadow-md shadow-blue-600/30 text-white'
+                  : 'text-slate-400 hover:text-slate-200'
               }`}
               onClick={() => setMode('robust')}
             >
@@ -176,10 +177,10 @@ export const AllocationDashboard: React.FC<AllocationDashboardProps> = ({
             </button>
             <button
               type="button"
-              className={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+              className={`px-3 py-1.5 font-medium rounded-lg transition-all min-h-[36px] ${
                 mode === 'baseline'
-                  ? 'bg-white shadow-sm text-blue-700'
-                  : 'text-slate-600 hover:text-slate-900'
+                  ? 'bg-blue-600 shadow-md shadow-blue-600/30 text-white'
+                  : 'text-slate-400 hover:text-slate-200'
               }`}
               onClick={() => setMode('baseline')}
             >
@@ -191,19 +192,20 @@ export const AllocationDashboard: React.FC<AllocationDashboardProps> = ({
             type="button"
             disabled={optimizing}
             onClick={handleOptimize}
-            className={`px-4 py-2 text-xs sm:text-sm font-semibold rounded-lg text-white shadow-sm transition-all ${
+            className={`px-5 py-2 text-xs sm:text-sm font-bold rounded-xl text-white shadow-lg transition-all flex items-center space-x-2 min-h-[44px] ${
               optimizing
-                ? 'bg-blue-400 cursor-not-allowed'
-                : 'bg-blue-600 hover:bg-blue-700 active:bg-blue-800'
+                ? 'bg-blue-900/60 cursor-not-allowed text-blue-300'
+                : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 shadow-blue-600/30'
             }`}
           >
-            {optimizing ? 'Solving CP-SAT...' : 'Run Optimization'}
+            <Cpu className="w-4 h-4" />
+            <span>{optimizing ? 'Solving CP-SAT Model...' : 'Run Optimization'}</span>
           </button>
         </div>
       </div>
 
       {errorMsg && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-lg text-rose-800 text-xs">
+        <div className="p-4 bg-rose-950/60 border border-rose-800 text-rose-300 rounded-xl text-xs font-medium">
           {errorMsg}
         </div>
       )}
@@ -260,65 +262,67 @@ export const AllocationDashboard: React.FC<AllocationDashboardProps> = ({
             unmetDemands={activePlan.unmet_demands}
           />
 
-          {/* Critical Reconnaissance Edges */}
-          <CriticalEdges recommendations={activePlan.reconnaissance_recommendations} />
+          {/* Critical Edges & Sensitivity Analysis */}
+          <CriticalEdges recommendations={voiTargets} />
 
-          {/* Human Incident Lead Approval Gate */}
-          <div className="bg-white p-5 rounded-lg shadow-sm border border-slate-200">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+          {/* Incident Lead Operational Sign-Off Panel */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 shadow-xl space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div>
-                <h3 className="text-base font-semibold text-slate-800">
-                  Incident Lead Sign-Off Gate
+                <h3 className="text-base font-bold text-white flex items-center space-x-2">
+                  <ShieldCheck className="w-5 h-5 text-amber-400" />
+                  <span>Incident Lead Operational Sign-Off Gate</span>
                 </h3>
-                <p className="text-xs text-slate-500">
-                  Mandatory operational justification before field dispatch authorization.
+                <p className="text-xs text-slate-400">
+                  Every dispatch action requires explicit written operational rationale to seal into the cryptographic audit trail.
                 </p>
               </div>
+
               <span
-                className={`text-xs font-bold px-3 py-1 rounded-full ${
+                className={`px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider ${
                   approvalStatus === 'APPROVED'
-                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300'
+                    ? 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/40'
                     : approvalStatus === 'REJECTED'
-                    ? 'bg-rose-100 text-rose-800 border border-rose-300'
-                    : 'bg-amber-100 text-amber-800 border border-amber-300'
+                    ? 'bg-rose-950/80 text-rose-300 border border-rose-800/40'
+                    : 'bg-amber-950/80 text-amber-300 border border-amber-800/40'
                 }`}
               >
-                Status: {approvalStatus || activePlan.approval_state.status}
+                {approvalStatus || 'PENDING_APPROVAL'}
               </span>
             </div>
 
             <div className="space-y-3">
               <div>
-                <label
-                  htmlFor="operational-rationale"
-                  className="block text-xs font-semibold text-slate-700 mb-1"
-                >
-                  Operational Decision Rationale (Mandatory &ge; 10 chars):
+                <label htmlFor="plan-approval-rationale" className="block text-xs font-semibold text-slate-300 mb-1.5">
+                  Operational Rationale &amp; Risk Acceptance (Mandatory):
                 </label>
                 <textarea
-                  id="operational-rationale"
-                  rows={2}
-                  className="w-full text-xs sm:text-sm border border-slate-300 rounded p-2.5 focus:ring-1 focus:ring-blue-500 focus:outline-none"
-                  placeholder="e.g. Approved deployment after verifying flood bypass corridors along Wayanad NH766."
+                  id="plan-approval-rationale"
+                  aria-label="Mandatory operational rationale and risk acceptance text"
                   value={approvalRationale}
                   onChange={(e) => setApprovalRationale(e.target.value)}
+                  placeholder="Provide operational justification, address potential road blockages, and confirm ground patrol verification before authorizing convoy dispatch..."
+                  className="w-full bg-slate-950 border border-slate-700/80 rounded-xl p-3 text-xs text-slate-100 placeholder-slate-500 h-24 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-inner"
                 />
               </div>
 
-              <div className="flex items-center gap-3 justify-end">
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   type="button"
-                  className="px-4 py-2 text-xs font-bold rounded bg-rose-50 text-rose-700 border border-rose-200 hover:bg-rose-100 transition-colors"
-                  onClick={() => handleApproval('REJECT')}
-                >
-                  Reject Plan
-                </button>
-                <button
-                  type="button"
-                  className="px-5 py-2 text-xs font-bold rounded bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-sm"
                   onClick={() => handleApproval('APPROVE')}
+                  className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 active:scale-95 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-600/30 focus:outline-none focus:ring-2 focus:ring-emerald-500 min-h-[44px] transition-all flex items-center justify-center space-x-2"
                 >
-                  Authorize Field Dispatch
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Approve &amp; Seal Relief Plan</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleApproval('REJECT')}
+                  className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700 text-xs font-semibold rounded-xl shadow-md focus:outline-none focus:ring-2 focus:ring-slate-500 min-h-[44px] transition-all flex items-center justify-center space-x-2"
+                >
+                  <XCircle className="w-4 h-4 text-slate-400" />
+                  <span>Reject &amp; Request What-If Revision</span>
                 </button>
               </div>
             </div>
