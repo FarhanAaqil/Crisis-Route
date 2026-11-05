@@ -16,3 +16,4 @@ CREATE TABLE IF NOT EXISTS audit_events (
 -- Index for temporal audit queries
 CREATE INDEX IF NOT EXISTS idx_audit_timestamp ON audit_events (timestamp DESC);
 CREATE INDEX IF NOT EXISTS idx_audit_action ON audit_events (action);
+
