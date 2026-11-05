@@ -1,0 +1,16 @@
+@import 'maplibre-gl/dist/maplibre-gl.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom operational crisis styling */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+.maplibregl-canvas {
+  outline: none;
+}
