@@ -165,4 +165,3 @@ def add_or_update_vehicle(
         details={"scenario_id": str(scenario_id), "capacity_kg": payload.capacity_kg},
     )
     return payload
-

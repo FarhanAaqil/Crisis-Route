@@ -18,7 +18,6 @@ from app.domain.models import (
     ObservationResponse,
     PlanResponse,
     ReconnaissanceRecommendation,
-    RegionModel,
     ScenarioCreate,
     ScenarioDetail,
     ScenarioSummary,
@@ -51,33 +50,402 @@ def _load_canonical_fixture() -> dict[str, Any]:
     return {}
 
 
-def seed_canonical_scenario() -> ScenarioDetail:
-    """Ensure canonical Kerala scenario fixture is pre-seeded in memory."""
-    data = _load_canonical_fixture()
-    if data:
-        scenario = ScenarioDetail(**data)
-        SCENARIO_STORE[str(scenario.scenario_id)] = scenario
-        return scenario
+def _get_benchmark_scenarios_data() -> list[dict[str, Any]]:
+    """Return realistic fallback fixtures for primary Indian disaster relief corridors."""
+    common_commodities = [
+        {
+            "id": "COM-WATER-10L",
+            "name": "Packaged Potable Water (10L Can)",
+            "unit_weight_kg": 10.0,
+            "priority_weight": 5.0,
+        },
+        {
+            "id": "COM-MRE-RATIONS",
+            "name": "Emergency Dry Food and Nutrition Kit",
+            "unit_weight_kg": 2.5,
+            "priority_weight": 4.0,
+        },
+        {
+            "id": "COM-MED-TRAUMA",
+            "name": "Essential Medical and Waterborne Disease Kit",
+            "unit_weight_kg": 5.0,
+            "priority_weight": 5.0,
+        },
+        {
+            "id": "COM-SHELTER-TARPS",
+            "name": "Reinforced Tarpaulin and Rope Pack",
+            "unit_weight_kg": 8.0,
+            "priority_weight": 3.0,
+        },
+    ]
 
-    scenario = ScenarioDetail(
-        scenario_id=UUID("a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d"),
-        snapshot_id="e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-        name="Kerala Monsoon 2026 - Wayanad & Periyar Basin Rapid Response",
-        description="Seeded benchmark scenario for monsoon flood relief in Kerala",
-        region=RegionModel(
-            name="Wayanad-Periyar Relief Corridor",
-            country="India",
-            bbox=[75.9, 11.45, 76.4, 11.95],
-            crs="EPSG:4326",
-        ),
-        time_horizon_hours=24.0,
-        commodities=[],
-        depots=[],
-        vehicles=[],
-        demand_nodes=[],
-    )
-    SCENARIO_STORE[str(scenario.scenario_id)] = scenario
-    return scenario
+    kerala = {
+        "scenario_id": "a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d",
+        "snapshot_id": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "name": "Kerala Monsoon 2026 - Wayanad Relief Corridor",
+        "description": "Monsoon flood and landslide relief operations in Wayanad, Kerala",
+        "region": {
+            "name": "Wayanad-Periyar Relief Corridor",
+            "country": "India",
+            "bbox": [75.9000, 11.4500, 76.4000, 11.9500],
+            "crs": "EPSG:4326",
+        },
+        "time_horizon_hours": 24.0,
+        "commodities": common_commodities,
+        "depots": [
+            {
+                "id": "DEPOT-KALPETTA",
+                "name": "Kalpetta Civil Station Forward Depot",
+                "coordinates": [76.0825, 11.6080],
+                "inventory": {
+                    "COM-WATER-10L": 1200,
+                    "COM-MRE-RATIONS": 2500,
+                    "COM-MED-TRAUMA": 400,
+                    "COM-SHELTER-TARPS": 600,
+                },
+            },
+            {
+                "id": "DEPOT-MANANTHAVADY",
+                "name": "Mananthavady North Staging Warehouse",
+                "coordinates": [76.0035, 11.8030],
+                "inventory": {
+                    "COM-WATER-10L": 800,
+                    "COM-MRE-RATIONS": 1800,
+                    "COM-MED-TRAUMA": 300,
+                    "COM-SHELTER-TARPS": 450,
+                },
+            },
+        ],
+        "vehicles": [
+            {
+                "id": "VEH-KSRTC-4WD-01",
+                "name": "Heavy 4WD Relief Truck 01",
+                "depot_id": "DEPOT-KALPETTA",
+                "capacity_kg": 3500.0,
+                "average_speed_kmh": 32.0,
+            },
+            {
+                "id": "VEH-KSRTC-4WD-02",
+                "name": "Heavy 4WD Relief Truck 02",
+                "depot_id": "DEPOT-KALPETTA",
+                "capacity_kg": 3500.0,
+                "average_speed_kmh": 32.0,
+            },
+            {
+                "id": "VEH-MED-VAN-01",
+                "name": "All-Terrain Medical Ambulance Van",
+                "depot_id": "DEPOT-KALPETTA",
+                "capacity_kg": 1200.0,
+                "average_speed_kmh": 40.0,
+            },
+            {
+                "id": "VEH-DEF-TRUCK-03",
+                "name": "Defence Heavy Logistic Carrier",
+                "depot_id": "DEPOT-MANANTHAVADY",
+                "capacity_kg": 4000.0,
+                "average_speed_kmh": 30.0,
+            },
+        ],
+        "demand_nodes": [
+            {
+                "id": "NODE-MEPPADI-ISOLATED",
+                "name": "Meppadi Landslide Cutoff Camp",
+                "vulnerable_group": "tribal_hamlet",
+                "population": 650,
+                "coordinates": [76.1280, 11.5510],
+                "demand": {
+                    "COM-WATER-10L": 250,
+                    "COM-MRE-RATIONS": 500,
+                    "COM-MED-TRAUMA": 80,
+                    "COM-SHELTER-TARPS": 120,
+                },
+            },
+            {
+                "id": "NODE-CHOORALMALA-SHELTER",
+                "name": "Chooralmala Valley Community Centre",
+                "vulnerable_group": "tea_plantation_workers",
+                "population": 820,
+                "coordinates": [76.1700, 11.5350],
+                "demand": {
+                    "COM-WATER-10L": 350,
+                    "COM-MRE-RATIONS": 700,
+                    "COM-MED-TRAUMA": 100,
+                    "COM-SHELTER-TARPS": 160,
+                },
+            },
+            {
+                "id": "NODE-VYTHIRI-HEALTH-POST",
+                "name": "Vythiri High Inundation Health Sub-Center",
+                "vulnerable_group": "elderly_cluster",
+                "population": 410,
+                "coordinates": [76.0410, 11.5520],
+                "demand": {
+                    "COM-WATER-10L": 180,
+                    "COM-MRE-RATIONS": 320,
+                    "COM-MED-TRAUMA": 90,
+                    "COM-SHELTER-TARPS": 70,
+                },
+            },
+            {
+                "id": "NODE-PANAMARAM-FLOOD-CAMP",
+                "name": "Panamaram River Overflow Shelter",
+                "vulnerable_group": "general_evacuees",
+                "population": 1100,
+                "coordinates": [76.0710, 11.7240],
+                "demand": {
+                    "COM-WATER-10L": 450,
+                    "COM-MRE-RATIONS": 900,
+                    "COM-MED-TRAUMA": 110,
+                    "COM-SHELTER-TARPS": 200,
+                },
+            },
+        ],
+        "equity_parameters": {"min_group_service_floor_alpha": 0.40, "beta_tail_risk_weight": 0.30},
+        "solver_parameters": {
+            "time_limit_seconds": 30,
+            "scenario_samples_s": 50,
+            "random_seed": 42,
+        },
+    }
+
+    chamoli = {
+        "scenario_id": "b2c3d4e5-f6a7-4b5c-9d0e-1f2a3b4c5d6e",
+        "snapshot_id": "f4c1d55309fc2d250bfcf5d9007fc03538bf52f5750c045db060002c8963c966",
+        "name": "Uttarakhand Himalayan Subsidence 2026 - Joshimath Corridor",
+        "description": "Land subsidence and slope destabilization along Alaknanda Gorge",
+        "region": {
+            "name": "Chamoli-Alaknanda Disaster Corridor",
+            "country": "India",
+            "bbox": [79.4500, 30.4000, 79.7500, 30.6500],
+            "crs": "EPSG:4326",
+        },
+        "time_horizon_hours": 36.0,
+        "commodities": common_commodities,
+        "depots": [
+            {
+                "id": "DEPOT-CHAMOLI-BASE",
+                "name": "Chamoli District Administrative Base",
+                "coordinates": [79.5200, 30.4200],
+                "inventory": {
+                    "COM-WATER-10L": 1000,
+                    "COM-MRE-RATIONS": 2000,
+                    "COM-MED-TRAUMA": 350,
+                    "COM-SHELTER-TARPS": 500,
+                },
+            },
+            {
+                "id": "DEPOT-PIPALKOTI",
+                "name": "Pipalkoti High Altitude Transit Depot",
+                "coordinates": [79.5400, 30.4800],
+                "inventory": {
+                    "COM-WATER-10L": 700,
+                    "COM-MRE-RATIONS": 1500,
+                    "COM-MED-TRAUMA": 250,
+                    "COM-SHELTER-TARPS": 400,
+                },
+            },
+        ],
+        "vehicles": [
+            {
+                "id": "VEH-ITBP-4WD-01",
+                "name": "ITBP Mountain Logistics Carrier 01",
+                "depot_id": "DEPOT-CHAMOLI-BASE",
+                "capacity_kg": 3000.0,
+                "average_speed_kmh": 25.0,
+            },
+            {
+                "id": "VEH-ITBP-4WD-02",
+                "name": "ITBP Mountain Logistics Carrier 02",
+                "depot_id": "DEPOT-CHAMOLI-BASE",
+                "capacity_kg": 3000.0,
+                "average_speed_kmh": 25.0,
+            },
+            {
+                "id": "VEH-HILL-AMBULANCE",
+                "name": "Mountain Emergency Rescue Van",
+                "depot_id": "DEPOT-PIPALKOTI",
+                "capacity_kg": 1000.0,
+                "average_speed_kmh": 30.0,
+            },
+        ],
+        "demand_nodes": [
+            {
+                "id": "NODE-JOSHIMATH-UPPER",
+                "name": "Upper Joshimath Sinking Sector",
+                "vulnerable_group": "hill_pilgrims_and_locals",
+                "population": 740,
+                "coordinates": [79.5650, 30.5560],
+                "demand": {
+                    "COM-WATER-10L": 280,
+                    "COM-MRE-RATIONS": 550,
+                    "COM-MED-TRAUMA": 95,
+                    "COM-SHELTER-TARPS": 140,
+                },
+            },
+            {
+                "id": "NODE-TAPOVAN-TUNNEL-CAMP",
+                "name": "Tapovan Valley Evacuation Shelter",
+                "vulnerable_group": "hydro_project_workers",
+                "population": 520,
+                "coordinates": [79.6200, 30.4900],
+                "demand": {
+                    "COM-WATER-10L": 220,
+                    "COM-MRE-RATIONS": 420,
+                    "COM-MED-TRAUMA": 70,
+                    "COM-SHELTER-TARPS": 100,
+                },
+            },
+            {
+                "id": "NODE-HEMKUND-ISOLATED",
+                "name": "Govindghat Isolated Relief Point",
+                "vulnerable_group": "high_altitude_remote",
+                "population": 380,
+                "coordinates": [79.6100, 30.6200],
+                "demand": {
+                    "COM-WATER-10L": 160,
+                    "COM-MRE-RATIONS": 310,
+                    "COM-MED-TRAUMA": 60,
+                    "COM-SHELTER-TARPS": 80,
+                },
+            },
+        ],
+        "equity_parameters": {"min_group_service_floor_alpha": 0.40, "beta_tail_risk_weight": 0.35},
+        "solver_parameters": {
+            "time_limit_seconds": 30,
+            "scenario_samples_s": 50,
+            "random_seed": 42,
+        },
+    }
+
+    majuli = {
+        "scenario_id": "c3d4e5f6-a7b8-4c5d-0e1f-2a3b4c5d6e7f",
+        "snapshot_id": "a5d2e66418ad3e361cfdf6e0118ad14649cf63a6861d156ec171113d9074da77",
+        "name": "Assam Brahmaputra Inundation 2026 - Majuli Island Evacuation",
+        "description": "Seasonal riverine flooding and embankment breach relief in Majuli",
+        "region": {
+            "name": "Majuli Riverine Island Corridor",
+            "country": "India",
+            "bbox": [94.0000, 26.8500, 94.4500, 27.1500],
+            "crs": "EPSG:4326",
+        },
+        "time_horizon_hours": 24.0,
+        "commodities": common_commodities,
+        "depots": [
+            {
+                "id": "DEPOT-JORHAT-GHAT",
+                "name": "Nimati Ghat Staging Warehouse",
+                "coordinates": [94.2500, 26.8600],
+                "inventory": {
+                    "COM-WATER-10L": 1400,
+                    "COM-MRE-RATIONS": 3000,
+                    "COM-MED-TRAUMA": 500,
+                    "COM-SHELTER-TARPS": 750,
+                },
+            },
+            {
+                "id": "DEPOT-GARAMUR",
+                "name": "Garamur Central Relief Depot",
+                "coordinates": [94.2200, 26.9600],
+                "inventory": {
+                    "COM-WATER-10L": 900,
+                    "COM-MRE-RATIONS": 2100,
+                    "COM-MED-TRAUMA": 320,
+                    "COM-SHELTER-TARPS": 500,
+                },
+            },
+        ],
+        "vehicles": [
+            {
+                "id": "VEH-AMPHIB-01",
+                "name": "All-Terrain Amphibious Logistics Truck 01",
+                "depot_id": "DEPOT-JORHAT-GHAT",
+                "capacity_kg": 3200.0,
+                "average_speed_kmh": 28.0,
+            },
+            {
+                "id": "VEH-RIVER-CARRIER-02",
+                "name": "Heavy High-Clearance Rescue Carrier",
+                "depot_id": "DEPOT-GARAMUR",
+                "capacity_kg": 3800.0,
+                "average_speed_kmh": 26.0,
+            },
+            {
+                "id": "VEH-NDRF-MED",
+                "name": "NDRF Riverine Mobile Medical Unit",
+                "depot_id": "DEPOT-JORHAT-GHAT",
+                "capacity_kg": 1500.0,
+                "average_speed_kmh": 35.0,
+            },
+        ],
+        "demand_nodes": [
+            {
+                "id": "NODE-KAMALABARI-CAMP",
+                "name": "Kamalabari Primary Inundation Camp",
+                "vulnerable_group": "riverine_tribal_villagers",
+                "population": 890,
+                "coordinates": [94.1600, 26.9500],
+                "demand": {
+                    "COM-WATER-10L": 380,
+                    "COM-MRE-RATIONS": 760,
+                    "COM-MED-TRAUMA": 115,
+                    "COM-SHELTER-TARPS": 180,
+                },
+            },
+            {
+                "id": "NODE-AUNIATI-SHELTER",
+                "name": "Auniati Satra Flood Shelter",
+                "vulnerable_group": "monastery_residents_elders",
+                "population": 620,
+                "coordinates": [94.1000, 26.9200],
+                "demand": {
+                    "COM-WATER-10L": 260,
+                    "COM-MRE-RATIONS": 520,
+                    "COM-MED-TRAUMA": 85,
+                    "COM-SHELTER-TARPS": 130,
+                },
+            },
+            {
+                "id": "NODE-JENGRAIMUKH-NORTH",
+                "name": "North Jengraimukh Cutoff Settlement",
+                "vulnerable_group": "displaced_farmers",
+                "population": 950,
+                "coordinates": [94.3400, 27.0800],
+                "demand": {
+                    "COM-WATER-10L": 420,
+                    "COM-MRE-RATIONS": 840,
+                    "COM-MED-TRAUMA": 130,
+                    "COM-SHELTER-TARPS": 210,
+                },
+            },
+        ],
+        "equity_parameters": {"min_group_service_floor_alpha": 0.40, "beta_tail_risk_weight": 0.30},
+        "solver_parameters": {
+            "time_limit_seconds": 30,
+            "scenario_samples_s": 50,
+            "random_seed": 42,
+        },
+    }
+
+    return [kerala, chamoli, majuli]
+
+
+def seed_canonical_scenario() -> ScenarioDetail:
+    """Ensure all authentic Indian benchmark scenarios are pre-seeded in memory."""
+    data = _load_canonical_fixture()
+    benchmarks = _get_benchmark_scenarios_data()
+
+    if data:
+        canonical_scen = ScenarioDetail(**data)
+        SCENARIO_STORE[str(canonical_scen.scenario_id)] = canonical_scen
+    else:
+        canonical_scen = ScenarioDetail(**benchmarks[0])
+        SCENARIO_STORE[str(canonical_scen.scenario_id)] = canonical_scen
+
+    for b_data in benchmarks[1:]:
+        scen = ScenarioDetail(**b_data)
+        SCENARIO_STORE[str(scen.scenario_id)] = scen
+
+    return canonical_scen
 
 
 # Initialize on import

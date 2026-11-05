@@ -43,9 +43,7 @@ def test_submission_gate_all_phases_verified():
     # Phase 3 Gate: Passability Calibration & Risk Routing Ready
     # =========================================================================
     # Verify edge cost impedance increases monotonically with risk and staleness
-    c_safe = compute_edge_impedance(
-        free_flow_sec=100.0, passability_prob=0.95, stale_age_hours=0.0
-    )
+    c_safe = compute_edge_impedance(free_flow_sec=100.0, passability_prob=0.95, stale_age_hours=0.0)
     c_risky = compute_edge_impedance(
         free_flow_sec=100.0, passability_prob=0.30, stale_age_hours=0.0
     )

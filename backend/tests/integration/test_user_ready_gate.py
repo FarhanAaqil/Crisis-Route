@@ -59,8 +59,7 @@ def test_user_ready_gate_signoff_and_audit_trail():
 
     # 5. Approver executes valid sign-off with detailed rationale -> Success (200)
     valid_rationale = (
-        "Authorized under Kerala SDMA SOP-2026. "
-        "Meppadi bypass confirmed passable with 4WD convoy."
+        "Authorized under Kerala SDMA SOP-2026. Meppadi bypass confirmed passable with 4WD convoy."
     )
     approver_resp = client.post(
         f"/api/v1/scenarios/{scenario_id}/approve",

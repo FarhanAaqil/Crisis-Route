@@ -21,4 +21,3 @@ def test_five_out_of_five_stress_tests_executed():
     md_path = Path("reports/stress_tests.md")
     assert json_path.exists()
     assert md_path.exists()
-

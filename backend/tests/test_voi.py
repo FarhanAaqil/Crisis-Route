@@ -11,4 +11,3 @@ def test_voi_simulation_correlation_exit_criterion_3():
     assert result.pearson_r > 0.40, f"Expected r > 0.40, got r = {result.pearson_r}"
     assert result.p_value < 0.05, f"Expected p < 0.05, got p = {result.p_value}"
     assert result.num_edges_evaluated == 30
-

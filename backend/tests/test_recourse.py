@@ -38,4 +38,3 @@ def test_stochastic_recourse_exit_criterion_2():
     assert len(result.plan.allocations) > 0
     assert len(result.plan.vehicle_routes) > 0
     assert result.plan.equity_evaluation["alpha_floor_satisfied"] is True
-
