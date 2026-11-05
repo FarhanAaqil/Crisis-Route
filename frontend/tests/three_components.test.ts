@@ -54,3 +54,4 @@ describe('Three.js 3D Tactical Visualizer Components', () => {
     expect(html).toContain('Tactical');
   });
 });
+

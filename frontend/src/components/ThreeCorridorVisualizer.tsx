@@ -92,7 +92,7 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
     }
 
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x0f172a, 0.015);
+    scene.fog = new THREE.FogExp2(0x2e3a44, 0.018);
     sceneRef.current = scene;
 
     const camera = new THREE.PerspectiveCamera(45, (container.clientWidth || 800) / 520, 0.1, 1000);
@@ -100,50 +100,49 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
     camera.lookAt(0, 0, 0);
     cameraRef.current = camera;
 
-    // Ambient and Directional Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    // Ambient and Directional Lighting tuned to Palette
+    const ambientLight = new THREE.AmbientLight(0xf6f4ee, 0.65);
     scene.add(ambientLight);
 
-    const dirLight = new THREE.DirectionalLight(0x60a5fa, 1.2);
+    const dirLight = new THREE.DirectionalLight(0xdde4e1, 1.1);
     dirLight.position.set(20, 40, 20);
     dirLight.castShadow = true;
     scene.add(dirLight);
 
-    const pointLight = new THREE.PointLight(0x38bdf8, 1.5, 50);
+    const pointLight = new THREE.PointLight(0xb0c2c6, 1.4, 50);
     pointLight.position.set(0, 10, 0);
     scene.add(pointLight);
 
-    // 3D Topographical Grid Floor
-    const gridHelper = new THREE.GridHelper(34, 34, 0x3b82f6, 0x1e293b);
+    // 3D Topographical Grid Floor (#7E939C and #4C5F6B)
+    const gridHelper = new THREE.GridHelper(34, 34, 0x7e939c, 0x4c5f6b);
     gridHelper.position.y = -0.1;
     scene.add(gridHelper);
 
-    // Terrain Contour Mesh with subtle elevation waves
+    // Terrain Contour Mesh with frosted slate wireframe
     const terrainGeo = new THREE.PlaneGeometry(36, 36, 24, 24);
     terrainGeo.rotateX(-Math.PI / 2);
     const pos = terrainGeo.attributes.position;
     for (let i = 0; i < pos.count; i++) {
       const vx = pos.getX(i);
       const vz = pos.getZ(i);
-      // Generate synthetic mountain/valley relief
       const elevation = Math.sin(vx * 0.25) * Math.cos(vz * 0.25) * 1.2 - 0.4;
       pos.setY(i, elevation);
     }
     terrainGeo.computeVertexNormals();
 
     const terrainMat = new THREE.MeshStandardMaterial({
-      color: 0x0f172a,
+      color: 0x2e3a44,
       roughness: 0.85,
-      metalness: 0.2,
+      metalness: 0.25,
       wireframe: true,
       transparent: true,
-      opacity: 0.35,
+      opacity: 0.4,
     });
     const terrain = new THREE.Mesh(terrainGeo, terrainMat);
     terrain.position.y = -0.5;
     scene.add(terrain);
 
-    // Build 3D Nodes
+    // Build 3D Nodes using Palette Accents
     const nodeGeometryDepot = new THREE.CylinderGeometry(0.7, 0.7, 0.8, 6);
     const nodeGeometryDemand = new THREE.SphereGeometry(0.5, 16, 16);
     const nodeGeometryJunction = new THREE.OctahedronGeometry(0.4);
@@ -152,23 +151,23 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
       let nodeMesh: THREE.Mesh;
       if (data.node.node_type === 'depot') {
         const mat = new THREE.MeshStandardMaterial({
-          color: 0x3b82f6,
-          emissive: 0x1d4ed8,
+          color: 0xb0c2c6,
+          emissive: 0x4c5f6b,
           emissiveIntensity: 0.6,
-          metalness: 0.5,
+          metalness: 0.4,
           roughness: 0.3,
         });
         nodeMesh = new THREE.Mesh(nodeGeometryDepot, mat);
         nodeMesh.position.set(data.x, data.y + 0.4, data.z);
 
-        // Glowing outer halo
+        // Glowing outer halo in pale sage (#DDE4E1)
         const haloGeo = new THREE.RingGeometry(0.9, 1.2, 16);
         haloGeo.rotateX(-Math.PI / 2);
         const haloMat = new THREE.MeshBasicMaterial({
-          color: 0x60a5fa,
+          color: 0xdde4e1,
           side: THREE.DoubleSide,
           transparent: true,
-          opacity: 0.5,
+          opacity: 0.6,
         });
         const halo = new THREE.Mesh(haloGeo, haloMat);
         halo.position.set(data.x, 0.1, data.z);
@@ -176,8 +175,8 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
       } else if (data.node.node_type === 'demand') {
         const mat = new THREE.MeshStandardMaterial({
           color: 0x10b981,
-          emissive: 0x047857,
-          emissiveIntensity: 0.4,
+          emissive: 0x059669,
+          emissiveIntensity: 0.45,
           metalness: 0.3,
           roughness: 0.4,
         });
@@ -185,8 +184,8 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
         nodeMesh.position.set(data.x, data.y + 0.5, data.z);
       } else {
         const mat = new THREE.MeshStandardMaterial({
-          color: 0xf59e0b,
-          emissive: 0xb45309,
+          color: 0x7e939c,
+          emissive: 0x4c5f6b,
           emissiveIntensity: 0.3,
         });
         nodeMesh = new THREE.Mesh(nodeGeometryJunction, mat);
@@ -199,8 +198,9 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
     edgeMeshMapRef.current.clear();
     convoyParticlesRef.current = [];
 
-    const convoyGeo = new THREE.SphereGeometry(0.16, 8, 8);
-    const convoyMat = new THREE.MeshBasicMaterial({ color: 0x67e8f9 });
+    // Convoy particle in warm alabaster cream (#F6F4EE)
+    const convoyGeo = new THREE.SphereGeometry(0.18, 8, 8);
+    const convoyMat = new THREE.MeshBasicMaterial({ color: 0xf6f4ee });
 
     edges.forEach((edge) => {
       const u = nodeMap.get(edge.u_node);
@@ -211,7 +211,6 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
       const p2 = new THREE.Vector3(v.x, v.y, v.z);
       const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
       
-      // Arc elevation based on passability and length
       const dist = p1.distanceTo(p2);
       mid.y += Math.min(dist * 0.15, 2.5);
 
@@ -231,9 +230,9 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
 
       const isSelected = edge.edge_id === selectedEdgeId;
       const tubeMat = new THREE.MeshStandardMaterial({
-        color: isSelected ? 0x38bdf8 : corridorColor,
-        emissive: isSelected ? 0x0284c7 : emissiveColor,
-        emissiveIntensity: isSelected ? 0.9 : 0.4,
+        color: isSelected ? 0xdde4e1 : corridorColor,
+        emissive: isSelected ? 0xb0c2c6 : emissiveColor,
+        emissiveIntensity: isSelected ? 0.95 : 0.4,
         roughness: 0.3,
         metalness: 0.2,
       });
@@ -271,11 +270,11 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
       }
     });
 
-    // Mouse Interaction: Orbit Rotation and Raycasting
+    // Mouse Interaction
     let isDragging = false;
     let prevMouseX = 0;
     let prevMouseY = 0;
-    let rotationVelocityX = 0.002; // Initial slow auto-rotation
+    let rotationVelocityX = 0.002;
 
     const onMouseDown = (e: MouseEvent) => {
       isDragging = true;
@@ -289,7 +288,6 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
       const mouseX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
       const mouseY = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
 
-      // Raycasting for edge hover
       const raycaster = new THREE.Raycaster();
       raycaster.setFromCamera(new THREE.Vector2(mouseX, mouseY), camera);
       const meshes = Array.from(edgeMeshMapRef.current.values());
@@ -334,7 +332,6 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
     window.addEventListener('mouseup', onMouseUp);
     domElement.addEventListener('wheel', onWheel, { passive: false });
 
-    // Click handler to select corridor
     const onClick = (e: MouseEvent) => {
       const rect = renderer.domElement.getBoundingClientRect();
       const mouseX = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -351,17 +348,14 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
     };
     domElement.addEventListener('click', onClick);
 
-    // Animation Loop
     let animationFrameId: number;
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);
 
-      // Auto rotation when not dragging
       if (!isDragging && rotationVelocityX !== 0) {
         scene.rotation.y += rotationVelocityX;
       }
 
-      // Convoy particles animation
       if (isAnimatingFleet) {
         convoyParticlesRef.current.forEach((convoy) => {
           convoy.progress += convoy.speed;
@@ -401,7 +395,6 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
     };
   }, [edges, nodes, nodeMap, isAnimatingFleet, onSelectEdge]);
 
-  // Adjust camera to top-down or perspective preset
   const handleToggleCamera = (mode: 'perspective' | 'topDown') => {
     setCameraMode(mode);
     if (!cameraRef.current || !sceneRef.current) return;
@@ -425,28 +418,28 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
 
   if (!hasWebGL) {
     return (
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 text-white text-center">
-        <h4 className="text-base font-bold text-blue-400 mb-2">3D Tactical Visualizer [Compatibility Mode]</h4>
-        <p className="text-xs text-slate-400 mb-4">
-          WebGL hardware acceleration is inactive in this viewport. Displaying network topological matrix:
+      <div className="glass-card rounded-2xl p-6 text-palette-cream text-center shadow-glass-card">
+        <h4 className="text-base font-bold text-palette-frost mb-2">3D Tactical Visualizer [Compatibility Mode]</h4>
+        <p className="text-xs text-palette-slate mb-4">
+          WebGL acceleration is inactive in this viewport. Displaying network topological matrix:
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-          <div className="p-3 bg-slate-800/80 rounded-lg border border-slate-700">
-            <div className="text-slate-400">Total Corridors</div>
-            <div className="text-lg font-bold text-white">{edges.length}</div>
+          <div className="glass-card-subtle p-3 rounded-xl">
+            <div className="text-palette-slate">Total Corridors</div>
+            <div className="text-lg font-bold text-palette-cream">{edges.length}</div>
           </div>
-          <div className="p-3 bg-slate-800/80 rounded-lg border border-slate-700">
-            <div className="text-slate-400">Staging Nodes</div>
-            <div className="text-lg font-bold text-blue-400">{nodes.length}</div>
+          <div className="glass-card-subtle p-3 rounded-xl">
+            <div className="text-palette-slate">Staging Nodes</div>
+            <div className="text-lg font-bold text-palette-frost">{nodes.length}</div>
           </div>
-          <div className="p-3 bg-slate-800/80 rounded-lg border border-slate-700">
-            <div className="text-slate-400">High Risk Corridors</div>
+          <div className="glass-card-subtle p-3 rounded-xl">
+            <div className="text-palette-slate">High Risk Corridors</div>
             <div className="text-lg font-bold text-rose-400">
               {edges.filter((e) => e.passability_prob < 0.4).length}
             </div>
           </div>
-          <div className="p-3 bg-slate-800/80 rounded-lg border border-slate-700">
-            <div className="text-slate-400">Active Bridge Links</div>
+          <div className="glass-card-subtle p-3 rounded-xl">
+            <div className="text-palette-slate">Active Bridge Links</div>
             <div className="text-lg font-bold text-amber-400">{edges.filter((e) => e.bridge).length}</div>
           </div>
         </div>
@@ -455,31 +448,31 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
   }
 
   return (
-    <div className="relative w-full rounded-2xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 shadow-2xl overflow-hidden font-sans">
-      {/* 3D Visualizer Header Controls HUD */}
+    <div className="relative w-full rounded-2xl bg-gradient-to-b from-palette-deep/90 via-palette-deep/75 to-palette-steel/80 border border-palette-frost/25 shadow-glass-card backdrop-blur-xl overflow-hidden font-sans">
+      {/* 3D Visualizer Header Controls HUD with Frosted Glass */}
       <div className="absolute top-4 left-4 right-4 z-10 flex flex-wrap items-center justify-between gap-3 pointer-events-none">
-        <div className="pointer-events-auto bg-slate-900/85 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-700/80 shadow-lg flex items-center space-x-3">
-          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+        <div className="pointer-events-auto glass-card px-4 py-2.5 rounded-xl border border-palette-frost/30 shadow-glass-card flex items-center space-x-3">
+          <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]" />
           <div>
-            <div className="text-xs font-bold text-slate-100 flex items-center space-x-1.5">
+            <div className="text-xs font-bold text-palette-cream flex items-center space-x-1.5">
               <span>Tactical 3D Topographical Grid</span>
-              <span className="text-[10px] bg-blue-600/40 text-blue-300 px-1.5 py-0.2 rounded font-mono">
+              <span className="text-[10px] bg-palette-steel/60 text-palette-frost px-2 py-0.5 rounded-md font-mono border border-palette-slate/40">
                 Three.js
               </span>
             </div>
-            <p className="text-[10px] text-slate-400 truncate max-w-[200px] sm:max-w-xs">{regionName}</p>
+            <p className="text-[10px] text-palette-frost/80 truncate max-w-[200px] sm:max-w-xs">{regionName}</p>
           </div>
         </div>
 
         {/* Viewport Control Buttons */}
-        <div className="pointer-events-auto flex items-center space-x-1.5 bg-slate-900/85 backdrop-blur-md p-1.5 rounded-xl border border-slate-700/80 shadow-lg text-xs">
+        <div className="pointer-events-auto flex items-center space-x-1.5 glass-card p-1.5 rounded-xl border border-palette-frost/30 shadow-glass-card text-xs">
           <button
             type="button"
             onClick={() => handleToggleCamera(cameraMode === 'perspective' ? 'topDown' : 'perspective')}
-            className={`px-2.5 py-1.5 rounded-lg font-medium transition-all flex items-center space-x-1.5 ${
+            className={`px-3 py-1.5 rounded-lg font-medium transition-all flex items-center space-x-1.5 min-h-[36px] ${
               cameraMode === 'perspective'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'text-slate-300 hover:text-white hover:bg-slate-800'
+                ? 'glass-btn-primary shadow-xs font-bold'
+                : 'text-palette-frost hover:text-palette-cream hover:bg-palette-steel/40'
             }`}
             title="Toggle Perspective 3D vs Top-Down View"
           >
@@ -490,8 +483,10 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
           <button
             type="button"
             onClick={() => setIsAnimatingFleet(!isAnimatingFleet)}
-            className={`px-2.5 py-1.5 rounded-lg font-medium transition-all flex items-center space-x-1.5 ${
-              isAnimatingFleet ? 'bg-emerald-600/30 text-emerald-300 border border-emerald-500/30' : 'text-slate-400 hover:bg-slate-800'
+            className={`px-3 py-1.5 rounded-lg font-medium transition-all flex items-center space-x-1.5 min-h-[36px] ${
+              isAnimatingFleet
+                ? 'bg-emerald-950/60 text-emerald-300 border border-emerald-800/60 shadow-xs'
+                : 'text-palette-frost hover:bg-palette-steel/40'
             }`}
             title="Toggle Fleet Convoy Simulation"
           >
@@ -502,7 +497,7 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
           <button
             type="button"
             onClick={handleResetView}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-2 rounded-lg text-palette-frost hover:text-palette-cream hover:bg-palette-steel/40 transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center"
             title="Reset Camera Orientation"
           >
             <RotateCcw className="w-4 h-4" />
@@ -520,7 +515,7 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
 
       {/* Floating Tactical Corridor HUD Card on Hover / Selection */}
       {(hoveredEdge || selectedEdgeId) && (
-        <div className="absolute bottom-4 left-4 z-10 max-w-sm w-full bg-slate-900/90 backdrop-blur-md p-3.5 rounded-xl border border-slate-700/80 shadow-2xl text-xs space-y-2 pointer-events-auto">
+        <div className="absolute bottom-4 left-4 z-10 max-w-sm w-full glass-card p-4 rounded-2xl border border-palette-frost/30 shadow-glass-card text-xs space-y-2.5 pointer-events-auto">
           {(() => {
             const edge = hoveredEdge || edges.find((e) => e.edge_id === selectedEdgeId);
             if (!edge) return null;
@@ -530,45 +525,45 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
 
             return (
               <>
-                <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                <div className="flex items-center justify-between border-b border-palette-slate/30 pb-2">
                   <div className="flex items-center space-x-1.5">
-                    <Navigation className="w-3.5 h-3.5 text-blue-400" />
-                    <span className="font-mono font-bold text-slate-100">{edge.edge_id}</span>
+                    <Navigation className="w-3.5 h-3.5 text-palette-frost" />
+                    <span className="font-mono font-bold text-palette-cream">{edge.edge_id}</span>
                   </div>
                   <span
-                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                       isHighRisk
-                        ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30'
+                        ? 'bg-rose-950/70 text-rose-300 border border-rose-800/60'
                         : isMediumRisk
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                        : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                        ? 'bg-amber-950/70 text-amber-300 border border-amber-800/60'
+                        : 'bg-emerald-950/70 text-emerald-300 border border-emerald-800/60'
                     }`}
                   >
                     {isHighRisk ? 'Critical Hazard' : isMediumRisk ? 'Caution' : 'Passable'}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2 py-1 text-center">
-                  <div className="bg-slate-800/60 p-1.5 rounded-lg border border-slate-700/50">
-                    <div className="text-[10px] text-slate-400">Passability</div>
-                    <div className={`font-mono font-bold ${isHighRisk ? 'text-rose-400' : 'text-emerald-400'}`}>
+                <div className="grid grid-cols-3 gap-2 py-1 text-center font-mono">
+                  <div className="glass-card-subtle p-2 rounded-xl">
+                    <div className="text-[10px] text-palette-slate">Passability</div>
+                    <div className={`font-bold ${isHighRisk ? 'text-rose-400' : 'text-emerald-400'}`}>
                       {probPct}%
                     </div>
                   </div>
-                  <div className="bg-slate-800/60 p-1.5 rounded-lg border border-slate-700/50">
-                    <div className="text-[10px] text-slate-400">Class</div>
-                    <div className="font-semibold text-slate-200 capitalize">{edge.road_class}</div>
+                  <div className="glass-card-subtle p-2 rounded-xl">
+                    <div className="text-[10px] text-palette-slate">Class</div>
+                    <div className="font-semibold text-palette-sage capitalize font-sans">{edge.road_class}</div>
                   </div>
-                  <div className="bg-slate-800/60 p-1.5 rounded-lg border border-slate-700/50">
-                    <div className="text-[10px] text-slate-400">Length</div>
-                    <div className="font-mono text-slate-200">{edge.length_m ? `${edge.length_m}m` : '—'}</div>
+                  <div className="glass-card-subtle p-2 rounded-xl">
+                    <div className="text-[10px] text-palette-slate">Length</div>
+                    <div className="text-palette-cream">{edge.length_m ? `${edge.length_m}m` : '—'}</div>
                   </div>
                 </div>
 
                 {edge.bridge && (
-                  <div className="flex items-center space-x-1.5 text-rose-300 bg-rose-950/40 px-2 py-1 rounded border border-rose-800/40 text-[11px]">
+                  <div className="flex items-center space-x-2 text-rose-300 bg-rose-950/50 px-2.5 py-1.5 rounded-xl border border-rose-800/40 text-[11px]">
                     <ShieldAlert className="w-3.5 h-3.5 shrink-0 text-rose-400" />
-                    <span>Bridge Structure — Vulnerable to Riverine Inundation</span>
+                    <span>Bridge Structure — Vulnerable to Inundation</span>
                   </div>
                 )}
               </>
@@ -578,22 +573,22 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
       )}
 
       {/* 3D Legend HUD */}
-      <div className="absolute bottom-4 right-4 z-10 hidden sm:flex items-center space-x-3 bg-slate-900/85 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-700/80 text-[11px] text-slate-300 pointer-events-none">
+      <div className="absolute bottom-4 right-4 z-10 hidden sm:flex items-center space-x-3.5 glass-card px-3.5 py-2 rounded-xl border border-palette-frost/30 text-[11px] text-palette-cream pointer-events-none shadow-glass-card">
         <div className="flex items-center space-x-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block" />
+          <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block shadow-[0_0_6px_#34d399]" />
           <span>Passable (≥70%)</span>
         </div>
         <div className="flex items-center space-x-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block" />
+          <span className="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block shadow-[0_0_6px_#fbbf24]" />
           <span>Caution (40-70%)</span>
         </div>
         <div className="flex items-center space-x-1.5">
-          <span className="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block" />
+          <span className="w-2.5 h-2.5 rounded-full bg-rose-400 inline-block shadow-[0_0_6px_#f87171]" />
           <span>Blocked (&lt;40%)</span>
         </div>
-        <div className="flex items-center space-x-1.5 pl-2 border-l border-slate-700">
-          <span className="w-2 h-2 rounded-xs bg-blue-500 inline-block" />
-          <span>Depot</span>
+        <div className="flex items-center space-x-1.5 pl-2.5 border-l border-palette-slate/40">
+          <span className="w-2.5 h-2.5 rounded-xs bg-palette-frost inline-block shadow-[0_0_6px_#b0c2c6]" />
+          <span className="text-palette-frost font-medium">Depot</span>
         </div>
       </div>
     </div>

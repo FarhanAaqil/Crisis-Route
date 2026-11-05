@@ -29,6 +29,7 @@ export const ThreeTacticalRadar: React.FC<TacticalRadarProps> = ({
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.setSize(size, size);
       renderer.setClearColor(0x000000, 0);
+      container.innerHTML = '';
       container.appendChild(renderer.domElement);
     } catch {
       setHasWebGL(false);
@@ -39,35 +40,35 @@ export const ThreeTacticalRadar: React.FC<TacticalRadarProps> = ({
     const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1000);
     camera.position.z = 3.6;
 
-    // Outer wireframe globe
+    // Outer wireframe globe in frosted slate (#7E939C)
     const sphereGeo = new THREE.SphereGeometry(1.2, 16, 16);
     const sphereMat = new THREE.MeshBasicMaterial({
-      color: 0x3b82f6,
+      color: 0xb0c2c6,
       wireframe: true,
       transparent: true,
-      opacity: 0.25,
+      opacity: 0.35,
     });
     const globe = new THREE.Mesh(sphereGeo, sphereMat);
     scene.add(globe);
 
-    // Inner core glowing sphere
+    // Inner core glowing sphere in steel slate (#4C5F6B)
     const coreGeo = new THREE.SphereGeometry(0.75, 16, 16);
     const coreMat = new THREE.MeshBasicMaterial({
-      color: 0x1e3a8a,
+      color: 0x4c5f6b,
       wireframe: true,
       transparent: true,
-      opacity: 0.4,
+      opacity: 0.45,
     });
     const core = new THREE.Mesh(coreGeo, coreMat);
     scene.add(core);
 
-    // Rotating Radar Sweep Ring
+    // Rotating Radar Sweep Ring in frost mist (#DDE4E1)
     const ringGeo = new THREE.RingGeometry(1.25, 1.3, 32);
     const ringMat = new THREE.MeshBasicMaterial({
-      color: 0x60a5fa,
+      color: 0xdde4e1,
       side: THREE.DoubleSide,
       transparent: true,
-      opacity: 0.6,
+      opacity: 0.7,
     });
     const ring = new THREE.Mesh(ringGeo, ringMat);
     ring.rotation.x = Math.PI / 2.3;
@@ -88,7 +89,7 @@ export const ThreeTacticalRadar: React.FC<TacticalRadarProps> = ({
       const z = 1.22 * Math.sin(phi) * Math.sin(theta);
       const y = 1.22 * Math.cos(phi);
 
-      const markerGeo = new THREE.SphereGeometry(0.06, 8, 8);
+      const markerGeo = new THREE.SphereGeometry(0.065, 8, 8);
       const markerMat = new THREE.MeshBasicMaterial({ color: pt.color });
       const marker = new THREE.Mesh(markerGeo, markerMat);
       marker.position.set(x, y, z);
@@ -131,10 +132,10 @@ export const ThreeTacticalRadar: React.FC<TacticalRadarProps> = ({
   if (!hasWebGL) {
     return (
       <div
-        className="flex items-center justify-center rounded-xl bg-slate-900/40 border border-blue-500/30 text-blue-400 text-xs font-mono"
+        className="flex items-center justify-center rounded-2xl bg-palette-deep/60 border border-palette-slate/30 text-palette-frost text-xs font-mono shadow-glass-card"
         style={{ width: size, height: size }}
       >
-        <span className="text-[10px] text-center p-2">3D Radar [Ready]</span>
+        <span className="text-[10px] text-center p-2 text-palette-cream">3D Radar [Active]</span>
       </div>
     );
   }
@@ -144,10 +145,10 @@ export const ThreeTacticalRadar: React.FC<TacticalRadarProps> = ({
       <div
         ref={mountRef}
         style={{ width: size, height: size }}
-        className="relative cursor-pointer transition-transform duration-500 hover:scale-105"
+        className="relative cursor-pointer transition-transform duration-500 hover:scale-110 drop-shadow-[0_0_15px_rgba(176,194,198,0.25)]"
         title={`CrisisRoute Tactical Radar — Active Corridor: ${activeRegion}`}
       />
-      <div className="absolute bottom-0 text-[10px] font-mono tracking-wider uppercase text-blue-400/80 bg-slate-900/60 px-2 py-0.5 rounded-full border border-blue-500/20 backdrop-blur-xs">
+      <div className="absolute bottom-0 text-[9px] font-mono tracking-widest uppercase text-palette-cream bg-palette-deep/75 px-2.5 py-0.5 rounded-full border border-palette-frost/30 backdrop-blur-md shadow-xs">
         Tactical 3D Radar
       </div>
     </div>

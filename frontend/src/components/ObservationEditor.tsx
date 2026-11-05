@@ -41,15 +41,17 @@ export const ObservationEditor: React.FC<ObservationEditorProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-white border border-slate-200 rounded-lg space-y-4 text-xs font-sans shadow-xs">
-      <div className="flex justify-between items-center border-b border-slate-200 pb-2">
-        <h4 className="font-bold text-slate-800 text-sm">Submit Field Road Observation</h4>
-        <code className="bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-mono">{edgeId}</code>
+    <form onSubmit={handleSubmit} className="p-5 glass-card-subtle rounded-2xl space-y-4 text-xs font-sans shadow-glass-card border border-palette-frost/25">
+      <div className="flex justify-between items-center border-b border-palette-slate/25 pb-3">
+        <h4 className="font-bold text-palette-cream text-sm">Submit Field Road Observation</h4>
+        <code className="glass-card px-2.5 py-1 rounded-xl font-mono text-palette-frost text-xs border border-palette-frost/20">
+          {edgeId}
+        </code>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         <div>
-          <label htmlFor="obs-status" className="block text-slate-700 font-semibold mb-1">
+          <label htmlFor="obs-status" className="block text-palette-cream font-semibold mb-1.5">
             Observed Status
           </label>
           <select
@@ -57,17 +59,17 @@ export const ObservationEditor: React.FC<ObservationEditorProps> = ({
             aria-label="Observed road passability status"
             value={status}
             onChange={(e) => setStatus(e.target.value as ObservationFormData['status'])}
-            className="w-full border border-slate-300 rounded px-2.5 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[40px]"
+            className="w-full glass-input rounded-xl px-3 py-2 text-palette-cream focus:outline-none focus:ring-2 focus:ring-palette-frost min-h-[44px]"
           >
-            <option value="passable">Passable (Usable)</option>
-            <option value="impassable">Impassable (Blocked / Submerged)</option>
-            <option value="partially_blocked">Partially Blocked (Single Lane)</option>
-            <option value="debris_cleared">Debris Cleared (Restored)</option>
+            <option value="passable" className="bg-palette-deep">Passable (Usable)</option>
+            <option value="impassable" className="bg-palette-deep">Impassable (Blocked / Submerged)</option>
+            <option value="partially_blocked" className="bg-palette-deep">Partially Blocked (Single Lane)</option>
+            <option value="debris_cleared" className="bg-palette-deep">Debris Cleared (Restored)</option>
           </select>
         </div>
 
         <div>
-          <label htmlFor="obs-source" className="block text-slate-700 font-semibold mb-1">
+          <label htmlFor="obs-source" className="block text-palette-cream font-semibold mb-1.5">
             Source Type
           </label>
           <select
@@ -75,19 +77,19 @@ export const ObservationEditor: React.FC<ObservationEditorProps> = ({
             aria-label="Observation reporting source"
             value={sourceType}
             onChange={(e) => setSourceType(e.target.value as ObservationFormData['source_type'])}
-            className="w-full border border-slate-300 rounded px-2.5 py-2 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[40px]"
+            className="w-full glass-input rounded-xl px-3 py-2 text-palette-cream focus:outline-none focus:ring-2 focus:ring-palette-frost min-h-[44px]"
           >
-            <option value="field_patrol">Disaster Field Patrol</option>
-            <option value="drone_recon">UAV / Drone Recon</option>
-            <option value="satellite_radar">Satellite Synthetic Aperture Radar</option>
-            <option value="citizen_report">Citizen / Crowdsource Report</option>
+            <option value="field_patrol" className="bg-palette-deep">Disaster Field Patrol</option>
+            <option value="drone_recon" className="bg-palette-deep">UAV / Drone Recon</option>
+            <option value="satellite_radar" className="bg-palette-deep">Satellite Synthetic Aperture Radar</option>
+            <option value="citizen_report" className="bg-palette-deep">Citizen / Crowdsource Report</option>
           </select>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
         <div>
-          <label htmlFor="obs-credibility" className="block text-slate-700 font-semibold mb-1">
+          <label htmlFor="obs-credibility" className="block text-palette-cream font-semibold mb-1.5">
             Source Credibility Weight ({credibility.toFixed(2)})
           </label>
           <input
@@ -99,12 +101,12 @@ export const ObservationEditor: React.FC<ObservationEditorProps> = ({
             step="0.05"
             value={credibility}
             onChange={(e) => setCredibility(parseFloat(e.target.value))}
-            className="w-full accent-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full accent-palette-frost focus:outline-none py-2"
           />
         </div>
 
         <div>
-          <label htmlFor="obs-water-depth" className="block text-slate-700 font-semibold mb-1">
+          <label htmlFor="obs-water-depth" className="block text-palette-cream font-semibold mb-1.5">
             Standing Water Depth (cm)
           </label>
           <input
@@ -115,13 +117,14 @@ export const ObservationEditor: React.FC<ObservationEditorProps> = ({
             max="250"
             value={waterDepth}
             onChange={(e) => setWaterDepth(parseFloat(e.target.value) || 0)}
-            className="w-full border border-slate-300 rounded px-2.5 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[40px]"
-          />
+            className="w-full glass-input rounded-xl px-3 py-2 text-palette-cream focus:outline-none focus:ring-2 focus:ring-palette-frost min-h-[44px]"
+          >
+          </input>
         </div>
       </div>
 
       <div>
-        <label htmlFor="obs-notes" className="block text-slate-700 font-semibold mb-1">
+        <label htmlFor="obs-notes" className="block text-palette-cream font-semibold mb-1.5">
           Field Verification Notes
         </label>
         <textarea
@@ -130,23 +133,23 @@ export const ObservationEditor: React.FC<ObservationEditorProps> = ({
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
           placeholder="e.g. Culvert damage reported 50m north of junction; 4WD trucks only."
-          className="w-full border border-slate-300 rounded p-2.5 h-16 text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full glass-input rounded-2xl p-3 h-20 text-palette-cream placeholder-palette-slate focus:outline-none focus:ring-2 focus:ring-palette-frost font-sans"
         />
       </div>
 
-      <div className="flex justify-end space-x-2 pt-2 border-t border-slate-200">
+      <div className="flex justify-end space-x-2.5 pt-3 border-t border-palette-slate/25">
         {onCancel && (
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2.5 border border-slate-300 rounded text-slate-700 hover:bg-slate-50 focus:outline-none focus:ring-2 focus:ring-slate-400 min-h-[44px] font-medium"
+            className="px-5 py-2.5 glass-card-subtle hover:bg-palette-steel/40 border border-palette-frost/25 rounded-2xl text-palette-frost hover:text-palette-cream min-h-[44px] font-medium transition-all"
           >
             Cancel
           </button>
         )}
         <button
           type="submit"
-          className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded shadow-xs focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 min-h-[44px]"
+          className="px-6 py-2.5 glass-btn-primary hover:border-palette-frost/60 active:scale-95 text-palette-cream font-bold rounded-2xl shadow-glass-card min-h-[44px] transition-all"
         >
           Publish &amp; Advance Graph Version
         </button>

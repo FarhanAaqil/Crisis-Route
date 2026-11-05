@@ -1,7 +1,7 @@
 {
   "manifest_title": "CrisisRoute Empirical Reproducibility & Claim Provenance Manifest",
-  "generated_at": "2026-11-05T12:43:37.037850+00:00",
-  "git_commit": "ccd63843db73f1df5732f3d8b7127fce1c96a448",
+  "generated_at": "2026-11-05T13:03:52.084875+00:00",
+  "git_commit": "bf84c8595f25d86e169687231b798501b42a347f",
   "environment": {
     "python_version": "3.12.9",
     "platform": "Windows-11-10.0.26300-SP0",

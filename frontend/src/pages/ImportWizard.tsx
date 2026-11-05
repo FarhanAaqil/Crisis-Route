@@ -86,24 +86,24 @@ EDGE-MALFORMED-ROW,ERR_NODE_A,ERR_NODE_B,-500.0,-30.0,invalid_class,false,1.95`;
 
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6 space-y-6 font-sans">
-      <header className="border-b border-slate-800 pb-4">
-        <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+      <header className="border-b border-palette-slate/25 pb-4">
+        <h1 className="text-xl sm:text-2xl font-extrabold text-palette-cream tracking-tight">
           Regional Data Ingestion Wizard
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400">
+        <p className="text-xs sm:text-sm text-palette-frost mt-0.5">
           Upload and validate road networks, facilities, and hazard overlays into an immutable, content-addressed snapshot.
         </p>
       </header>
 
       {/* Step Indicator */}
-      <div className="flex space-x-6 border-b border-slate-800 pb-3 text-xs font-semibold">
+      <div className="flex space-x-6 border-b border-palette-slate/25 pb-3 text-xs font-semibold">
         <button
           onClick={() => setStep(1)}
           className={`pb-2 transition-all flex items-center space-x-2 ${
-            step === 1 ? 'border-b-2 border-blue-500 text-blue-400 font-bold' : 'text-slate-400 hover:text-slate-200'
+            step === 1 ? 'border-b-2 border-palette-frost text-palette-cream font-bold' : 'text-palette-frost hover:text-palette-cream'
           }`}
         >
-          <span className="w-5 h-5 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px]">1</span>
+          <span className="w-5 h-5 rounded-full glass-card-subtle flex items-center justify-center text-[10px] text-palette-cream">1</span>
           <span>1. Upload &amp; Schema Validation</span>
         </button>
         <button
@@ -111,11 +111,11 @@ EDGE-MALFORMED-ROW,ERR_NODE_A,ERR_NODE_B,-500.0,-30.0,invalid_class,false,1.95`;
           disabled={totalRows === 0}
           className={`pb-2 transition-all flex items-center space-x-2 ${
             step === 2
-              ? 'border-b-2 border-blue-500 text-blue-400 font-bold'
-              : 'text-slate-400 hover:text-slate-200 disabled:opacity-40 disabled:hover:text-slate-400'
+              ? 'border-b-2 border-palette-frost text-palette-cream font-bold'
+              : 'text-palette-frost hover:text-palette-cream disabled:opacity-40'
           }`}
         >
-          <span className="w-5 h-5 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px]">2</span>
+          <span className="w-5 h-5 rounded-full glass-card-subtle flex items-center justify-center text-[10px] text-palette-cream">2</span>
           <span>2. Spatial Preview &amp; Quarantine</span>
         </button>
         <button
@@ -123,31 +123,31 @@ EDGE-MALFORMED-ROW,ERR_NODE_A,ERR_NODE_B,-500.0,-30.0,invalid_class,false,1.95`;
           disabled={!snapshotHash}
           className={`pb-2 transition-all flex items-center space-x-2 ${
             step === 3
-              ? 'border-b-2 border-blue-500 text-blue-400 font-bold'
-              : 'text-slate-400 hover:text-slate-200 disabled:opacity-40 disabled:hover:text-slate-400'
+              ? 'border-b-2 border-palette-frost text-palette-cream font-bold'
+              : 'text-palette-frost hover:text-palette-cream disabled:opacity-40'
           }`}
         >
-          <span className="w-5 h-5 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center text-[10px]">3</span>
+          <span className="w-5 h-5 rounded-full glass-card-subtle flex items-center justify-center text-[10px] text-palette-cream">3</span>
           <span>3. Snapshot Sealing</span>
         </button>
       </div>
 
       {step === 1 && (
         <div className="space-y-4">
-          <div className="p-10 border-2 border-dashed border-slate-700/80 rounded-2xl text-center bg-slate-900/60 backdrop-blur-sm space-y-4 shadow-xl">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-blue-950/60 border border-blue-800/50 flex items-center justify-center text-blue-400 shadow-inner">
+          <div className="p-10 border-2 border-dashed border-palette-frost/30 rounded-3xl text-center glass-card space-y-4 shadow-glass-card">
+            <div className="w-14 h-14 mx-auto rounded-2xl glass-card-subtle flex items-center justify-center text-palette-frost shadow-inner border border-palette-frost/30">
               <UploadCloud className="w-7 h-7" />
             </div>
             <div>
-              <div className="text-base font-bold text-white">Drop regional CSV or GeoJSON files here</div>
-              <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
+              <div className="text-base font-bold text-palette-cream">Drop regional CSV or GeoJSON files here</div>
+              <p className="text-xs text-palette-frost max-w-md mx-auto mt-1">
                 Supports OpenStreetMap road extracts, hazard rasters, and facility inventories.
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3">
-              <label className="cursor-pointer px-5 py-2.5 bg-slate-800 hover:bg-slate-700 active:scale-95 border border-slate-700 rounded-xl text-xs font-semibold text-slate-100 shadow-md transition-all flex items-center space-x-2 min-h-[44px]">
-                <FileSpreadsheet className="w-4 h-4 text-blue-400" />
+              <label className="cursor-pointer px-5 py-2.5 glass-card-subtle hover:bg-palette-steel/50 active:scale-95 border border-palette-frost/25 rounded-2xl text-xs font-semibold text-palette-cream shadow-glass-card transition-all flex items-center space-x-2 min-h-[44px]">
+                <FileSpreadsheet className="w-4 h-4 text-palette-frost" />
                 <span>Select File from Disk</span>
                 <input
                   type="file"
@@ -165,7 +165,7 @@ EDGE-MALFORMED-ROW,ERR_NODE_A,ERR_NODE_B,-500.0,-30.0,invalid_class,false,1.95`;
                 type="button"
                 disabled={isProcessing}
                 onClick={handleSimulateSample}
-                className="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 disabled:opacity-50 text-white text-xs font-bold rounded-xl shadow-lg shadow-blue-600/30 transition-all flex items-center space-x-2 min-h-[44px]"
+                className="px-5 py-2.5 glass-btn-primary hover:border-palette-frost/60 active:scale-95 disabled:opacity-50 text-palette-cream text-xs font-bold rounded-2xl shadow-glass-card transition-all flex items-center space-x-2 min-h-[44px]"
               >
                 <span>{isProcessing ? 'Validating Schema...' : 'Simulate Ingestion of Kerala Dataset'}</span>
                 <ArrowRight className="w-4 h-4" />
@@ -193,14 +193,14 @@ EDGE-MALFORMED-ROW,ERR_NODE_A,ERR_NODE_B,-500.0,-30.0,invalid_class,false,1.95`;
           <div className="flex justify-end space-x-3 pt-2">
             <button
               onClick={() => setStep(1)}
-              className="px-4 py-2 border border-slate-700 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800 transition-colors min-h-[40px]"
+              className="px-5 py-2.5 glass-card-subtle hover:bg-palette-steel/50 rounded-2xl text-xs font-semibold text-palette-cream transition-colors min-h-[44px] border border-palette-frost/25"
             >
               Back
             </button>
             <button
               onClick={handleSealSnapshot}
               disabled={isProcessing}
-              className="px-6 py-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 active:scale-95 text-white text-xs font-bold rounded-xl shadow-lg shadow-emerald-600/30 transition-all flex items-center space-x-2 min-h-[40px]"
+              className="px-6 py-2.5 bg-gradient-to-r from-emerald-600/90 to-emerald-500/90 hover:from-emerald-500 hover:to-emerald-400 active:scale-95 text-white text-xs font-bold rounded-2xl shadow-glass-card border border-emerald-400/30 transition-all flex items-center space-x-2 min-h-[44px]"
             >
               <ShieldCheck className="w-4 h-4" />
               <span>{isProcessing ? 'Hashing & Sealing...' : 'Seal Content-Addressed Snapshot (SHA-256)'}</span>
@@ -210,34 +210,34 @@ EDGE-MALFORMED-ROW,ERR_NODE_A,ERR_NODE_B,-500.0,-30.0,invalid_class,false,1.95`;
       )}
 
       {step === 3 && (
-        <div className="p-8 bg-emerald-950/40 border border-emerald-800/80 rounded-2xl space-y-4 shadow-xl">
-          <div className="flex items-center space-x-2 text-emerald-400 font-bold text-base">
-            <CheckCircle2 className="w-5 h-5" />
+        <div className="p-8 bg-emerald-950/40 border border-emerald-800/80 rounded-3xl space-y-4 shadow-glass-card backdrop-blur-md">
+          <div className="flex items-center space-x-2 text-emerald-300 font-bold text-base">
+            <CheckCircle2 className="w-5 h-5 text-emerald-400" />
             <span>✓ Snapshot Successfully Sealed and Registered</span>
           </div>
-          <div className="text-xs text-slate-300 space-y-2">
+          <div className="text-xs text-palette-frost space-y-2">
             <div>
-              <span className="font-semibold text-white">Snapshot ID (SHA-256): </span>
-              <code className="font-mono bg-slate-900 px-2.5 py-1 border border-slate-700 rounded-lg text-emerald-300 break-all block mt-1">
+              <span className="font-semibold text-palette-cream">Snapshot ID (SHA-256): </span>
+              <code className="font-mono bg-palette-deep/90 px-3 py-1.5 border border-palette-frost/25 rounded-xl text-emerald-300 break-all block mt-1">
                 {snapshotHash}
               </code>
             </div>
             <div>
-              <span className="font-semibold text-white">File Ingested: </span>
-              <span className="font-mono text-slate-300">{fileName}</span>
+              <span className="font-semibold text-palette-cream">File Ingested: </span>
+              <span className="font-mono text-palette-frost">{fileName}</span>
             </div>
             <div>
-              <span className="font-semibold text-white">Network Validation: </span>
-              <span className="text-slate-300">
+              <span className="font-semibold text-palette-cream">Network Validation: </span>
+              <span className="text-palette-frost">
                 {validRows} validated links sealed &bull; {quarantinedRows} isolated in quarantine buffer
               </span>
             </div>
           </div>
           <button
             onClick={() => setStep(1)}
-            className="px-4 py-2 bg-slate-800 text-slate-200 text-xs rounded-xl hover:bg-slate-700 font-medium transition-all flex items-center space-x-2 min-h-[40px]"
+            className="px-5 py-2.5 glass-card-subtle text-palette-cream text-xs rounded-2xl hover:bg-palette-steel/50 font-medium transition-all flex items-center space-x-2 min-h-[44px] border border-palette-frost/25"
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <RotateCcw className="w-3.5 h-3.5 text-palette-frost" />
             <span>Start New Import</span>
           </button>
         </div>
