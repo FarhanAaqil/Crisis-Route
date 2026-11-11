@@ -17,9 +17,9 @@ CrisisRoute strictly adheres to human-in-the-loop operational safety standards:
 ## 2. Development Workflow & Quality Gates
 
 ### Branching Strategy
-- Development occurs on `master`.
-- Each phase or feature must pass 100% of linting, typing, and unit test suites before being merged into `main`.
-- Merge commits to `main` are non-fast-forward (`--no-ff`) and tagged with semver milestone tags (e.g., `phase-8-submission-ready`).
+- Work lands on `master`; after each phase a pull request merges `master` into `main`.
+- The CI gate must be green before merging: ruff lint and format, mypy, pytest, ESLint, tsc, vitest, the production build and the Docker build.
+- Merge commits to `main` are non-fast-forward. Keep commit messages short, plain sentences that say what changed and why.
 
 ### Quality Checks
 Before submitting a pull request, verify all quality gates locally:
@@ -27,14 +27,16 @@ Before submitting a pull request, verify all quality gates locally:
 ```bash
 # 1. Python Linting & Formatting
 ruff check backend experiments
+ruff format --check backend experiments
 
 # 2. Static Type Verification
-mypy --config-file backend/pyproject.toml backend experiments
+mypy --config-file backend/pyproject.toml backend/app experiments
 
 # 3. Backend Unit & Integration Tests (100% pass required)
 pytest
 
 # 4. Frontend Typecheck & Vitest Suite
+npm run lint --prefix frontend
 npm run typecheck --prefix frontend
 npm run test --prefix frontend
 ```
