@@ -287,13 +287,14 @@ export interface RouteAlternativesResponse {
 
 export interface ObservationResponse {
   observation_id: string;
-  scenario_id: string;
   edge_id: string;
   status: 'passable' | 'impassable' | 'partially_blocked' | 'debris_cleared';
   source_type: string;
   source_credibility: number;
+  water_depth_cm?: number;
+  reported_by?: string;
   notes?: string;
-  observed_at: string;
+  timestamp: string;
 }
 
 export interface PreviewEdge {
@@ -333,6 +334,19 @@ export interface IngestUploadResponse {
 
 const BASE_URL: string = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
+/** Error carrying the HTTP status and the server's structured `detail` (if it sent one). */
+export class ApiError extends Error {
+  status: number;
+  detail: unknown;
+
+  constructor(message: string, status: number, detail: unknown) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.detail = detail;
+  }
+}
+
 /** fetch wrapper that attaches the bearer token and signals the app when the session lapses. */
 async function apiFetch(url: string, init: RequestInit = {}): Promise<Response> {
   const headers = new Headers(init.headers);
@@ -345,204 +359,129 @@ async function apiFetch(url: string, init: RequestInit = {}): Promise<Response> 
   return res;
 }
 
-export async function login(username: string, password: string): Promise<LoginResponse> {
-  const res = await apiFetch(`${BASE_URL}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password }),
-  });
+function messageFromDetail(detail: unknown, fallback: string): string {
+  if (typeof detail === 'string') return detail;
+  if (detail && typeof detail === 'object') {
+    const d = detail as { detail?: unknown; primary_cause?: unknown };
+    if (typeof d.primary_cause === 'string') return d.primary_cause;
+    if (typeof d.detail === 'string') return d.detail;
+  }
+  if (Array.isArray(detail) && detail.length > 0) {
+    const first = detail[0] as { msg?: string };
+    if (first?.msg) return first.msg;
+  }
+  return fallback;
+}
+
+/** Call the API, parse JSON and turn failures into ApiError with the server's explanation. */
+async function request<T>(path: string, init: RequestInit = {}, fallbackError = 'Request failed'): Promise<T> {
+  const res = await apiFetch(`${BASE_URL}${path}`, init);
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(typeof body.detail === 'string' ? body.detail : 'Sign-in failed');
+    const detail = (body as { detail?: unknown }).detail ?? body;
+    throw new ApiError(messageFromDetail(detail, fallbackError), res.status, detail);
   }
-  return res.json();
+  if (res.status === 204) return undefined as T;
+  return (await res.json()) as T;
 }
 
-export async function fetchHealth(): Promise<SystemHealth> {
-  const res = await apiFetch(`${BASE_URL}/health`);
-  if (!res.ok) throw new Error('Health check failed');
-  return res.json();
-}
+const jsonInit = (method: string, body: unknown): RequestInit => ({
+  method,
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify(body),
+});
 
-export async function fetchScenarios(): Promise<ScenarioSummary[]> {
-  const res = await apiFetch(`${BASE_URL}/scenarios`);
-  if (!res.ok) throw new Error('Failed to fetch scenarios');
-  return res.json();
-}
+export const login = (username: string, password: string): Promise<LoginResponse> =>
+  request('/auth/login', jsonInit('POST', { username, password }), 'Sign-in failed');
 
-export async function fetchScenarioDetail(scenarioId: string): Promise<ScenarioDetail> {
-  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}`);
-  if (!res.ok) throw new Error(`Failed to fetch scenario ${scenarioId}`);
-  return res.json();
-}
+export const fetchHealth = (): Promise<SystemHealth> => request('/health', {}, 'Health check failed');
 
-export async function fetchScenarioResources(scenarioId: string): Promise<ScenarioResourcesResponse> {
-  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/resources`);
-  if (!res.ok) throw new Error('Failed to fetch scenario resources');
-  return res.json();
-}
+export const fetchScenarios = (): Promise<ScenarioSummary[]> =>
+  request('/scenarios', {}, 'Failed to fetch scenarios');
 
-export async function fetchPassability(scenarioId: string): Promise<PassabilityResponse> {
-  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/passability`);
-  if (!res.ok) throw new Error('Failed to fetch road passability data');
-  return res.json();
-}
+export const fetchScenarioDetail = (scenarioId: string): Promise<ScenarioDetail> =>
+  request(`/scenarios/${scenarioId}`, {}, `Failed to fetch scenario ${scenarioId}`);
 
-export async function fetchVoiRankings(scenarioId: string, topK: number = 5): Promise<VoiRankingsResponse> {
-  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/voi-rankings?top_k=${topK}`);
-  if (!res.ok) throw new Error('Failed to fetch Value-of-Information rankings');
-  return res.json();
-}
+export const fetchScenarioResources = (scenarioId: string): Promise<ScenarioResourcesResponse> =>
+  request(`/scenarios/${scenarioId}/resources`, {}, 'Failed to fetch scenario resources');
 
-export async function fetchScenarioFan(scenarioId: string, numSamples: number = 50): Promise<ScenarioFanResponse> {
-  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/scenario-fan?num_samples=${numSamples}`);
-  if (!res.ok) throw new Error('Failed to fetch stochastic scenario fan');
-  return res.json();
-}
+export const fetchPassability = (scenarioId: string): Promise<PassabilityResponse> =>
+  request(`/scenarios/${scenarioId}/passability`, {}, 'Failed to fetch road passability data');
 
-export async function fetchRouteAlternatives(
+export const fetchVoiRankings = (scenarioId: string, topK: number = 5): Promise<VoiRankingsResponse> =>
+  request(`/scenarios/${scenarioId}/voi-rankings?top_k=${topK}`, {}, 'Failed to fetch Value-of-Information rankings');
+
+export const fetchScenarioFan = (scenarioId: string, numSamples: number = 50): Promise<ScenarioFanResponse> =>
+  request(`/scenarios/${scenarioId}/scenario-fan?num_samples=${numSamples}`, {}, 'Failed to fetch scenario fan');
+
+export const fetchRouteAlternatives = (
   scenarioId: string,
   originId: string,
   destinationId: string,
   k: number = 3,
-  vehicleId?: string
-): Promise<RouteAlternativesResponse> {
-  const url = `${BASE_URL}/scenarios/${scenarioId}/routes?origin_id=${encodeURIComponent(
-    originId
-  )}&destination_id=${encodeURIComponent(destinationId)}&k=${k}${
-    vehicleId ? `&vehicle_id=${encodeURIComponent(vehicleId)}` : ''
-  }`;
-  const res = await apiFetch(url);
-  if (!res.ok) throw new Error('Failed to fetch route alternatives');
-  return res.json();
-}
+  vehicleId?: string,
+): Promise<RouteAlternativesResponse> => {
+  const params = new URLSearchParams({ origin_id: originId, destination_id: destinationId, k: String(k) });
+  if (vehicleId) params.set('vehicle_id', vehicleId);
+  return request(`/scenarios/${scenarioId}/routes?${params.toString()}`, {}, 'Failed to fetch route alternatives');
+};
 
-export async function optimizePlan(
-  scenarioId: string,
-  mode: 'robust' | 'baseline' = 'robust'
-): Promise<PlanDetail> {
-  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/plans/optimize?mode=${mode}`, {
-    method: 'POST',
-    headers: {
-    },
-  });
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(JSON.stringify(errorData.detail || errorData));
-  }
-  return res.json();
-}
+export const optimizePlan = (scenarioId: string, mode: 'robust' | 'baseline' = 'robust'): Promise<PlanDetail> =>
+  request(`/scenarios/${scenarioId}/plans/optimize?mode=${mode}`, { method: 'POST' }, 'Optimization failed');
 
-export async function submitPlanForApproval(planId: string): Promise<PlanDetail> {
-  const res = await apiFetch(`${BASE_URL}/scenarios/plans/${planId}/submit`, { method: 'POST' });
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}));
-    throw new Error(typeof errorData.detail === 'string' ? errorData.detail : 'Could not submit plan');
-  }
-  return res.json();
-}
+export const submitPlanForApproval = (planId: string): Promise<PlanDetail> =>
+  request(`/scenarios/plans/${planId}/submit`, { method: 'POST' }, 'Could not submit plan');
 
-export async function fetchActivePlan(scenarioId: string): Promise<PlanDetail> {
-  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/plans/active`);
-  if (!res.ok) throw new Error('Failed to fetch active relief plan');
-  return res.json();
-}
+export const fetchActivePlan = (scenarioId: string): Promise<PlanDetail> =>
+  request(`/scenarios/${scenarioId}/plans/active`, {}, 'No active plan');
 
-export async function submitPlanApproval(
+export const submitPlanApproval = (
   planId: string,
   decision: 'APPROVE' | 'REJECT',
   rationale: string,
-  _approverName?: string
-): Promise<PlanDetail> {
-  const res = await apiFetch(`${BASE_URL}/scenarios/plans/${planId}/approval`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ decision, rationale }),
-  });
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.detail || 'Approval submission failed');
-  }
-  return res.json();
+): Promise<PlanDetail> =>
+  request(`/scenarios/plans/${planId}/approval`, jsonInit('POST', { decision, rationale }), 'Approval submission failed');
+
+export interface ObservationPayload {
+  edge_id: string;
+  status: string;
+  source_type: string;
+  source_credibility: number;
+  water_depth_cm?: number;
+  notes?: string;
 }
 
-export async function approveScenarioDirectly(
-  scenarioId: string,
-  decision: 'APPROVE' | 'REJECT',
-  rationale: string,
-  _approverId?: string
-): Promise<ScenarioApprovalResult> {
-  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/approve`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ decision, rationale }),
-  });
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.detail || 'Direct scenario approval failed');
-  }
-  return res.json();
+export const fetchObservations = (scenarioId: string, limit = 50, offset = 0): Promise<ObservationResponse[]> =>
+  request(`/scenarios/${scenarioId}/observations?limit=${limit}&offset=${offset}`, {}, 'Failed to fetch observations');
+
+export const submitObservation = (scenarioId: string, payload: ObservationPayload): Promise<ObservationResponse> =>
+  request(`/scenarios/${scenarioId}/observations`, jsonInit('POST', payload), 'Observation submission failed');
+
+export const uploadNetworkData = (formData: FormData): Promise<IngestUploadResponse> =>
+  request('/ingest/upload', { method: 'POST', body: formData }, 'File ingestion failed');
+
+export const exportPlan = (scenarioId: string, planId: string): Promise<Record<string, unknown>> =>
+  request(`/scenarios/${scenarioId}/plans/${planId}/export`, {}, 'Export plan failed');
+
+export interface AuditPage {
+  items: AuditEventRecord[];
+  total: number;
 }
 
-export async function fetchObservations(scenarioId: string): Promise<ObservationResponse[]> {
-  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/observations`);
-  if (!res.ok) throw new Error('Failed to fetch observations');
-  return res.json();
+export async function fetchAuditLogs(limit = 50, offset = 0, action?: string): Promise<AuditPage> {
+  const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
+  if (action) params.set('action', action);
+  const res = await apiFetch(`${BASE_URL}/audit?${params.toString()}`);
+  if (!res.ok) throw new ApiError('Failed to fetch audit trail', res.status, null);
+  const items = (await res.json()) as AuditEventRecord[];
+  return { items, total: Number(res.headers.get('X-Total-Count') ?? items.length) };
 }
 
-export async function submitObservation(
-  scenarioId: string,
-  payload: {
-    edge_id: string;
-    status: string;
-    source_type: string;
-    source_credibility: number;
-    notes?: string;
-  },
-  _role?: string
-): Promise<ObservationResponse> {
-  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/observations`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.detail || 'Observation submission failed');
-  }
-  return res.json();
+export interface AuditIntegrity {
+  intact: boolean;
+  event_count: number;
+  head_hash: string | null;
 }
 
-export async function uploadNetworkData(formData: FormData): Promise<IngestUploadResponse> {
-  const res = await apiFetch(`${BASE_URL}/ingest/upload`, {
-    method: 'POST',
-    body: formData,
-  });
-  if (!res.ok) {
-    const errorData = await res.json();
-    throw new Error(errorData.detail || 'File ingestion failed');
-  }
-  return res.json();
-}
-
-export async function exportPlan(scenarioId: string, planId: string): Promise<Record<string, unknown>> {
-  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/plans/${planId}/export`);
-  if (!res.ok) throw new Error('Export plan failed');
-  return res.json();
-}
-
-export async function fetchAuditLogs(limit: number = 100, actionFilter?: string): Promise<AuditEventRecord[]> {
-  const url = `${BASE_URL}/audit?limit=${limit}${actionFilter ? `&action=${encodeURIComponent(actionFilter)}` : ''}`;
-  const res = await apiFetch(url, {
-    headers: {
-    },
-  });
-  if (!res.ok) throw new Error('Failed to fetch audit trail');
-  return res.json();
-}
+export const fetchAuditIntegrity = (): Promise<AuditIntegrity> =>
+  request('/audit/verify', {}, 'Could not verify the audit ledger');

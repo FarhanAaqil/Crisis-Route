@@ -43,8 +43,8 @@ EDGE-MALFORMED-ROW,ERR_NODE_A,ERR_NODE_B,-500.0,-30.0,invalid_class,false,1.95`;
 
       notify(`Processed ${res.total_rows} rows: ${res.valid_rows} valid, ${res.quarantined_rows} quarantined`, 'info');
       setStep(2);
-    } catch (err: any) {
-      notify(`Upload failed: ${err.message}`, 'error');
+    } catch (err) {
+      notify(`Upload failed: ${err instanceof Error ? err.message : 'unknown error'}`, 'error');
     } finally {
       setIsProcessing(false);
     }
@@ -68,8 +68,8 @@ EDGE-MALFORMED-ROW,ERR_NODE_A,ERR_NODE_B,-500.0,-30.0,invalid_class,false,1.95`;
 
       notify(`Ingested sample corridor: ${res.valid_rows} valid links parsed, ${res.quarantined_rows} quarantined`, 'info');
       setStep(2);
-    } catch (err: any) {
-      notify(`Sample ingestion failed: ${err.message}`, 'error');
+    } catch (err) {
+      notify(`Sample ingestion failed: ${err instanceof Error ? err.message : 'unknown error'}`, 'error');
     } finally {
       setIsProcessing(false);
     }

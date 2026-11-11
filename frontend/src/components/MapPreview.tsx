@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 import { RoadLayer, RoadEdgeStyle, MapNodeItem } from '../map/RoadLayer';
 
 interface MapPreviewProps {
@@ -72,8 +73,8 @@ export const MapPreview: React.FC<MapPreviewProps> = ({
 
       mapRef.current = map;
     } catch {
-      // In headless testing or environments without WebGL
-      setWebglError(true);
+      // Environments without WebGL: schedule the notice outside the effect body
+      queueMicrotask(() => setWebglError(true));
     }
 
     return () => {

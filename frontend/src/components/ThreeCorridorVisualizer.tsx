@@ -11,6 +11,8 @@ interface ThreeCorridorVisualizerProps {
   regionName?: string;
 }
 
+const detectWebGL = (): boolean => typeof window !== 'undefined' && !!window.WebGLRenderingContext;
+
 export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = ({
   edges,
   nodes,
@@ -19,7 +21,9 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
   regionName = 'Disaster Relief Sector',
 }) => {
   const mountRef = useRef<HTMLDivElement>(null);
-  const [hasWebGL, setHasWebGL] = useState<boolean>(true);
+  const [webglSupported] = useState<boolean>(detectWebGL);
+  const [rendererFailed, setRendererFailed] = useState<boolean>(false);
+  const hasWebGL = webglSupported && !rendererFailed;
   const [hoveredEdge, setHoveredEdge] = useState<PassabilityEdgeItem | null>(null);
   const [isAnimatingFleet, setIsAnimatingFleet] = useState<boolean>(true);
   const [cameraMode, setCameraMode] = useState<'perspective' | 'topDown'>('perspective');
@@ -68,10 +72,7 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
   const edgeMeshMapRef = useRef<Map<string, THREE.Mesh>>(new Map());
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !window.WebGLRenderingContext) {
-      setHasWebGL(false);
-      return;
-    }
+    if (!webglSupported) return;
 
     const container = mountRef.current;
     if (!container) return;
@@ -87,7 +88,7 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
       container.appendChild(renderer.domElement);
       rendererRef.current = renderer;
     } catch {
-      setHasWebGL(false);
+      queueMicrotask(() => setRendererFailed(true));
       return;
     }
 

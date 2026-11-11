@@ -1,29 +1,42 @@
-import React, { useState, useEffect } from 'react';
-import { AuditEventRecord, fetchAuditLogs } from '../api/client';
-import { ClipboardList, Filter, RotateCcw, FileText } from 'lucide-react';
+import React, { useState } from 'react';
+import { AuditEventRecord, fetchAuditIntegrity, fetchAuditLogs } from '../api/client';
+import { useApp } from '../context/AppContext';
+import { useAsync } from '../hooks/useAsync';
+import { ErrorState } from '../components/StateViews';
+import { Skeleton } from '../components/Skeleton';
+import { ClipboardList, Filter, RotateCcw, FileText, ShieldAlert, ShieldCheck } from 'lucide-react';
+
+// Actions that can be filtered on; the server applies the filter so pagination stays correct
+const KNOWN_ACTIONS = [
+  'LOGIN',
+  'LOGIN_FAILED',
+  'CREATE_SCENARIO',
+  'SUBMIT_OBSERVATION',
+  'OPTIMIZE_ALLOCATION_PLAN',
+  'PLAN_SUBMITTED',
+  'PLAN_APPROVE',
+  'PLAN_REJECT',
+  'PLAN_APPROVAL',
+  'INGEST_UPLOAD',
+];
+
+const PAGE_SIZE = 25;
 
 export const AuditLogViewer: React.FC = () => {
-  const [logs, setLogs] = useState<AuditEventRecord[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const { activeRole } = useApp();
   const [filterAction, setFilterAction] = useState<string>('ALL');
+  const [page, setPage] = useState(0);
   const [selectedEvent, setSelectedEvent] = useState<AuditEventRecord | null>(null);
 
-  useEffect(() => {
-    fetchAuditLogs(100)
-      .then((data) => {
-        setLogs(data);
-        setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
-  }, []);
+  const action = filterAction === 'ALL' ? undefined : filterAction;
+  const audit = useAsync(() => fetchAuditLogs(PAGE_SIZE, page * PAGE_SIZE, action), [page, action]);
+  const canVerify = activeRole === 'approver' || activeRole === 'admin';
+  const integrity = useAsync(() => (canVerify ? fetchAuditIntegrity() : Promise.resolve(null)), [canVerify, audit.data?.total]);
 
-  const uniqueActions = Array.from(new Set(logs.map((l) => l.action)));
-
-  const filteredLogs = filterAction === 'ALL'
-    ? logs
-    : logs.filter((l) => l.action === filterAction);
+  const logs = audit.data?.items ?? [];
+  const total = audit.data?.total ?? 0;
+  const pageCount = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const loading = audit.loading && !audit.data;
 
   return (
     <div className="p-4 sm:p-6 max-w-7xl mx-auto space-y-6 font-sans">
@@ -48,11 +61,14 @@ export const AuditLogViewer: React.FC = () => {
               id="audit-filter"
               aria-label="Filter audit logs by action"
               value={filterAction}
-              onChange={(e) => setFilterAction(e.target.value)}
+              onChange={(e) => {
+                setFilterAction(e.target.value);
+                setPage(0);
+              }}
               className="text-xs glass-input rounded-xl px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-palette-frost font-medium text-palette-cream"
             >
-              <option value="ALL" className="bg-palette-deep">All Actions ({logs.length})</option>
-              {uniqueActions.map((act) => (
+              <option value="ALL" className="bg-palette-deep">All actions</option>
+              {KNOWN_ACTIONS.map((act) => (
                 <option key={act} value={act} className="bg-palette-deep">
                   {act}
                 </option>
@@ -62,15 +78,7 @@ export const AuditLogViewer: React.FC = () => {
 
           <button
             type="button"
-            onClick={() => {
-              setLoading(true);
-              fetchAuditLogs(100)
-                .then((data) => {
-                  setLogs(data);
-                  setLoading(false);
-                })
-                .catch(() => setLoading(false));
-            }}
+            onClick={audit.reload}
             className="px-4 py-2 glass-card-subtle hover:bg-palette-steel/50 active:scale-95 text-palette-cream border border-palette-frost/25 rounded-xl text-xs font-semibold shadow-glass-card transition-all flex items-center space-x-1.5 min-h-[36px]"
           >
             <RotateCcw className="w-3.5 h-3.5 text-palette-frost" />
@@ -78,6 +86,24 @@ export const AuditLogViewer: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {integrity.data && (
+        <div
+          role="status"
+          className={`flex items-center gap-2 p-3 rounded-xl text-xs border ${
+            integrity.data.intact
+              ? 'bg-emerald-950/60 border-emerald-800 text-emerald-200'
+              : 'bg-rose-950/60 border-rose-800 text-rose-200'
+          }`}
+        >
+          {integrity.data.intact ? <ShieldCheck className="w-4 h-4" /> : <ShieldAlert className="w-4 h-4" />}
+          <span>
+            {integrity.data.intact
+              ? `Ledger verified: ${integrity.data.event_count} events, hash chain intact.`
+              : 'Ledger integrity check FAILED: history was altered. Escalate immediately.'}
+          </span>
+        </div>
+      )}
 
       <div className="glass-card rounded-3xl shadow-glass-card overflow-hidden border border-palette-frost/25">
         <div className="overflow-x-auto">
@@ -93,20 +119,28 @@ export const AuditLogViewer: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-palette-slate/20 font-sans">
-              {loading ? (
+              {audit.error ? (
                 <tr>
-                  <td colSpan={6} className="py-8 text-center text-palette-frost">
-                    Loading immutable audit trail...
+                  <td colSpan={6} className="p-4">
+                    <ErrorState message={audit.error} onRetry={audit.reload} />
                   </td>
                 </tr>
-              ) : filteredLogs.length === 0 ? (
+              ) : loading ? (
+                <tr>
+                  <td colSpan={6} className="p-4 space-y-2">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6" />
+                    <Skeleton className="h-4 w-4/6" />
+                  </td>
+                </tr>
+              ) : logs.length === 0 ? (
                 <tr>
                   <td colSpan={6} className="py-8 text-center text-palette-slate">
                     No audit records matching filter criteria.
                   </td>
                 </tr>
               ) : (
-                filteredLogs.map((log) => (
+                logs.map((log) => (
                   <tr
                     key={log.event_id}
                     onClick={() => setSelectedEvent(log)}
@@ -145,6 +179,30 @@ export const AuditLogViewer: React.FC = () => {
           </table>
         </div>
       </div>
+
+      <nav className="flex items-center justify-between text-xs text-palette-frost" aria-label="Audit pages">
+        <span>
+          {total} events · page {page + 1} of {pageCount}
+        </span>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            disabled={page === 0}
+            onClick={() => setPage((p) => Math.max(0, p - 1))}
+            className="px-3 py-1.5 rounded-lg glass-card-subtle border border-palette-frost/25 disabled:opacity-40 min-h-[36px]"
+          >
+            Previous
+          </button>
+          <button
+            type="button"
+            disabled={page + 1 >= pageCount}
+            onClick={() => setPage((p) => p + 1)}
+            className="px-3 py-1.5 rounded-lg glass-card-subtle border border-palette-frost/25 disabled:opacity-40 min-h-[36px]"
+          >
+            Next
+          </button>
+        </div>
+      </nav>
 
       {selectedEvent && (
         <div className="p-6 glass-card rounded-3xl shadow-glass-card space-y-3.5 border border-palette-frost/30">

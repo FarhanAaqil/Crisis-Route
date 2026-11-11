@@ -6,19 +6,20 @@ interface TacticalRadarProps {
   activeRegion?: string;
 }
 
+const detectWebGL = (): boolean => typeof window !== 'undefined' && !!window.WebGLRenderingContext;
+
 export const ThreeTacticalRadar: React.FC<TacticalRadarProps> = ({
   size = 140,
   activeRegion = 'Wayanad, Kerala',
 }) => {
   const mountRef = useRef<HTMLDivElement>(null);
-  const [hasWebGL, setHasWebGL] = useState<boolean>(true);
+  const [webglSupported] = useState<boolean>(detectWebGL);
+  const [rendererFailed, setRendererFailed] = useState<boolean>(false);
+  const hasWebGL = webglSupported && !rendererFailed;
 
   useEffect(() => {
     // Verify WebGL availability
-    if (typeof window === 'undefined' || !window.WebGLRenderingContext) {
-      setHasWebGL(false);
-      return;
-    }
+    if (!webglSupported) return;
 
     const container = mountRef.current;
     if (!container) return;
@@ -32,7 +33,7 @@ export const ThreeTacticalRadar: React.FC<TacticalRadarProps> = ({
       container.innerHTML = '';
       container.appendChild(renderer.domElement);
     } catch {
-      setHasWebGL(false);
+      queueMicrotask(() => setRendererFailed(true));
       return;
     }
 
@@ -98,7 +99,7 @@ export const ThreeTacticalRadar: React.FC<TacticalRadarProps> = ({
     scene.add(incidentGroup);
 
     let animationFrameId: number;
-    let clock = new THREE.Clock();
+    const clock = new THREE.Clock();
 
     const animate = () => {
       animationFrameId = requestAnimationFrame(animate);

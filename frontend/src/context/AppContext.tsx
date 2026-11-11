@@ -1,49 +1,51 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {
-  fetchScenarios,
   fetchActivePlan,
-  ScenarioSummary,
+  fetchScenarioDetail,
+  fetchScenarios,
   PlanDetail,
+  ScenarioDetail,
+  ScenarioSummary,
 } from '../api/client';
 import { ToastMessage, ToastContainer } from '../components/Toast';
 import { useAuth } from '../auth/AuthContext';
+import { useAsync } from '../hooks/useAsync';
+import type { Role } from '../auth/session';
 
-export type UserRole = 'analyst' | 'field_analyst' | 'approver' | 'admin';
+export type UserRole = Role;
 
 export interface AppContextValue {
   scenarios: ScenarioSummary[];
+  scenariosLoading: boolean;
+  scenariosError: string | null;
   activeScenarioId: string;
   activeScenario: ScenarioSummary | null;
+  scenarioDetail: ScenarioDetail | null;
   setActiveScenarioId: (id: string) => void;
   activeRole: UserRole;
+  userId: string;
   userName: string;
   activePlan: PlanDetail | null;
   setActivePlan: (plan: PlanDetail | null) => void;
-  isLoadingScenarios: boolean;
-  reloadScenarios: () => Promise<void>;
+  reloadScenarios: () => void;
   notify: (msg: string, type?: 'success' | 'error' | 'info') => void;
   isOnline: boolean;
 }
 
-const defaultScenario: ScenarioSummary = {
-  scenario_id: 'a1b2c3d4-e5f6-4a5b-8c9d-0e1f2a3b4c5d',
-  name: 'Kerala Monsoon 2026 - Wayanad Relief Corridor',
-  region_name: 'Wayanad-Periyar Relief Corridor',
-  created_at: '2026-11-04T06:00:00Z',
-  active_plan_id: null,
-};
-
-const defaultContextValue: AppContextValue = {
-  scenarios: [defaultScenario],
-  activeScenarioId: defaultScenario.scenario_id,
-  activeScenario: defaultScenario,
+const emptyContext: AppContextValue = {
+  scenarios: [],
+  scenariosLoading: false,
+  scenariosError: null,
+  activeScenarioId: '',
+  activeScenario: null,
+  scenarioDetail: null,
   setActiveScenarioId: () => {},
   activeRole: 'analyst',
+  userId: '',
   userName: '',
   activePlan: null,
   setActivePlan: () => {},
-  isLoadingScenarios: false,
-  reloadScenarios: async () => {},
+  reloadScenarios: () => {},
   notify: () => {},
   isOnline: true,
 };
@@ -51,14 +53,10 @@ const defaultContextValue: AppContextValue = {
 const AppContext = createContext<AppContextValue | null>(null);
 
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [scenarios, setScenarios] = useState<ScenarioSummary[]>([defaultScenario]);
-  const [activeScenarioId, setActiveScenarioId] = useState<string>(defaultScenario.scenario_id);
   const { user } = useAuth();
-  const activeRole: UserRole = user?.role ?? 'analyst';
-  const userName = user?.display_name ?? '';
-  const [activePlan, setActivePlan] = useState<PlanDetail | null>(null);
-  const [isLoadingScenarios, setIsLoadingScenarios] = useState<boolean>(true);
-  const [isOnline, setIsOnline] = useState<boolean>(true);
+  const [chosenScenarioId, setChosenScenarioId] = useState<string>('');
+  const [planOverride, setPlanOverride] = useState<{ scenarioId: string; plan: PlanDetail | null } | null>(null);
+  const [isOnline, setIsOnline] = useState<boolean>(typeof navigator === 'undefined' ? true : navigator.onLine);
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
   useEffect(() => {
@@ -81,65 +79,67 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
-  const reloadScenarios = useCallback(async () => {
-    try {
-      setIsLoadingScenarios(true);
-      const list = await fetchScenarios();
-      if (list && list.length > 0) {
-        setScenarios(list);
-        if (!activeScenarioId || !list.some((s) => s.scenario_id === activeScenarioId)) {
-          setActiveScenarioId(list[0].scenario_id);
-        }
-      }
-    } catch {
-      notify('Backend connection offline — running with local buffer', 'error');
-    } finally {
-      setIsLoadingScenarios(false);
-    }
-  }, [activeScenarioId, notify]);
+  const scenariosQuery = useAsync(fetchScenarios, []);
+  const scenarios = useMemo(() => scenariosQuery.data ?? [], [scenariosQuery.data]);
 
-  // Load scenarios on mount
-  useEffect(() => {
-    reloadScenarios();
-  }, []);
+  // Fall back to the first scenario until the user picks one (or if the pick disappeared)
+  const activeScenarioId = scenarios.some((s) => s.scenario_id === chosenScenarioId)
+    ? chosenScenarioId
+    : (scenarios[0]?.scenario_id ?? '');
 
-  // Fetch active plan when scenario changes
-  useEffect(() => {
-    if (!activeScenarioId) return;
+  const detailQuery = useAsync(
+    () => (activeScenarioId ? fetchScenarioDetail(activeScenarioId) : Promise.resolve(null)),
+    [activeScenarioId],
+  );
 
-    let isMounted = true;
-    fetchActivePlan(activeScenarioId)
-      .then((plan) => {
-        if (isMounted) setActivePlan(plan);
-      })
-      .catch(() => {
-        if (isMounted) setActivePlan(null);
-      });
+  const planQuery = useAsync(
+    () => (activeScenarioId ? fetchActivePlan(activeScenarioId).catch(() => null) : Promise.resolve(null)),
+    [activeScenarioId],
+  );
 
-    return () => {
-      isMounted = false;
-    };
-  }, [activeScenarioId]);
+  const activePlan =
+    planOverride && planOverride.scenarioId === activeScenarioId ? planOverride.plan : (planQuery.data ?? null);
 
-  const activeScenario = scenarios.find((s) => s.scenario_id === activeScenarioId) || defaultScenario;
+  const setActivePlan = useCallback(
+    (plan: PlanDetail | null) => setPlanOverride({ scenarioId: activeScenarioId, plan }),
+    [activeScenarioId],
+  );
+
+  const value = useMemo<AppContextValue>(
+    () => ({
+      scenarios,
+      scenariosLoading: scenariosQuery.loading,
+      scenariosError: scenariosQuery.error,
+      activeScenarioId,
+      activeScenario: scenarios.find((s) => s.scenario_id === activeScenarioId) ?? null,
+      scenarioDetail: detailQuery.data,
+      setActiveScenarioId: setChosenScenarioId,
+      activeRole: user?.role ?? 'analyst',
+      userId: user?.user_id ?? '',
+      userName: user?.display_name ?? '',
+      activePlan,
+      setActivePlan,
+      reloadScenarios: scenariosQuery.reload,
+      notify,
+      isOnline,
+    }),
+    [
+      scenarios,
+      scenariosQuery.loading,
+      scenariosQuery.error,
+      scenariosQuery.reload,
+      activeScenarioId,
+      detailQuery.data,
+      user,
+      activePlan,
+      setActivePlan,
+      notify,
+      isOnline,
+    ],
+  );
 
   return (
-    <AppContext.Provider
-      value={{
-        scenarios,
-        activeScenarioId,
-        activeScenario,
-        setActiveScenarioId,
-        activeRole,
-        userName,
-        activePlan,
-        setActivePlan,
-        isLoadingScenarios,
-        reloadScenarios,
-        notify,
-        isOnline,
-      }}
-    >
+    <AppContext.Provider value={value}>
       {children}
       <ToastContainer toasts={toasts} onDismiss={dismissToast} />
     </AppContext.Provider>
@@ -147,6 +147,5 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 };
 
 export function useApp(): AppContextValue {
-  const context = useContext(AppContext);
-  return context || defaultContextValue;
+  return useContext(AppContext) ?? emptyContext;
 }

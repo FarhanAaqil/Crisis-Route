@@ -4,14 +4,14 @@ export interface RowError {
   column: string;
   error_code: string;
   message: string;
-  invalid_value?: any;
+  invalid_value?: unknown;
 }
 
 export interface QuarantinedItem {
   quarantine_id: string;
   file_name: string;
   row_index: number;
-  raw_data: Record<string, any>;
+  raw_data: Record<string, unknown>;
   errors: RowError[];
 }
 
