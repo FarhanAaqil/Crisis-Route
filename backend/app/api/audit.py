@@ -1,6 +1,6 @@
 """Audit trail query endpoints for regulatory compliance and operational accountability."""
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Response
 
 from app.domain.audit import AuditEvent
 from app.domain.models import UserRole
@@ -19,6 +19,8 @@ def list_audit_events(
     resource_type: str | None = Query(default=None),
     user_id: str | None = Query(default=None),
     limit: int = Query(default=100, ge=1, le=1000),
+    offset: int = Query(default=0, ge=0),
+    response: Response = None,  # type: ignore[assignment]
     current_user: CurrentUser = Depends(
         require_role([UserRole.ANALYST, UserRole.APPROVER, UserRole.ADMIN])
     ),
@@ -33,7 +35,8 @@ def list_audit_events(
     if user_id:
         events = [e for e in events if e.user_id == user_id]
 
-    return events[:limit]
+    response.headers["X-Total-Count"] = str(len(events))
+    return events[offset : offset + limit]
 
 
 @router.get("/verify")

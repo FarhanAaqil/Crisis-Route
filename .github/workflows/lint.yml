@@ -73,3 +73,29 @@ jobs:
 
       - name: Production build
         run: npm run build
+
+  docker:
+    name: Docker image builds
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t crisisroute:ci .
+
+      - name: Smoke test the container
+        run: |
+          docker run -d --name cr -p 8000:8000 \
+            -e CRISISROUTE_ENVIRONMENT=development \
+            -e CRISISROUTE_JWT_SECRET_KEY=ci-secret-ci-secret-ci-secret-ci-secret \
+            crisisroute:ci
+          for i in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:8000/api/v1/health && break
+            sleep 2
+          done
+          curl -fsS http://127.0.0.1:8000/ | grep -qi "<div id=\"root\""
+
+      - name: Container logs
+        if: always()
+        run: docker logs cr

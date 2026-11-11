@@ -8,6 +8,7 @@ from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel
 
 from app.api.scenarios import OBSERVATION_STORE, PLAN_STORE, SCENARIO_STORE
+from app.core.cache import ResponseCache
 from app.domain.models import ReconnaissanceRecommendation, ScenarioDetail
 from app.graph.alternatives import find_k_diverse_alternatives
 from app.graph.live import build_live_graph
@@ -80,6 +81,18 @@ def get_voi_rankings(
         )
 
     scenario = SCENARIO_STORE[sid]
+    key = (
+        sid,
+        scenario.snapshot_id,
+        OBSERVATION_STORE.version(sid),
+        scenario.active_plan_id,
+        top_k,
+    )
+    return _VOI_CACHE.get_or_compute(key, lambda: _compute_voi(scenario, top_k))
+
+
+def _compute_voi(scenario: ScenarioDetail, top_k: int) -> VoiRankingsResponse:
+    sid = str(scenario.scenario_id)
     g = build_live_graph(scenario, OBSERVATION_STORE.get(sid))
 
     # If an active plan exists, gather its traversed edge paths
@@ -116,7 +129,9 @@ def get_voi_rankings(
     )
 
 
-_RISK_CACHE: dict[tuple[str, str, int, int], tuple[float, float, float]] = {}
+_RISK_CACHE: ResponseCache[tuple[float, float, float]] = ResponseCache(32)
+_VOI_CACHE: ResponseCache[VoiRankingsResponse] = ResponseCache(64)
+_ROUTES_CACHE: ResponseCache[RouteAlternativesResponse] = ResponseCache(128)
 
 
 def _plan_risk_comparison(
@@ -130,10 +145,15 @@ def _plan_risk_comparison(
     Both plans are scored on the same sampled worlds. Results are cached per scenario version
     and observation count because the two optimizations take a few seconds.
     """
-    key = (sid, scenario.snapshot_id, len(OBSERVATION_STORE.get(sid)), bundle.num_samples)
-    if key in _RISK_CACHE:
-        return _RISK_CACHE[key]
+    key = (sid, scenario.snapshot_id, OBSERVATION_STORE.version(sid), bundle.num_samples)
+    return _RISK_CACHE.get_or_compute(key, lambda: _compute_plan_risk(scenario, g, bundle))
 
+
+def _compute_plan_risk(
+    scenario: ScenarioDetail,
+    g: nx.DiGraph,
+    bundle: ScenarioSampleBundle,
+) -> tuple[float, float, float]:
     nominal, _ = solve_equitable_allocation(scenario, g)
     recourse = solve_two_stage_recourse(
         scenario,
@@ -146,15 +166,11 @@ def _plan_risk_comparison(
         evaluate_plan_under_samples(scenario, nominal, bundle).expected_loss if nominal else 0.0
     )
     rec_profile = evaluate_plan_under_samples(scenario, recourse.plan, bundle)
-    result = (
+    return (
         round(det_loss, 1),
         round(rec_profile.expected_loss, 1),
         round(rec_profile.expected_shortfall(0.05), 1),
     )
-    if len(_RISK_CACHE) >= 32:
-        _RISK_CACHE.pop(next(iter(_RISK_CACHE)))
-    _RISK_CACHE[key] = result
-    return result
 
 
 @router.get("/scenario-fan", response_model=ScenarioFanResponse)
@@ -230,6 +246,17 @@ def get_route_alternatives(
         )
 
     scenario = SCENARIO_STORE[sid]
+    key = (sid, scenario.snapshot_id, OBSERVATION_STORE.version(sid), origin_id, destination_id, k)
+    cached = _ROUTES_CACHE.get_or_compute(
+        key, lambda: _compute_routes(scenario, origin_id, destination_id, k)
+    )
+    return cached.model_copy(update={"vehicle_id": vehicle_id})
+
+
+def _compute_routes(
+    scenario: ScenarioDetail, origin_id: str, destination_id: str, k: int
+) -> RouteAlternativesResponse:
+    sid = str(scenario.scenario_id)
     g = build_live_graph(scenario, OBSERVATION_STORE.get(sid))
 
     if origin_id not in g:
@@ -272,7 +299,7 @@ def get_route_alternatives(
         scenario_id=scenario.scenario_id,
         origin_id=origin_id,
         destination_id=destination_id,
-        vehicle_id=vehicle_id,
+        vehicle_id=None,
         destination_name=dest_name,
         routes=routes,
     )

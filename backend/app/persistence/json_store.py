@@ -89,21 +89,28 @@ class ListStore[T: BaseModel]:
         self._model_cls = model_cls
         self._dir = directory
         self._items: dict[str, list[T]] = {}
+        self._versions: dict[str, int] = {}
         self._lock = RLock()
         if directory is not None and directory.exists():
             for file in sorted(directory.glob("*.json")):
                 try:
                     raw = json.loads(file.read_text(encoding="utf-8"))
                     self._items[file.stem] = [model_cls.model_validate(r) for r in raw]
+                    self._versions[file.stem] = len(self._items[file.stem])
                 except (ValueError, OSError):
                     logger.exception("Skipping unreadable record %s", file)
 
     def get(self, key: str, default: list[T] | None = None) -> list[T]:
         return list(self._items.get(key, default or []))
 
+    def version(self, key: str) -> int:
+        """Counter that only ever grows, so cache keys never collide after edits."""
+        return self._versions.get(key, 0)
+
     def append(self, key: str, item: T) -> None:
         with self._lock:
             self._items.setdefault(key, []).append(item)
+            self._versions[key] = self._versions.get(key, 0) + 1
             if self._dir is not None:
                 payload = [i.model_dump(mode="json") for i in self._items[key]]
                 atomic_write_text(self._dir / f"{key}.json", json.dumps(payload, indent=2))

@@ -1,0 +1,16 @@
+[
+  {
+    "user_id": "analyst-001",
+    "username": "analyst",
+    "display_name": "Logistics Analyst",
+    "role": "analyst",
+    "password_hash": "REPLACE_WITH_OUTPUT_OF: python -m app.security.users hash"
+  },
+  {
+    "user_id": "approver-001",
+    "username": "approver",
+    "display_name": "Incident Lead",
+    "role": "approver",
+    "password_hash": "REPLACE_WITH_OUTPUT_OF: python -m app.security.users hash"
+  }
+]
