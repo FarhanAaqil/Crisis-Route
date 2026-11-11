@@ -13,8 +13,7 @@ from app.domain.models import (
     SolverStatus,
     UserRole,
 )
-from app.domain.observations import ObservationGraphManager
-from app.graph.build import build_scenario_corridor_graph
+from app.graph.live import build_live_graph
 from app.optimization.baseline import solve_proportional_baseline
 from app.optimization.model import solve_equitable_allocation
 from app.optimization.objective import equity_evaluation_to_dict
@@ -44,12 +43,7 @@ def optimize_allocation_plan(
     sid = str(scenario_id)
 
     # 1. Build base corridor graph for the scenario
-    g = build_scenario_corridor_graph(scenario)
-
-    # 2. Replay active scenario observations onto the graph
-    obs_list = OBSERVATION_STORE.get(sid)
-    for obs in obs_list:
-        g, _, _ = ObservationGraphManager.apply_observation_to_graph(g, obs)
+    g = build_live_graph(scenario, OBSERVATION_STORE.get(sid))
 
     # 3. Solve based on requested mode
     if mode == "baseline":
@@ -77,6 +71,7 @@ def optimize_allocation_plan(
             )
         plan = plan_opt
 
+    plan.generated_by = current_user.user_id
     PLAN_STORE[str(plan.plan_id)] = plan
     scenario.active_plan_id = plan.plan_id
     SCENARIO_STORE.save(sid)
@@ -135,6 +130,11 @@ def export_plan_manifest(scenario_id: UUID, plan_id: UUID) -> dict[str, Any]:
     plan = get_plan(scenario_id, plan_id)
     return {
         "export_format": "CrisisRoute-Plan-v1",
+        "deployable": plan.approval_state.status == ApprovalStatus.APPROVED,
+        "notice": (
+            "CrisisRoute provides probabilistic decision support under road uncertainty. "
+            "It does not certify route safety or replace ground situational reports."
+        ),
         "plan_id": str(plan.plan_id),
         "scenario_id": str(plan.scenario_id),
         "snapshot_id": plan.snapshot_id,

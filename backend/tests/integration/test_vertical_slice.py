@@ -183,6 +183,10 @@ def test_full_operational_vertical_slice_e2e():
     # -------------------------------------------------------------------------
     # Step 6: Incident Lead Sign-Off Gate
     # -------------------------------------------------------------------------
+    submit_res = client.post(f"/api/v1/scenarios/plans/{plan_id}/submit", headers=analyst_headers)
+    assert submit_res.status_code == 200
+    assert submit_res.json()["approval_state"]["status"] == "PENDING_APPROVAL"
+
     approval_payload = {
         "decision": "APPROVE",
         "rationale": "Field clearance confirmed on Meppadi corridor. Fleet dispatch authorized.",

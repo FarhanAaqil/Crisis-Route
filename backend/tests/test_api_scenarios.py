@@ -69,22 +69,26 @@ def test_submit_observation():
     assert obs_data["status"] == "partially_blocked"
 
 
-def test_mock_vertical_slice_generation_and_approval():
-    """Verify the Phase 1 end-to-end slice: generate plan and execute approval."""
+def test_vertical_slice_generation_submission_and_approval():
+    """Generate a plan, submit it, and have a different person approve it."""
     list_resp = client.get("/api/v1/scenarios")
     scenario_id = list_resp.json()[0]["scenario_id"]
 
-    # 1. Analyst generates mock plan
+    # 1. Analyst generates a plan with the real solver and submits it for sign-off
     gen_headers = auth_headers(UserRole.ANALYST.value, "analyst-farhan", "Farhan Aaqil")
-    plan_resp = client.post(f"/api/v1/scenarios/{scenario_id}/plans", headers=gen_headers)
-    assert plan_resp.status_code == 200
+    plan_resp = client.post(f"/api/v1/scenarios/{scenario_id}/plans/optimize", headers=gen_headers)
+    assert plan_resp.status_code == 201
     plan = plan_resp.json()
-    assert plan["solver_status"] == "FEASIBLE"
+    assert plan["solver_status"] in ("OPTIMAL", "NON_OPTIMAL_INCUMBENT")
     assert len(plan["vehicle_routes"]) >= 1
     assert len(plan["allocations"]) >= 1
-    assert plan["approval_state"]["status"] == "PENDING_APPROVAL"
+    assert plan["approval_state"]["status"] == "DRAFT"
+    assert plan["generated_by"] == "analyst-farhan"
 
     plan_id = plan["plan_id"]
+    submitted = client.post(f"/api/v1/scenarios/plans/{plan_id}/submit", headers=gen_headers)
+    assert submitted.status_code == 200
+    assert submitted.json()["approval_state"]["status"] == "PENDING_APPROVAL"
 
     # 2. Unauthorized role attempting approval is rejected (403)
     unauth_headers = auth_headers(UserRole.ANALYST.value, "analyst-farhan", "Farhan Aaqil")

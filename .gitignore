@@ -82,3 +82,6 @@ plans/
 .claude/
 CLAUDE.md
 artifacts/state/
+
+# CrisisBench instances are regenerated deterministically from the seeded generator
+data/bench/instances/

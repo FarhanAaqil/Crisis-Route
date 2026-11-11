@@ -26,7 +26,10 @@ def test_user_ready_gate_signoff_and_audit_trail():
     field_resp = client.post(
         f"/api/v1/scenarios/{scenario_id}/approve",
         headers=auth_headers(UserRole.FIELD_ANALYST.value, "field-agent-99"),
-        json={"rationale": "Field inspection confirmed single-lane passability."},
+        json={
+            "decision": "APPROVE",
+            "rationale": "Field inspection confirmed single-lane passability.",
+        },
     )
     assert field_resp.status_code == 403
 
@@ -34,7 +37,10 @@ def test_user_ready_gate_signoff_and_audit_trail():
     analyst_resp = client.post(
         f"/api/v1/scenarios/{scenario_id}/approve",
         headers=auth_headers(UserRole.ANALYST.value, "analyst-coordinator-01"),
-        json={"rationale": "All demand nodes covered above alpha threshold."},
+        json={
+            "decision": "APPROVE",
+            "rationale": "All demand nodes covered above alpha threshold.",
+        },
     )
     assert analyst_resp.status_code == 403
 
@@ -42,9 +48,24 @@ def test_user_ready_gate_signoff_and_audit_trail():
     short_rationale_resp = client.post(
         f"/api/v1/scenarios/{scenario_id}/approve",
         headers=auth_headers(UserRole.APPROVER.value, "incident-lead-42"),
-        json={"rationale": "ok"},
+        json={"decision": "APPROVE", "rationale": "ok"},
     )
     assert short_rationale_resp.status_code == 422
+
+    # 4b. With no active plan there is nothing to approve -> Conflict (409)
+    no_plan_resp = client.post(
+        f"/api/v1/scenarios/{scenario_id}/approve",
+        headers=auth_headers(UserRole.APPROVER.value, "incident-lead-42"),
+        json={"decision": "APPROVE", "rationale": "Approving before any plan exists."},
+    )
+    if no_plan_resp.status_code == 409:
+        analyst = auth_headers(UserRole.ANALYST.value, "analyst-coordinator-01")
+        opt = client.post(f"/api/v1/scenarios/{scenario_id}/plans/optimize", headers=analyst)
+        assert opt.status_code == 201
+        sub = client.post(
+            f"/api/v1/scenarios/plans/{opt.json()['plan_id']}/submit", headers=analyst
+        )
+        assert sub.status_code == 200
 
     # 5. Approver executes valid sign-off with detailed rationale -> Success (200)
     valid_rationale = (
@@ -53,7 +74,7 @@ def test_user_ready_gate_signoff_and_audit_trail():
     approver_resp = client.post(
         f"/api/v1/scenarios/{scenario_id}/approve",
         headers=auth_headers(UserRole.APPROVER.value, "incident-lead-42"),
-        json={"rationale": valid_rationale},
+        json={"decision": "APPROVE", "rationale": valid_rationale},
     )
     assert approver_resp.status_code == 200
     approval_data = approver_resp.json()

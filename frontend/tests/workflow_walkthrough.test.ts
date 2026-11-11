@@ -49,9 +49,7 @@ describe('End-to-End Operational Workflow Walkthrough Simulation', () => {
     // Step 2: Passability Scoring & Calibration Status
     const modelHtml = renderToString(React.createElement(ModelStatus));
     expect(modelHtml).toContain('Passability Model Calibration Status');
-    expect(modelHtml).toContain('v1.0.0-gbdt-isotonic');
-    expect(modelHtml).toContain('0.042');
-    expect(modelHtml).toContain('Reliability Table (Calibration vs. Empirical Accuracy)');
+    expect(modelHtml).not.toContain('0.042'); // no hardcoded metrics: values come from the API
 
     // Step 3: Route Alternatives with Yen's Algorithm
     const routeHtml = renderToString(

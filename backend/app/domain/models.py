@@ -207,6 +207,9 @@ class VehicleRoutePlan(BaseModel):
     """Routing decision for a single vehicle."""
 
     vehicle_id: str
+    depot_id: str | None = None
+    destination_node_id: str | None = None
+    payload_kg: float | None = None
     chosen_path: list[str]
     survival_probability: float = Field(ge=0.0, le=1.0)
     estimated_travel_time_min: float = Field(ge=0.0)
@@ -257,6 +260,7 @@ class PlanResponse(BaseModel):
     scenario_id: UUID
     snapshot_id: str
     generated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    generated_by: str | None = None
     solver_status: SolverStatus = SolverStatus.FEASIBLE
     solve_time_seconds: float = 0.0
     vehicle_routes: list[VehicleRoutePlan] = Field(default_factory=list)

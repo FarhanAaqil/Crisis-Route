@@ -10,7 +10,7 @@ from app.core.config import settings
 from app.domain.models import UserRole
 from app.ingestion.csv_parser import parse_road_edges_csv
 from app.ingestion.geojson_parser import parse_geojson_features
-from app.ingestion.quarantine import IngestionReport, QuarantinedRecord
+from app.ingestion.quarantine import IngestionReport, QuarantinedRecord, RowValidationError
 from app.security.auth import CurrentUser, record_audit_event, require_role
 
 router = APIRouter(prefix="/ingest", tags=["Ingestion"])
@@ -88,12 +88,11 @@ async def upload_network_data(
                     row_index=0,
                     raw_data={"raw_preview": content[:200]},
                     errors=[
-                        {
-                            "column": "file",
-                            "error_code": "JSON_PARSE_ERROR",
-                            "message": f"Malformed GeoJSON: {exc}",
-                            "invalid_value": None,
-                        }
+                        RowValidationError(
+                            column="file",
+                            error_code="JSON_PARSE_ERROR",
+                            message=f"Malformed GeoJSON: {exc}",
+                        )
                     ],
                 )
             )

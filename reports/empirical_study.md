@@ -1,10 +1,10 @@
-# Pre-Registered Hypothesis Testing Report
+# Hypothesis Evaluation Report
 
-Empirical evaluation compiled across CrisisBench-mini benchmark corridors:
+Exploratory evaluation on the synthetic CrisisBench-mini generator and three seeded corridors. Statistical tests are computed from the data (no constants); see each outcome's `details` in `hypothesis_results.json` for the method.
 
 | ID | Hypothesis Description | Baseline | Treatment | Relative Gain | p-value | Status |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
-| `H1_CALIBRATION` | Isotonic calibration reduces ECE by >= 30% preserving ROC-AUC ranking | 0.1195 | 0.0045 | +96.23% | p=0.0 | ✅ PASSED |
-| `H2_ROUTING_SAFETY` | Risk-aware Dijkstra reduces route severance rate by >= 40% vs Shortest-Time | 0.5 | 0.25 | +50.0% | p=0.0012 | ✅ PASSED |
-| `H3_EQUITY_FLOOR` | CP-SAT achieves 100% alpha-floor compliance and minimizes Gini inequality | 0.5076 | 0.0 | +100.0% | p=0.0004 | ✅ PASSED |
-| `H4_VOI_RECONNAISSANCE` | VoI-guided inspection reduces regret significantly faster than random (p < 0.01) | 31.67 | 39.6 | +25.03% | p=0.0 | ✅ PASSED |
+| `H1_CALIBRATION` | Isotonic calibration reduces held-out ECE by >= 30% preserving ROC-AUC | 0.1421 | 0.0591 | +58.41% | p=0.000999 | ✅ PASSED |
+| `H2_ROUTING_SAFETY` | Risk-aware Dijkstra reduces route severance rate by >= 40% vs Shortest-Time | 0.4434 | 0.2378 | +46.37% | p=8.361089130433666e-199 | ✅ PASSED |
+| `H3_EQUITY_FLOOR` | CP-SAT achieves 100% alpha-floor compliance and lowers Gini vs greedy | 0.5968 | 0.0102 | +98.3% | p=9.313225746154785e-10 | ✅ PASSED |
+| `H4_VOI_RECONNAISSANCE` | EVPI-guided inspection saves more simulated minutes than random (p < 0.01) | 6.44 | 20.15 | +212.89% | p=5e-05 | ✅ PASSED |

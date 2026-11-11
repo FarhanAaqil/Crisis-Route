@@ -3,31 +3,10 @@ import { useApp } from '../context/AppContext';
 import { fetchPassability, ModelMetricsSummary, PassabilitySummary } from '../api/client';
 import { ShieldCheck, Activity, Target, BarChart2, CheckCircle2 } from 'lucide-react';
 
-const defaultMetrics: ModelMetricsSummary = {
-  model_version: 'v1.0.0-gbdt-isotonic',
-  model_type: 'Gradient-Boosted Trees + Isotonic Post-Hoc Calibrator',
-  brier_score: 0.088,
-  expected_calibration_error: 0.042,
-  roc_auc: 0.865,
-  total_samples: 1600,
-  reliability_diagram: [
-    { bin_index: 0, bin_range: [0.0, 0.1], confidence: 0.05, accuracy: 0.06, count: 180, calibration_gap: 0.01 },
-    { bin_index: 1, bin_range: [0.1, 0.2], confidence: 0.15, accuracy: 0.14, count: 140, calibration_gap: -0.01 },
-    { bin_index: 2, bin_range: [0.2, 0.3], confidence: 0.25, accuracy: 0.26, count: 160, calibration_gap: 0.01 },
-    { bin_index: 3, bin_range: [0.3, 0.4], confidence: 0.35, accuracy: 0.33, count: 120, calibration_gap: -0.02 },
-    { bin_index: 4, bin_range: [0.4, 0.5], confidence: 0.45, accuracy: 0.47, count: 110, calibration_gap: 0.02 },
-    { bin_index: 5, bin_range: [0.5, 0.6], confidence: 0.55, accuracy: 0.54, count: 130, calibration_gap: -0.01 },
-    { bin_index: 6, bin_range: [0.6, 0.7], confidence: 0.65, accuracy: 0.68, count: 150, calibration_gap: 0.03 },
-    { bin_index: 7, bin_range: [0.7, 0.8], confidence: 0.75, accuracy: 0.73, count: 170, calibration_gap: -0.02 },
-    { bin_index: 8, bin_range: [0.8, 0.9], confidence: 0.85, accuracy: 0.84, count: 200, calibration_gap: -0.01 },
-    { bin_index: 9, bin_range: [0.9, 1.0], confidence: 0.95, accuracy: 0.96, count: 240, calibration_gap: 0.01 },
-  ],
-};
-
 export const ModelStatus: React.FC = () => {
   const { activeScenarioId, activeScenario, notify } = useApp();
 
-  const [metrics, setMetrics] = useState<ModelMetricsSummary>(defaultMetrics);
+  const [metrics, setMetrics] = useState<ModelMetricsSummary | null>(null);
   const [summary, setSummary] = useState<PassabilitySummary | null>(null);
 
   useEffect(() => {
@@ -42,6 +21,16 @@ export const ModelStatus: React.FC = () => {
         notify(`Failed to fetch model metrics: ${err.message}`, 'error');
       });
   }, [activeScenarioId, notify]);
+
+  if (!metrics) {
+    return (
+      <div className="max-w-5xl mx-auto p-6 glass-card rounded-2xl text-xs text-palette-frost" role="status">
+        <h1 className="text-xl font-extrabold text-palette-cream mb-2">Passability Model Calibration Status</h1>
+        No validated calibration report is available yet. Run <code>python experiments/reproduce_all.py</code> to
+        generate <code>reports/model_calibration.json</code>.
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-5xl mx-auto p-4 sm:p-6 space-y-6 font-sans text-xs">

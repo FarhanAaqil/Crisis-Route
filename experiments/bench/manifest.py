@@ -20,8 +20,12 @@ def build_synthetic_network_edges(
     rng = np.random.default_rng(1337)
 
     # Generate grid nodes
-    lons = np.linspace(min_lon, max_lon, int(np.sqrt(num_nodes)))
-    lats = np.linspace(min_lat, max_lat, int(np.sqrt(num_nodes)))
+    side = int(np.sqrt(num_nodes))
+    lons = np.linspace(min_lon, max_lon, side)
+    lats = np.linspace(min_lat, max_lat, side)
+    # Grid spacing between neighbouring nodes; the old threshold was smaller than this, so the
+    # generated benchmark networks contained no roads at all.
+    spacing_deg = (max_lon - min_lon) / (side - 1)
 
     nodes: list[tuple[str, float, float]] = []
     idx = 1
@@ -41,7 +45,7 @@ def build_synthetic_network_edges(
                 continue
             dist_deg = np.sqrt((u_lon - v_lon) ** 2 + (u_lat - v_lat) ** 2)
             # Threshold for adjacent connections
-            if dist_deg < (max_lon - min_lon) / (np.sqrt(num_nodes) - 0.5):
+            if dist_deg < spacing_deg * 1.05:  # axis neighbours only, no diagonals
                 r_class = road_classes[edge_idx % len(road_classes)]
                 length_m = round(dist_deg * 111000.0, 1)
                 speed_kmh = 50.0 if r_class in ["primary", "trunk"] else 30.0
@@ -179,7 +183,7 @@ def generate_crisisbench_mini(
             # Save instance file
             inst_file = instances_dir / f"{instance_id}.json"
             with open(inst_file, "w", encoding="utf-8") as f:
-                json.dump(instance_data, f, indent=2)
+                json.dump(instance_data, f, separators=(",", ":"))
 
             instances_manifest.append(
                 {
@@ -188,7 +192,7 @@ def generate_crisisbench_mini(
                     "split": event.split_assignment,
                     "hazard_type": event.hazard_type,
                     "region": event.region_name,
-                    "file_path": str(inst_file.relative_to(dest_dir.parent)),
+                    "file_path": inst_file.relative_to(dest_dir.parent).as_posix(),
                 }
             )
 

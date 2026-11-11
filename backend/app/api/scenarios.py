@@ -2,29 +2,24 @@
 
 import hashlib
 import json
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any
+from typing import Annotated, Any, Literal
 from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, StringConstraints, field_validator
 
 from app.core.config import settings
 from app.domain.models import (
-    AllocationItem,
-    ApprovalRecord,
     ApprovalStatus,
     ObservationCreate,
     ObservationResponse,
     PlanResponse,
-    ReconnaissanceRecommendation,
     ScenarioCreate,
     ScenarioDetail,
     ScenarioSummary,
-    SolverStatus,
-    UnmetDemandItem,
     UserRole,
-    VehicleRoutePlan,
 )
 from app.persistence.json_store import ListStore, ModelStore
 from app.security.auth import CurrentUser, record_audit_event, require_role
@@ -439,6 +434,11 @@ def _get_benchmark_scenarios_data() -> list[dict[str, Any]]:
     return [kerala, chamoli, majuli]
 
 
+def build_benchmark_scenarios() -> list[ScenarioDetail]:
+    """Fresh copies of the three seeded Indian corridor scenarios (never the stored objects)."""
+    return [ScenarioDetail(**data) for data in _get_benchmark_scenarios_data()]
+
+
 def seed_canonical_scenario() -> ScenarioDetail:
     """Ensure all authentic Indian benchmark scenarios are pre-seeded in memory."""
     data = _load_canonical_fixture()
@@ -563,115 +563,116 @@ def submit_observation(
     return obs
 
 
-@router.post("/{scenario_id}/plans", response_model=PlanResponse)
-def generate_mock_plan(
-    scenario_id: UUID,
-    current_user: CurrentUser = Depends(require_role([UserRole.ANALYST, UserRole.ADMIN])),
-) -> PlanResponse:
-    """Generate a valid decision support plan (mock vertical slice for Phase 1)."""
-    sid = str(scenario_id)
-    if sid not in SCENARIO_STORE:
+def _get_plan_or_404(plan_id: str) -> PlanResponse:
+    plan = PLAN_STORE.get(plan_id)
+    if plan is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Scenario {scenario_id} not found",
+            status_code=status.HTTP_404_NOT_FOUND, detail=f"Plan {plan_id} not found"
         )
-
-    scenario = SCENARIO_STORE[sid]
-    plan_id = uuid4()
-
-    mock_routes = [
-        VehicleRoutePlan(
-            vehicle_id="VEH-KSRTC-4WD-01",
-            chosen_path=["EDGE-WAYANAD-NH766-01", "EDGE-WAYANAD-SH54-04", "EDGE-MEPPADI-ACC-01"],
-            survival_probability=0.88,
-            estimated_travel_time_min=42.5,
-            alternative_paths=[],
-        ),
-        VehicleRoutePlan(
-            vehicle_id="VEH-DEF-TRUCK-03",
-            chosen_path=["EDGE-MANANTHAVADY-01", "EDGE-PANAMARAM-MAIN-02"],
-            survival_probability=0.94,
-            estimated_travel_time_min=35.0,
-            alternative_paths=[],
-        ),
-    ]
-
-    plan = PlanResponse(
-        plan_id=plan_id,
-        scenario_id=scenario.scenario_id,
-        snapshot_id=scenario.snapshot_id,
-        solver_status=SolverStatus.FEASIBLE,
-        solve_time_seconds=1.24,
-        vehicle_routes=mock_routes,
-        allocations=[
-            AllocationItem(
-                demand_node_id="NODE-MEPPADI-ISOLATED",
-                commodity_id="COM-WATER-10L",
-                vehicle_id="VEH-KSRTC-4WD-01",
-                quantity_delivered=200,
-            ),
-            AllocationItem(
-                demand_node_id="NODE-PANAMARAM-FLOOD-CAMP",
-                commodity_id="COM-WATER-10L",
-                vehicle_id="VEH-DEF-TRUCK-03",
-                quantity_delivered=350,
-            ),
-        ],
-        unmet_demands=[
-            UnmetDemandItem(
-                demand_node_id="NODE-MEPPADI-ISOLATED",
-                commodity_id="COM-WATER-10L",
-                unmet_quantity=50,
-                vulnerable_group="tribal_hamlet",
-            )
-        ],
-        equity_evaluation={
-            "min_group_served_fraction": 0.80,
-            "group_breakdowns": {
-                "tribal_hamlet": {
-                    "total_demand": 250,
-                    "total_delivered": 200,
-                    "served_fraction": 0.80,
-                },
-                "general_evacuees": {
-                    "total_demand": 450,
-                    "total_delivered": 350,
-                    "served_fraction": 0.778,
-                },
-            },
-        },
-        reconnaissance_recommendations=[
-            ReconnaissanceRecommendation(
-                edge_id="EDGE-WAYANAD-SH54-04",
-                expected_regret_reduction=142.5,
-                inspection_cost=25.0,
-                voi_score=5.7,
-                priority_rank=1,
-            )
-        ],
-        approval_state=ApprovalRecord(status=ApprovalStatus.PENDING_APPROVAL),
-    )
-
-    PLAN_STORE[str(plan_id)] = plan
-    scenario.active_plan_id = plan_id
-    SCENARIO_STORE.save(sid)
-
-    record_audit_event(
-        user_id=current_user.user_id,
-        action="GENERATE_PLAN",
-        resource_type="plan",
-        resource_id=str(plan_id),
-        details={"scenario_id": sid, "solver_status": plan.solver_status.value},
-    )
-
     return plan
+
+
+def _plan_is_stale(plan: PlanResponse) -> bool:
+    """A plan is stale when a field report arrived after it was generated."""
+    latest = max((o.timestamp for o in OBSERVATION_STORE.get(str(plan.scenario_id))), default=None)
+    return latest is not None and latest > plan.generated_at
 
 
 class ApprovalPayload(BaseModel):
     """Payload for plan approval / rejection."""
 
-    decision: str
-    rationale: str
+    decision: Literal["APPROVE", "REJECT"]
+    rationale: Annotated[
+        str, StringConstraints(strip_whitespace=True, min_length=10, max_length=2000)
+    ]
+
+    @field_validator("decision", mode="before")
+    @classmethod
+    def _normalise_decision(cls, value: object) -> object:
+        return value.strip().upper() if isinstance(value, str) else value
+
+
+def _decide_plan(
+    plan: PlanResponse,
+    decision: str,
+    rationale: str,
+    user: CurrentUser,
+    audit_resource: tuple[str, str] | None = None,
+) -> PlanResponse:
+    """Apply a human sign-off decision, enforcing the approval gate rules."""
+    pid = str(plan.plan_id)
+    current = plan.approval_state.status
+    if current in (ApprovalStatus.APPROVED, ApprovalStatus.REJECTED):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Plan was already {current.value.lower()}; generate a new plan to change it.",
+        )
+    if current != ApprovalStatus.PENDING_APPROVAL:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Plan must be submitted for approval before it can be signed off.",
+        )
+    if plan.generated_by and plan.generated_by == user.user_id:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="The person who generated a plan cannot approve or reject it (four-eyes rule).",
+        )
+    if decision == "APPROVE" and _plan_is_stale(plan):
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="New field observations arrived since this plan was generated. Re-optimize.",
+        )
+
+    plan.approval_state.status = (
+        ApprovalStatus.APPROVED if decision == "APPROVE" else ApprovalStatus.REJECTED
+    )
+    plan.approval_state.reviewed_by = user.username
+    plan.approval_state.reviewed_at = datetime.now(UTC)
+    plan.approval_state.rationale = rationale
+    PLAN_STORE.save(pid)
+
+    resource_type, resource_id = audit_resource or ("plan", pid)
+    record_audit_event(
+        user_id=user.user_id,
+        action=f"PLAN_{decision}" if resource_type == "plan" else "PLAN_APPROVAL",
+        resource_type=resource_type,
+        resource_id=resource_id,
+        details={
+            "decision": decision,
+            "rationale": rationale,
+            "approver": user.username,
+            "plan_id": pid,
+            "snapshot_id": plan.snapshot_id,
+        },
+    )
+    return plan
+
+
+@router.post("/plans/{plan_id}/submit", response_model=PlanResponse)
+def submit_plan_for_approval(
+    plan_id: UUID,
+    current_user: CurrentUser = Depends(require_role([UserRole.ANALYST, UserRole.ADMIN])),
+) -> PlanResponse:
+    """Hand a draft plan to the Incident Lead for sign-off."""
+    plan = _get_plan_or_404(str(plan_id))
+    if plan.approval_state.status != ApprovalStatus.DRAFT:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=(
+                "Only draft plans can be submitted "
+                f"(current status: {plan.approval_state.status.value})."
+            ),
+        )
+    plan.approval_state.status = ApprovalStatus.PENDING_APPROVAL
+    PLAN_STORE.save(str(plan_id))
+    record_audit_event(
+        user_id=current_user.user_id,
+        action="PLAN_SUBMITTED",
+        resource_type="plan",
+        resource_id=str(plan_id),
+        details={"scenario_id": str(plan.scenario_id)},
+    )
+    return plan
 
 
 @router.post("/plans/{plan_id}/approval", response_model=PlanResponse)
@@ -681,50 +682,8 @@ def approve_or_reject_plan(
     current_user: CurrentUser = Depends(require_role([UserRole.APPROVER, UserRole.ADMIN])),
 ) -> PlanResponse:
     """Incident Lead mandatory approval sign-off with operational rationale."""
-    pid = str(plan_id)
-    if pid not in PLAN_STORE:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Plan {plan_id} not found",
-        )
-
-    if not payload.rationale or len(payload.rationale.strip()) < 10:
-        raise HTTPException(
-            status_code=422,
-            detail="A written operational rationale of at least 10 characters is mandatory.",
-        )
-
-    decision_norm = payload.decision.upper()
-    if decision_norm not in ["APPROVE", "REJECT"]:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Decision must be 'APPROVE' or 'REJECT'",
-        )
-
-    plan = PLAN_STORE[pid]
-    plan.approval_state.status = (
-        ApprovalStatus.APPROVED if decision_norm == "APPROVE" else ApprovalStatus.REJECTED
-    )
-    plan.approval_state.reviewed_by = current_user.username
-    plan.approval_state.rationale = payload.rationale
-    PLAN_STORE.save(pid)
-
-    record_audit_event(
-        user_id=current_user.user_id,
-        action=f"PLAN_{decision_norm}",
-        resource_type="plan",
-        resource_id=pid,
-        details={"rationale": payload.rationale, "approver": current_user.username},
-    )
-
-    return plan
-
-
-class ScenarioApprovalPayload(BaseModel):
-    """Payload for direct scenario approval."""
-
-    decision: str = "APPROVE"
-    rationale: str
+    plan = _get_plan_or_404(str(plan_id))
+    return _decide_plan(plan, payload.decision, payload.rationale, current_user)
 
 
 class ScenarioApprovalResponse(BaseModel):
@@ -734,57 +693,39 @@ class ScenarioApprovalResponse(BaseModel):
     approver_id: str
     rationale: str
     scenario_id: str
-    plan_id: str | None = None
+    plan_id: str
 
 
 @router.post("/{scenario_id}/approve", response_model=ScenarioApprovalResponse)
 def approve_scenario(
     scenario_id: UUID,
-    payload: ScenarioApprovalPayload,
+    payload: ApprovalPayload,
     current_user: CurrentUser = Depends(require_role([UserRole.APPROVER, UserRole.ADMIN])),
 ) -> ScenarioApprovalResponse:
-    """Incident Lead direct scenario approval sign-off with audit trail."""
+    """Sign off the scenario's active plan (same rules as the per-plan endpoint)."""
     sid = str(scenario_id)
     if sid not in SCENARIO_STORE:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Scenario {scenario_id} not found",
         )
-
-    if not payload.rationale or len(payload.rationale.strip()) < 10:
-        raise HTTPException(
-            status_code=422,
-            detail="A written operational rationale of at least 10 characters is mandatory.",
-        )
-
-    decision = payload.decision.upper()
     scenario = SCENARIO_STORE[sid]
-    if scenario.active_plan_id and str(scenario.active_plan_id) in PLAN_STORE:
-        plan = PLAN_STORE[str(scenario.active_plan_id)]
-        plan.approval_state.status = (
-            ApprovalStatus.APPROVED if decision == "APPROVE" else ApprovalStatus.REJECTED
+    if not scenario.active_plan_id or str(scenario.active_plan_id) not in PLAN_STORE:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="This scenario has no active plan to approve. Generate and submit one first.",
         )
-        plan.approval_state.reviewed_by = current_user.username
-        plan.approval_state.rationale = payload.rationale
-        PLAN_STORE.save(str(scenario.active_plan_id))
-
-    record_audit_event(
-        user_id=current_user.user_id,
-        action="PLAN_APPROVAL",
-        resource_type="scenario",
-        resource_id=sid,
-        details={
-            "decision": decision,
-            "rationale": payload.rationale,
-            "approver": current_user.username,
-            "active_plan_id": str(scenario.active_plan_id) if scenario.active_plan_id else None,
-        },
+    plan = _decide_plan(
+        PLAN_STORE[str(scenario.active_plan_id)],
+        payload.decision,
+        payload.rationale,
+        current_user,
+        audit_resource=("scenario", sid),
     )
-
     return ScenarioApprovalResponse(
-        status="APPROVED" if decision == "APPROVE" else "REJECTED",
+        status=plan.approval_state.status.value,
         approver_id=current_user.user_id,
         rationale=payload.rationale,
         scenario_id=sid,
-        plan_id=str(scenario.active_plan_id) if scenario.active_plan_id else None,
+        plan_id=str(plan.plan_id),
     )

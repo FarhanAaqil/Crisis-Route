@@ -16,7 +16,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_01.json"
+      "file_path": "bench/instances/inst_ev01_01.json"
     },
     {
       "instance_id": "inst_ev01_02",
@@ -24,7 +24,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_02.json"
+      "file_path": "bench/instances/inst_ev01_02.json"
     },
     {
       "instance_id": "inst_ev01_03",
@@ -32,7 +32,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_03.json"
+      "file_path": "bench/instances/inst_ev01_03.json"
     },
     {
       "instance_id": "inst_ev01_04",
@@ -40,7 +40,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_04.json"
+      "file_path": "bench/instances/inst_ev01_04.json"
     },
     {
       "instance_id": "inst_ev01_05",
@@ -48,7 +48,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_05.json"
+      "file_path": "bench/instances/inst_ev01_05.json"
     },
     {
       "instance_id": "inst_ev01_06",
@@ -56,7 +56,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_06.json"
+      "file_path": "bench/instances/inst_ev01_06.json"
     },
     {
       "instance_id": "inst_ev01_07",
@@ -64,7 +64,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_07.json"
+      "file_path": "bench/instances/inst_ev01_07.json"
     },
     {
       "instance_id": "inst_ev01_08",
@@ -72,7 +72,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_08.json"
+      "file_path": "bench/instances/inst_ev01_08.json"
     },
     {
       "instance_id": "inst_ev01_09",
@@ -80,7 +80,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_09.json"
+      "file_path": "bench/instances/inst_ev01_09.json"
     },
     {
       "instance_id": "inst_ev01_10",
@@ -88,7 +88,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_10.json"
+      "file_path": "bench/instances/inst_ev01_10.json"
     },
     {
       "instance_id": "inst_ev01_11",
@@ -96,7 +96,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_11.json"
+      "file_path": "bench/instances/inst_ev01_11.json"
     },
     {
       "instance_id": "inst_ev01_12",
@@ -104,7 +104,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_12.json"
+      "file_path": "bench/instances/inst_ev01_12.json"
     },
     {
       "instance_id": "inst_ev01_13",
@@ -112,7 +112,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_13.json"
+      "file_path": "bench/instances/inst_ev01_13.json"
     },
     {
       "instance_id": "inst_ev01_14",
@@ -120,7 +120,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_14.json"
+      "file_path": "bench/instances/inst_ev01_14.json"
     },
     {
       "instance_id": "inst_ev01_15",
@@ -128,7 +128,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_15.json"
+      "file_path": "bench/instances/inst_ev01_15.json"
     },
     {
       "instance_id": "inst_ev01_16",
@@ -136,7 +136,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_16.json"
+      "file_path": "bench/instances/inst_ev01_16.json"
     },
     {
       "instance_id": "inst_ev01_17",
@@ -144,7 +144,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_17.json"
+      "file_path": "bench/instances/inst_ev01_17.json"
     },
     {
       "instance_id": "inst_ev01_18",
@@ -152,7 +152,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_18.json"
+      "file_path": "bench/instances/inst_ev01_18.json"
     },
     {
       "instance_id": "inst_ev01_19",
@@ -160,7 +160,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_19.json"
+      "file_path": "bench/instances/inst_ev01_19.json"
     },
     {
       "instance_id": "inst_ev01_20",
@@ -168,7 +168,7 @@
       "split": "train",
       "hazard_type": "flash_flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev01_20.json"
+      "file_path": "bench/instances/inst_ev01_20.json"
     },
     {
       "instance_id": "inst_ev02_01",
@@ -176,7 +176,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_01.json"
+      "file_path": "bench/instances/inst_ev02_01.json"
     },
     {
       "instance_id": "inst_ev02_02",
@@ -184,7 +184,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_02.json"
+      "file_path": "bench/instances/inst_ev02_02.json"
     },
     {
       "instance_id": "inst_ev02_03",
@@ -192,7 +192,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_03.json"
+      "file_path": "bench/instances/inst_ev02_03.json"
     },
     {
       "instance_id": "inst_ev02_04",
@@ -200,7 +200,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_04.json"
+      "file_path": "bench/instances/inst_ev02_04.json"
     },
     {
       "instance_id": "inst_ev02_05",
@@ -208,7 +208,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_05.json"
+      "file_path": "bench/instances/inst_ev02_05.json"
     },
     {
       "instance_id": "inst_ev02_06",
@@ -216,7 +216,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_06.json"
+      "file_path": "bench/instances/inst_ev02_06.json"
     },
     {
       "instance_id": "inst_ev02_07",
@@ -224,7 +224,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_07.json"
+      "file_path": "bench/instances/inst_ev02_07.json"
     },
     {
       "instance_id": "inst_ev02_08",
@@ -232,7 +232,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_08.json"
+      "file_path": "bench/instances/inst_ev02_08.json"
     },
     {
       "instance_id": "inst_ev02_09",
@@ -240,7 +240,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_09.json"
+      "file_path": "bench/instances/inst_ev02_09.json"
     },
     {
       "instance_id": "inst_ev02_10",
@@ -248,7 +248,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_10.json"
+      "file_path": "bench/instances/inst_ev02_10.json"
     },
     {
       "instance_id": "inst_ev02_11",
@@ -256,7 +256,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_11.json"
+      "file_path": "bench/instances/inst_ev02_11.json"
     },
     {
       "instance_id": "inst_ev02_12",
@@ -264,7 +264,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_12.json"
+      "file_path": "bench/instances/inst_ev02_12.json"
     },
     {
       "instance_id": "inst_ev02_13",
@@ -272,7 +272,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_13.json"
+      "file_path": "bench/instances/inst_ev02_13.json"
     },
     {
       "instance_id": "inst_ev02_14",
@@ -280,7 +280,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_14.json"
+      "file_path": "bench/instances/inst_ev02_14.json"
     },
     {
       "instance_id": "inst_ev02_15",
@@ -288,7 +288,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_15.json"
+      "file_path": "bench/instances/inst_ev02_15.json"
     },
     {
       "instance_id": "inst_ev02_16",
@@ -296,7 +296,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_16.json"
+      "file_path": "bench/instances/inst_ev02_16.json"
     },
     {
       "instance_id": "inst_ev02_17",
@@ -304,7 +304,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_17.json"
+      "file_path": "bench/instances/inst_ev02_17.json"
     },
     {
       "instance_id": "inst_ev02_18",
@@ -312,7 +312,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_18.json"
+      "file_path": "bench/instances/inst_ev02_18.json"
     },
     {
       "instance_id": "inst_ev02_19",
@@ -320,7 +320,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_19.json"
+      "file_path": "bench/instances/inst_ev02_19.json"
     },
     {
       "instance_id": "inst_ev02_20",
@@ -328,7 +328,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev02_20.json"
+      "file_path": "bench/instances/inst_ev02_20.json"
     },
     {
       "instance_id": "inst_ev03_01",
@@ -336,7 +336,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_01.json"
+      "file_path": "bench/instances/inst_ev03_01.json"
     },
     {
       "instance_id": "inst_ev03_02",
@@ -344,7 +344,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_02.json"
+      "file_path": "bench/instances/inst_ev03_02.json"
     },
     {
       "instance_id": "inst_ev03_03",
@@ -352,7 +352,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_03.json"
+      "file_path": "bench/instances/inst_ev03_03.json"
     },
     {
       "instance_id": "inst_ev03_04",
@@ -360,7 +360,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_04.json"
+      "file_path": "bench/instances/inst_ev03_04.json"
     },
     {
       "instance_id": "inst_ev03_05",
@@ -368,7 +368,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_05.json"
+      "file_path": "bench/instances/inst_ev03_05.json"
     },
     {
       "instance_id": "inst_ev03_06",
@@ -376,7 +376,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_06.json"
+      "file_path": "bench/instances/inst_ev03_06.json"
     },
     {
       "instance_id": "inst_ev03_07",
@@ -384,7 +384,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_07.json"
+      "file_path": "bench/instances/inst_ev03_07.json"
     },
     {
       "instance_id": "inst_ev03_08",
@@ -392,7 +392,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_08.json"
+      "file_path": "bench/instances/inst_ev03_08.json"
     },
     {
       "instance_id": "inst_ev03_09",
@@ -400,7 +400,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_09.json"
+      "file_path": "bench/instances/inst_ev03_09.json"
     },
     {
       "instance_id": "inst_ev03_10",
@@ -408,7 +408,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_10.json"
+      "file_path": "bench/instances/inst_ev03_10.json"
     },
     {
       "instance_id": "inst_ev03_11",
@@ -416,7 +416,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_11.json"
+      "file_path": "bench/instances/inst_ev03_11.json"
     },
     {
       "instance_id": "inst_ev03_12",
@@ -424,7 +424,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_12.json"
+      "file_path": "bench/instances/inst_ev03_12.json"
     },
     {
       "instance_id": "inst_ev03_13",
@@ -432,7 +432,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_13.json"
+      "file_path": "bench/instances/inst_ev03_13.json"
     },
     {
       "instance_id": "inst_ev03_14",
@@ -440,7 +440,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_14.json"
+      "file_path": "bench/instances/inst_ev03_14.json"
     },
     {
       "instance_id": "inst_ev03_15",
@@ -448,7 +448,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_15.json"
+      "file_path": "bench/instances/inst_ev03_15.json"
     },
     {
       "instance_id": "inst_ev03_16",
@@ -456,7 +456,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_16.json"
+      "file_path": "bench/instances/inst_ev03_16.json"
     },
     {
       "instance_id": "inst_ev03_17",
@@ -464,7 +464,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_17.json"
+      "file_path": "bench/instances/inst_ev03_17.json"
     },
     {
       "instance_id": "inst_ev03_18",
@@ -472,7 +472,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_18.json"
+      "file_path": "bench/instances/inst_ev03_18.json"
     },
     {
       "instance_id": "inst_ev03_19",
@@ -480,7 +480,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_19.json"
+      "file_path": "bench/instances/inst_ev03_19.json"
     },
     {
       "instance_id": "inst_ev03_20",
@@ -488,7 +488,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev03_20.json"
+      "file_path": "bench/instances/inst_ev03_20.json"
     },
     {
       "instance_id": "inst_ev04_01",
@@ -496,7 +496,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_01.json"
+      "file_path": "bench/instances/inst_ev04_01.json"
     },
     {
       "instance_id": "inst_ev04_02",
@@ -504,7 +504,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_02.json"
+      "file_path": "bench/instances/inst_ev04_02.json"
     },
     {
       "instance_id": "inst_ev04_03",
@@ -512,7 +512,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_03.json"
+      "file_path": "bench/instances/inst_ev04_03.json"
     },
     {
       "instance_id": "inst_ev04_04",
@@ -520,7 +520,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_04.json"
+      "file_path": "bench/instances/inst_ev04_04.json"
     },
     {
       "instance_id": "inst_ev04_05",
@@ -528,7 +528,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_05.json"
+      "file_path": "bench/instances/inst_ev04_05.json"
     },
     {
       "instance_id": "inst_ev04_06",
@@ -536,7 +536,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_06.json"
+      "file_path": "bench/instances/inst_ev04_06.json"
     },
     {
       "instance_id": "inst_ev04_07",
@@ -544,7 +544,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_07.json"
+      "file_path": "bench/instances/inst_ev04_07.json"
     },
     {
       "instance_id": "inst_ev04_08",
@@ -552,7 +552,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_08.json"
+      "file_path": "bench/instances/inst_ev04_08.json"
     },
     {
       "instance_id": "inst_ev04_09",
@@ -560,7 +560,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_09.json"
+      "file_path": "bench/instances/inst_ev04_09.json"
     },
     {
       "instance_id": "inst_ev04_10",
@@ -568,7 +568,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_10.json"
+      "file_path": "bench/instances/inst_ev04_10.json"
     },
     {
       "instance_id": "inst_ev04_11",
@@ -576,7 +576,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_11.json"
+      "file_path": "bench/instances/inst_ev04_11.json"
     },
     {
       "instance_id": "inst_ev04_12",
@@ -584,7 +584,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_12.json"
+      "file_path": "bench/instances/inst_ev04_12.json"
     },
     {
       "instance_id": "inst_ev04_13",
@@ -592,7 +592,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_13.json"
+      "file_path": "bench/instances/inst_ev04_13.json"
     },
     {
       "instance_id": "inst_ev04_14",
@@ -600,7 +600,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_14.json"
+      "file_path": "bench/instances/inst_ev04_14.json"
     },
     {
       "instance_id": "inst_ev04_15",
@@ -608,7 +608,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_15.json"
+      "file_path": "bench/instances/inst_ev04_15.json"
     },
     {
       "instance_id": "inst_ev04_16",
@@ -616,7 +616,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_16.json"
+      "file_path": "bench/instances/inst_ev04_16.json"
     },
     {
       "instance_id": "inst_ev04_17",
@@ -624,7 +624,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_17.json"
+      "file_path": "bench/instances/inst_ev04_17.json"
     },
     {
       "instance_id": "inst_ev04_18",
@@ -632,7 +632,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_18.json"
+      "file_path": "bench/instances/inst_ev04_18.json"
     },
     {
       "instance_id": "inst_ev04_19",
@@ -640,7 +640,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_19.json"
+      "file_path": "bench/instances/inst_ev04_19.json"
     },
     {
       "instance_id": "inst_ev04_20",
@@ -648,7 +648,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev04_20.json"
+      "file_path": "bench/instances/inst_ev04_20.json"
     },
     {
       "instance_id": "inst_ev05_01",
@@ -656,7 +656,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_01.json"
+      "file_path": "bench/instances/inst_ev05_01.json"
     },
     {
       "instance_id": "inst_ev05_02",
@@ -664,7 +664,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_02.json"
+      "file_path": "bench/instances/inst_ev05_02.json"
     },
     {
       "instance_id": "inst_ev05_03",
@@ -672,7 +672,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_03.json"
+      "file_path": "bench/instances/inst_ev05_03.json"
     },
     {
       "instance_id": "inst_ev05_04",
@@ -680,7 +680,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_04.json"
+      "file_path": "bench/instances/inst_ev05_04.json"
     },
     {
       "instance_id": "inst_ev05_05",
@@ -688,7 +688,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_05.json"
+      "file_path": "bench/instances/inst_ev05_05.json"
     },
     {
       "instance_id": "inst_ev05_06",
@@ -696,7 +696,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_06.json"
+      "file_path": "bench/instances/inst_ev05_06.json"
     },
     {
       "instance_id": "inst_ev05_07",
@@ -704,7 +704,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_07.json"
+      "file_path": "bench/instances/inst_ev05_07.json"
     },
     {
       "instance_id": "inst_ev05_08",
@@ -712,7 +712,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_08.json"
+      "file_path": "bench/instances/inst_ev05_08.json"
     },
     {
       "instance_id": "inst_ev05_09",
@@ -720,7 +720,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_09.json"
+      "file_path": "bench/instances/inst_ev05_09.json"
     },
     {
       "instance_id": "inst_ev05_10",
@@ -728,7 +728,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_10.json"
+      "file_path": "bench/instances/inst_ev05_10.json"
     },
     {
       "instance_id": "inst_ev05_11",
@@ -736,7 +736,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_11.json"
+      "file_path": "bench/instances/inst_ev05_11.json"
     },
     {
       "instance_id": "inst_ev05_12",
@@ -744,7 +744,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_12.json"
+      "file_path": "bench/instances/inst_ev05_12.json"
     },
     {
       "instance_id": "inst_ev05_13",
@@ -752,7 +752,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_13.json"
+      "file_path": "bench/instances/inst_ev05_13.json"
     },
     {
       "instance_id": "inst_ev05_14",
@@ -760,7 +760,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_14.json"
+      "file_path": "bench/instances/inst_ev05_14.json"
     },
     {
       "instance_id": "inst_ev05_15",
@@ -768,7 +768,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_15.json"
+      "file_path": "bench/instances/inst_ev05_15.json"
     },
     {
       "instance_id": "inst_ev05_16",
@@ -776,7 +776,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_16.json"
+      "file_path": "bench/instances/inst_ev05_16.json"
     },
     {
       "instance_id": "inst_ev05_17",
@@ -784,7 +784,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_17.json"
+      "file_path": "bench/instances/inst_ev05_17.json"
     },
     {
       "instance_id": "inst_ev05_18",
@@ -792,7 +792,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_18.json"
+      "file_path": "bench/instances/inst_ev05_18.json"
     },
     {
       "instance_id": "inst_ev05_19",
@@ -800,7 +800,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_19.json"
+      "file_path": "bench/instances/inst_ev05_19.json"
     },
     {
       "instance_id": "inst_ev05_20",
@@ -808,7 +808,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev05_20.json"
+      "file_path": "bench/instances/inst_ev05_20.json"
     },
     {
       "instance_id": "inst_ev06_01",
@@ -816,7 +816,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_01.json"
+      "file_path": "bench/instances/inst_ev06_01.json"
     },
     {
       "instance_id": "inst_ev06_02",
@@ -824,7 +824,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_02.json"
+      "file_path": "bench/instances/inst_ev06_02.json"
     },
     {
       "instance_id": "inst_ev06_03",
@@ -832,7 +832,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_03.json"
+      "file_path": "bench/instances/inst_ev06_03.json"
     },
     {
       "instance_id": "inst_ev06_04",
@@ -840,7 +840,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_04.json"
+      "file_path": "bench/instances/inst_ev06_04.json"
     },
     {
       "instance_id": "inst_ev06_05",
@@ -848,7 +848,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_05.json"
+      "file_path": "bench/instances/inst_ev06_05.json"
     },
     {
       "instance_id": "inst_ev06_06",
@@ -856,7 +856,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_06.json"
+      "file_path": "bench/instances/inst_ev06_06.json"
     },
     {
       "instance_id": "inst_ev06_07",
@@ -864,7 +864,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_07.json"
+      "file_path": "bench/instances/inst_ev06_07.json"
     },
     {
       "instance_id": "inst_ev06_08",
@@ -872,7 +872,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_08.json"
+      "file_path": "bench/instances/inst_ev06_08.json"
     },
     {
       "instance_id": "inst_ev06_09",
@@ -880,7 +880,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_09.json"
+      "file_path": "bench/instances/inst_ev06_09.json"
     },
     {
       "instance_id": "inst_ev06_10",
@@ -888,7 +888,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_10.json"
+      "file_path": "bench/instances/inst_ev06_10.json"
     },
     {
       "instance_id": "inst_ev06_11",
@@ -896,7 +896,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_11.json"
+      "file_path": "bench/instances/inst_ev06_11.json"
     },
     {
       "instance_id": "inst_ev06_12",
@@ -904,7 +904,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_12.json"
+      "file_path": "bench/instances/inst_ev06_12.json"
     },
     {
       "instance_id": "inst_ev06_13",
@@ -912,7 +912,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_13.json"
+      "file_path": "bench/instances/inst_ev06_13.json"
     },
     {
       "instance_id": "inst_ev06_14",
@@ -920,7 +920,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_14.json"
+      "file_path": "bench/instances/inst_ev06_14.json"
     },
     {
       "instance_id": "inst_ev06_15",
@@ -928,7 +928,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_15.json"
+      "file_path": "bench/instances/inst_ev06_15.json"
     },
     {
       "instance_id": "inst_ev06_16",
@@ -936,7 +936,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_16.json"
+      "file_path": "bench/instances/inst_ev06_16.json"
     },
     {
       "instance_id": "inst_ev06_17",
@@ -944,7 +944,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_17.json"
+      "file_path": "bench/instances/inst_ev06_17.json"
     },
     {
       "instance_id": "inst_ev06_18",
@@ -952,7 +952,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_18.json"
+      "file_path": "bench/instances/inst_ev06_18.json"
     },
     {
       "instance_id": "inst_ev06_19",
@@ -960,7 +960,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_19.json"
+      "file_path": "bench/instances/inst_ev06_19.json"
     },
     {
       "instance_id": "inst_ev06_20",
@@ -968,7 +968,7 @@
       "split": "train",
       "hazard_type": "landslide",
       "region": "Kerala-Wayanad",
-      "file_path": "bench\\instances\\inst_ev06_20.json"
+      "file_path": "bench/instances/inst_ev06_20.json"
     },
     {
       "instance_id": "inst_ev07_01",
@@ -976,7 +976,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_01.json"
+      "file_path": "bench/instances/inst_ev07_01.json"
     },
     {
       "instance_id": "inst_ev07_02",
@@ -984,7 +984,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_02.json"
+      "file_path": "bench/instances/inst_ev07_02.json"
     },
     {
       "instance_id": "inst_ev07_03",
@@ -992,7 +992,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_03.json"
+      "file_path": "bench/instances/inst_ev07_03.json"
     },
     {
       "instance_id": "inst_ev07_04",
@@ -1000,7 +1000,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_04.json"
+      "file_path": "bench/instances/inst_ev07_04.json"
     },
     {
       "instance_id": "inst_ev07_05",
@@ -1008,7 +1008,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_05.json"
+      "file_path": "bench/instances/inst_ev07_05.json"
     },
     {
       "instance_id": "inst_ev07_06",
@@ -1016,7 +1016,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_06.json"
+      "file_path": "bench/instances/inst_ev07_06.json"
     },
     {
       "instance_id": "inst_ev07_07",
@@ -1024,7 +1024,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_07.json"
+      "file_path": "bench/instances/inst_ev07_07.json"
     },
     {
       "instance_id": "inst_ev07_08",
@@ -1032,7 +1032,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_08.json"
+      "file_path": "bench/instances/inst_ev07_08.json"
     },
     {
       "instance_id": "inst_ev07_09",
@@ -1040,7 +1040,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_09.json"
+      "file_path": "bench/instances/inst_ev07_09.json"
     },
     {
       "instance_id": "inst_ev07_10",
@@ -1048,7 +1048,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_10.json"
+      "file_path": "bench/instances/inst_ev07_10.json"
     },
     {
       "instance_id": "inst_ev07_11",
@@ -1056,7 +1056,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_11.json"
+      "file_path": "bench/instances/inst_ev07_11.json"
     },
     {
       "instance_id": "inst_ev07_12",
@@ -1064,7 +1064,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_12.json"
+      "file_path": "bench/instances/inst_ev07_12.json"
     },
     {
       "instance_id": "inst_ev07_13",
@@ -1072,7 +1072,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_13.json"
+      "file_path": "bench/instances/inst_ev07_13.json"
     },
     {
       "instance_id": "inst_ev07_14",
@@ -1080,7 +1080,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_14.json"
+      "file_path": "bench/instances/inst_ev07_14.json"
     },
     {
       "instance_id": "inst_ev07_15",
@@ -1088,7 +1088,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_15.json"
+      "file_path": "bench/instances/inst_ev07_15.json"
     },
     {
       "instance_id": "inst_ev07_16",
@@ -1096,7 +1096,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_16.json"
+      "file_path": "bench/instances/inst_ev07_16.json"
     },
     {
       "instance_id": "inst_ev07_17",
@@ -1104,7 +1104,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_17.json"
+      "file_path": "bench/instances/inst_ev07_17.json"
     },
     {
       "instance_id": "inst_ev07_18",
@@ -1112,7 +1112,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_18.json"
+      "file_path": "bench/instances/inst_ev07_18.json"
     },
     {
       "instance_id": "inst_ev07_19",
@@ -1120,7 +1120,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_19.json"
+      "file_path": "bench/instances/inst_ev07_19.json"
     },
     {
       "instance_id": "inst_ev07_20",
@@ -1128,7 +1128,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev07_20.json"
+      "file_path": "bench/instances/inst_ev07_20.json"
     },
     {
       "instance_id": "inst_ev08_01",
@@ -1136,7 +1136,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_01.json"
+      "file_path": "bench/instances/inst_ev08_01.json"
     },
     {
       "instance_id": "inst_ev08_02",
@@ -1144,7 +1144,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_02.json"
+      "file_path": "bench/instances/inst_ev08_02.json"
     },
     {
       "instance_id": "inst_ev08_03",
@@ -1152,7 +1152,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_03.json"
+      "file_path": "bench/instances/inst_ev08_03.json"
     },
     {
       "instance_id": "inst_ev08_04",
@@ -1160,7 +1160,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_04.json"
+      "file_path": "bench/instances/inst_ev08_04.json"
     },
     {
       "instance_id": "inst_ev08_05",
@@ -1168,7 +1168,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_05.json"
+      "file_path": "bench/instances/inst_ev08_05.json"
     },
     {
       "instance_id": "inst_ev08_06",
@@ -1176,7 +1176,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_06.json"
+      "file_path": "bench/instances/inst_ev08_06.json"
     },
     {
       "instance_id": "inst_ev08_07",
@@ -1184,7 +1184,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_07.json"
+      "file_path": "bench/instances/inst_ev08_07.json"
     },
     {
       "instance_id": "inst_ev08_08",
@@ -1192,7 +1192,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_08.json"
+      "file_path": "bench/instances/inst_ev08_08.json"
     },
     {
       "instance_id": "inst_ev08_09",
@@ -1200,7 +1200,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_09.json"
+      "file_path": "bench/instances/inst_ev08_09.json"
     },
     {
       "instance_id": "inst_ev08_10",
@@ -1208,7 +1208,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_10.json"
+      "file_path": "bench/instances/inst_ev08_10.json"
     },
     {
       "instance_id": "inst_ev08_11",
@@ -1216,7 +1216,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_11.json"
+      "file_path": "bench/instances/inst_ev08_11.json"
     },
     {
       "instance_id": "inst_ev08_12",
@@ -1224,7 +1224,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_12.json"
+      "file_path": "bench/instances/inst_ev08_12.json"
     },
     {
       "instance_id": "inst_ev08_13",
@@ -1232,7 +1232,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_13.json"
+      "file_path": "bench/instances/inst_ev08_13.json"
     },
     {
       "instance_id": "inst_ev08_14",
@@ -1240,7 +1240,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_14.json"
+      "file_path": "bench/instances/inst_ev08_14.json"
     },
     {
       "instance_id": "inst_ev08_15",
@@ -1248,7 +1248,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_15.json"
+      "file_path": "bench/instances/inst_ev08_15.json"
     },
     {
       "instance_id": "inst_ev08_16",
@@ -1256,7 +1256,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_16.json"
+      "file_path": "bench/instances/inst_ev08_16.json"
     },
     {
       "instance_id": "inst_ev08_17",
@@ -1264,7 +1264,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_17.json"
+      "file_path": "bench/instances/inst_ev08_17.json"
     },
     {
       "instance_id": "inst_ev08_18",
@@ -1272,7 +1272,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_18.json"
+      "file_path": "bench/instances/inst_ev08_18.json"
     },
     {
       "instance_id": "inst_ev08_19",
@@ -1280,7 +1280,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_19.json"
+      "file_path": "bench/instances/inst_ev08_19.json"
     },
     {
       "instance_id": "inst_ev08_20",
@@ -1288,7 +1288,7 @@
       "split": "train",
       "hazard_type": "flood",
       "region": "Kerala-Periyar",
-      "file_path": "bench\\instances\\inst_ev08_20.json"
+      "file_path": "bench/instances/inst_ev08_20.json"
     },
     {
       "instance_id": "inst_ev09_01",
@@ -1296,7 +1296,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_01.json"
+      "file_path": "bench/instances/inst_ev09_01.json"
     },
     {
       "instance_id": "inst_ev09_02",
@@ -1304,7 +1304,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_02.json"
+      "file_path": "bench/instances/inst_ev09_02.json"
     },
     {
       "instance_id": "inst_ev09_03",
@@ -1312,7 +1312,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_03.json"
+      "file_path": "bench/instances/inst_ev09_03.json"
     },
     {
       "instance_id": "inst_ev09_04",
@@ -1320,7 +1320,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_04.json"
+      "file_path": "bench/instances/inst_ev09_04.json"
     },
     {
       "instance_id": "inst_ev09_05",
@@ -1328,7 +1328,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_05.json"
+      "file_path": "bench/instances/inst_ev09_05.json"
     },
     {
       "instance_id": "inst_ev09_06",
@@ -1336,7 +1336,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_06.json"
+      "file_path": "bench/instances/inst_ev09_06.json"
     },
     {
       "instance_id": "inst_ev09_07",
@@ -1344,7 +1344,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_07.json"
+      "file_path": "bench/instances/inst_ev09_07.json"
     },
     {
       "instance_id": "inst_ev09_08",
@@ -1352,7 +1352,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_08.json"
+      "file_path": "bench/instances/inst_ev09_08.json"
     },
     {
       "instance_id": "inst_ev09_09",
@@ -1360,7 +1360,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_09.json"
+      "file_path": "bench/instances/inst_ev09_09.json"
     },
     {
       "instance_id": "inst_ev09_10",
@@ -1368,7 +1368,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_10.json"
+      "file_path": "bench/instances/inst_ev09_10.json"
     },
     {
       "instance_id": "inst_ev09_11",
@@ -1376,7 +1376,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_11.json"
+      "file_path": "bench/instances/inst_ev09_11.json"
     },
     {
       "instance_id": "inst_ev09_12",
@@ -1384,7 +1384,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_12.json"
+      "file_path": "bench/instances/inst_ev09_12.json"
     },
     {
       "instance_id": "inst_ev09_13",
@@ -1392,7 +1392,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_13.json"
+      "file_path": "bench/instances/inst_ev09_13.json"
     },
     {
       "instance_id": "inst_ev09_14",
@@ -1400,7 +1400,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_14.json"
+      "file_path": "bench/instances/inst_ev09_14.json"
     },
     {
       "instance_id": "inst_ev09_15",
@@ -1408,7 +1408,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_15.json"
+      "file_path": "bench/instances/inst_ev09_15.json"
     },
     {
       "instance_id": "inst_ev09_16",
@@ -1416,7 +1416,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_16.json"
+      "file_path": "bench/instances/inst_ev09_16.json"
     },
     {
       "instance_id": "inst_ev09_17",
@@ -1424,7 +1424,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_17.json"
+      "file_path": "bench/instances/inst_ev09_17.json"
     },
     {
       "instance_id": "inst_ev09_18",
@@ -1432,7 +1432,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_18.json"
+      "file_path": "bench/instances/inst_ev09_18.json"
     },
     {
       "instance_id": "inst_ev09_19",
@@ -1440,7 +1440,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_19.json"
+      "file_path": "bench/instances/inst_ev09_19.json"
     },
     {
       "instance_id": "inst_ev09_20",
@@ -1448,7 +1448,7 @@
       "split": "val",
       "hazard_type": "embankment_breach",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev09_20.json"
+      "file_path": "bench/instances/inst_ev09_20.json"
     },
     {
       "instance_id": "inst_ev10_01",
@@ -1456,7 +1456,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_01.json"
+      "file_path": "bench/instances/inst_ev10_01.json"
     },
     {
       "instance_id": "inst_ev10_02",
@@ -1464,7 +1464,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_02.json"
+      "file_path": "bench/instances/inst_ev10_02.json"
     },
     {
       "instance_id": "inst_ev10_03",
@@ -1472,7 +1472,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_03.json"
+      "file_path": "bench/instances/inst_ev10_03.json"
     },
     {
       "instance_id": "inst_ev10_04",
@@ -1480,7 +1480,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_04.json"
+      "file_path": "bench/instances/inst_ev10_04.json"
     },
     {
       "instance_id": "inst_ev10_05",
@@ -1488,7 +1488,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_05.json"
+      "file_path": "bench/instances/inst_ev10_05.json"
     },
     {
       "instance_id": "inst_ev10_06",
@@ -1496,7 +1496,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_06.json"
+      "file_path": "bench/instances/inst_ev10_06.json"
     },
     {
       "instance_id": "inst_ev10_07",
@@ -1504,7 +1504,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_07.json"
+      "file_path": "bench/instances/inst_ev10_07.json"
     },
     {
       "instance_id": "inst_ev10_08",
@@ -1512,7 +1512,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_08.json"
+      "file_path": "bench/instances/inst_ev10_08.json"
     },
     {
       "instance_id": "inst_ev10_09",
@@ -1520,7 +1520,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_09.json"
+      "file_path": "bench/instances/inst_ev10_09.json"
     },
     {
       "instance_id": "inst_ev10_10",
@@ -1528,7 +1528,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_10.json"
+      "file_path": "bench/instances/inst_ev10_10.json"
     },
     {
       "instance_id": "inst_ev10_11",
@@ -1536,7 +1536,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_11.json"
+      "file_path": "bench/instances/inst_ev10_11.json"
     },
     {
       "instance_id": "inst_ev10_12",
@@ -1544,7 +1544,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_12.json"
+      "file_path": "bench/instances/inst_ev10_12.json"
     },
     {
       "instance_id": "inst_ev10_13",
@@ -1552,7 +1552,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_13.json"
+      "file_path": "bench/instances/inst_ev10_13.json"
     },
     {
       "instance_id": "inst_ev10_14",
@@ -1560,7 +1560,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_14.json"
+      "file_path": "bench/instances/inst_ev10_14.json"
     },
     {
       "instance_id": "inst_ev10_15",
@@ -1568,7 +1568,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_15.json"
+      "file_path": "bench/instances/inst_ev10_15.json"
     },
     {
       "instance_id": "inst_ev10_16",
@@ -1576,7 +1576,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_16.json"
+      "file_path": "bench/instances/inst_ev10_16.json"
     },
     {
       "instance_id": "inst_ev10_17",
@@ -1584,7 +1584,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_17.json"
+      "file_path": "bench/instances/inst_ev10_17.json"
     },
     {
       "instance_id": "inst_ev10_18",
@@ -1592,7 +1592,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_18.json"
+      "file_path": "bench/instances/inst_ev10_18.json"
     },
     {
       "instance_id": "inst_ev10_19",
@@ -1600,7 +1600,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_19.json"
+      "file_path": "bench/instances/inst_ev10_19.json"
     },
     {
       "instance_id": "inst_ev10_20",
@@ -1608,7 +1608,7 @@
       "split": "val",
       "hazard_type": "flood",
       "region": "Assam-Barak",
-      "file_path": "bench\\instances\\inst_ev10_20.json"
+      "file_path": "bench/instances/inst_ev10_20.json"
     },
     {
       "instance_id": "inst_ev11_01",
@@ -1616,7 +1616,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_01.json"
+      "file_path": "bench/instances/inst_ev11_01.json"
     },
     {
       "instance_id": "inst_ev11_02",
@@ -1624,7 +1624,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_02.json"
+      "file_path": "bench/instances/inst_ev11_02.json"
     },
     {
       "instance_id": "inst_ev11_03",
@@ -1632,7 +1632,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_03.json"
+      "file_path": "bench/instances/inst_ev11_03.json"
     },
     {
       "instance_id": "inst_ev11_04",
@@ -1640,7 +1640,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_04.json"
+      "file_path": "bench/instances/inst_ev11_04.json"
     },
     {
       "instance_id": "inst_ev11_05",
@@ -1648,7 +1648,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_05.json"
+      "file_path": "bench/instances/inst_ev11_05.json"
     },
     {
       "instance_id": "inst_ev11_06",
@@ -1656,7 +1656,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_06.json"
+      "file_path": "bench/instances/inst_ev11_06.json"
     },
     {
       "instance_id": "inst_ev11_07",
@@ -1664,7 +1664,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_07.json"
+      "file_path": "bench/instances/inst_ev11_07.json"
     },
     {
       "instance_id": "inst_ev11_08",
@@ -1672,7 +1672,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_08.json"
+      "file_path": "bench/instances/inst_ev11_08.json"
     },
     {
       "instance_id": "inst_ev11_09",
@@ -1680,7 +1680,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_09.json"
+      "file_path": "bench/instances/inst_ev11_09.json"
     },
     {
       "instance_id": "inst_ev11_10",
@@ -1688,7 +1688,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_10.json"
+      "file_path": "bench/instances/inst_ev11_10.json"
     },
     {
       "instance_id": "inst_ev11_11",
@@ -1696,7 +1696,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_11.json"
+      "file_path": "bench/instances/inst_ev11_11.json"
     },
     {
       "instance_id": "inst_ev11_12",
@@ -1704,7 +1704,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_12.json"
+      "file_path": "bench/instances/inst_ev11_12.json"
     },
     {
       "instance_id": "inst_ev11_13",
@@ -1712,7 +1712,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_13.json"
+      "file_path": "bench/instances/inst_ev11_13.json"
     },
     {
       "instance_id": "inst_ev11_14",
@@ -1720,7 +1720,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_14.json"
+      "file_path": "bench/instances/inst_ev11_14.json"
     },
     {
       "instance_id": "inst_ev11_15",
@@ -1728,7 +1728,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_15.json"
+      "file_path": "bench/instances/inst_ev11_15.json"
     },
     {
       "instance_id": "inst_ev11_16",
@@ -1736,7 +1736,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_16.json"
+      "file_path": "bench/instances/inst_ev11_16.json"
     },
     {
       "instance_id": "inst_ev11_17",
@@ -1744,7 +1744,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_17.json"
+      "file_path": "bench/instances/inst_ev11_17.json"
     },
     {
       "instance_id": "inst_ev11_18",
@@ -1752,7 +1752,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_18.json"
+      "file_path": "bench/instances/inst_ev11_18.json"
     },
     {
       "instance_id": "inst_ev11_19",
@@ -1760,7 +1760,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_19.json"
+      "file_path": "bench/instances/inst_ev11_19.json"
     },
     {
       "instance_id": "inst_ev11_20",
@@ -1768,7 +1768,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev11_20.json"
+      "file_path": "bench/instances/inst_ev11_20.json"
     },
     {
       "instance_id": "inst_ev12_01",
@@ -1776,7 +1776,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_01.json"
+      "file_path": "bench/instances/inst_ev12_01.json"
     },
     {
       "instance_id": "inst_ev12_02",
@@ -1784,7 +1784,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_02.json"
+      "file_path": "bench/instances/inst_ev12_02.json"
     },
     {
       "instance_id": "inst_ev12_03",
@@ -1792,7 +1792,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_03.json"
+      "file_path": "bench/instances/inst_ev12_03.json"
     },
     {
       "instance_id": "inst_ev12_04",
@@ -1800,7 +1800,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_04.json"
+      "file_path": "bench/instances/inst_ev12_04.json"
     },
     {
       "instance_id": "inst_ev12_05",
@@ -1808,7 +1808,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_05.json"
+      "file_path": "bench/instances/inst_ev12_05.json"
     },
     {
       "instance_id": "inst_ev12_06",
@@ -1816,7 +1816,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_06.json"
+      "file_path": "bench/instances/inst_ev12_06.json"
     },
     {
       "instance_id": "inst_ev12_07",
@@ -1824,7 +1824,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_07.json"
+      "file_path": "bench/instances/inst_ev12_07.json"
     },
     {
       "instance_id": "inst_ev12_08",
@@ -1832,7 +1832,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_08.json"
+      "file_path": "bench/instances/inst_ev12_08.json"
     },
     {
       "instance_id": "inst_ev12_09",
@@ -1840,7 +1840,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_09.json"
+      "file_path": "bench/instances/inst_ev12_09.json"
     },
     {
       "instance_id": "inst_ev12_10",
@@ -1848,7 +1848,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_10.json"
+      "file_path": "bench/instances/inst_ev12_10.json"
     },
     {
       "instance_id": "inst_ev12_11",
@@ -1856,7 +1856,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_11.json"
+      "file_path": "bench/instances/inst_ev12_11.json"
     },
     {
       "instance_id": "inst_ev12_12",
@@ -1864,7 +1864,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_12.json"
+      "file_path": "bench/instances/inst_ev12_12.json"
     },
     {
       "instance_id": "inst_ev12_13",
@@ -1872,7 +1872,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_13.json"
+      "file_path": "bench/instances/inst_ev12_13.json"
     },
     {
       "instance_id": "inst_ev12_14",
@@ -1880,7 +1880,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_14.json"
+      "file_path": "bench/instances/inst_ev12_14.json"
     },
     {
       "instance_id": "inst_ev12_15",
@@ -1888,7 +1888,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_15.json"
+      "file_path": "bench/instances/inst_ev12_15.json"
     },
     {
       "instance_id": "inst_ev12_16",
@@ -1896,7 +1896,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_16.json"
+      "file_path": "bench/instances/inst_ev12_16.json"
     },
     {
       "instance_id": "inst_ev12_17",
@@ -1904,7 +1904,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_17.json"
+      "file_path": "bench/instances/inst_ev12_17.json"
     },
     {
       "instance_id": "inst_ev12_18",
@@ -1912,7 +1912,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_18.json"
+      "file_path": "bench/instances/inst_ev12_18.json"
     },
     {
       "instance_id": "inst_ev12_19",
@@ -1920,7 +1920,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_19.json"
+      "file_path": "bench/instances/inst_ev12_19.json"
     },
     {
       "instance_id": "inst_ev12_20",
@@ -1928,7 +1928,7 @@
       "split": "test",
       "hazard_type": "cyclone",
       "region": "Odisha-Puri",
-      "file_path": "bench\\instances\\inst_ev12_20.json"
+      "file_path": "bench/instances/inst_ev12_20.json"
     }
   ]
 }
