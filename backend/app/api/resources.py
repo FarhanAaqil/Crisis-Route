@@ -6,7 +6,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 
-from app.api.scenarios import SCENARIO_STORE
+from app.api.scenarios import SCENARIO_STORE, reseal_scenario
 from app.domain.models import (
     CommodityModel,
     DemandNodeModel,
@@ -88,6 +88,7 @@ def add_or_update_demand_node(
     else:
         scenario.demand_nodes.append(payload)
 
+    reseal_scenario(scenario)
     record_audit_event(
         user_id=current_user.user_id,
         action="UPDATE_DEMAND_NODE",
@@ -108,6 +109,7 @@ def delete_demand_node(
     scenario = _get_scenario_or_404(scenario_id)
     scenario.demand_nodes = [d for d in scenario.demand_nodes if d.id != node_id]
 
+    reseal_scenario(scenario)
     record_audit_event(
         user_id=current_user.user_id,
         action="DELETE_DEMAND_NODE",
@@ -132,6 +134,7 @@ def add_or_update_depot(
     else:
         scenario.depots.append(payload)
 
+    reseal_scenario(scenario)
     record_audit_event(
         user_id=current_user.user_id,
         action="UPDATE_DEPOT",
@@ -157,6 +160,7 @@ def add_or_update_vehicle(
     else:
         scenario.vehicles.append(payload)
 
+    reseal_scenario(scenario)
     record_audit_event(
         user_id=current_user.user_id,
         action="UPDATE_VEHICLE",

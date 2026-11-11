@@ -8,7 +8,9 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 
 from app.api.scenarios import OBSERVATION_STORE, SCENARIO_STORE
+from app.core.cache import ResponseCache
 from app.core.config import settings
+from app.domain.models import ScenarioDetail
 from app.graph.live import build_live_graph
 
 router = APIRouter(prefix="/scenarios/{scenario_id}/passability", tags=["Passability"])
@@ -110,6 +112,9 @@ def _get_risk_class(prob: float) -> str:
     return "CRITICAL"
 
 
+_PASSABILITY_CACHE: ResponseCache[PassabilityResponse] = ResponseCache(32)
+
+
 @lru_cache(maxsize=1)
 def _load_calibration_metrics() -> ModelMetricsSummary | None:
     """Held-out calibration metrics written by the experiments pipeline, if available."""
@@ -143,6 +148,12 @@ def get_scenario_passability(scenario_id: UUID) -> PassabilityResponse:
         )
 
     scenario = SCENARIO_STORE[sid]
+    key = (sid, scenario.snapshot_id, OBSERVATION_STORE.version(sid))
+    return _PASSABILITY_CACHE.get_or_compute(key, lambda: _compute_passability(scenario))
+
+
+def _compute_passability(scenario: ScenarioDetail) -> PassabilityResponse:
+    sid = str(scenario.scenario_id)
     g = build_live_graph(scenario, OBSERVATION_STORE.get(sid))
 
     # Build node list

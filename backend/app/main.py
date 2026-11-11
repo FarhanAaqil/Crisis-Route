@@ -2,12 +2,14 @@
 
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from pathlib import Path
 
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.exceptions import HTTPException as StarletteHTTPException
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.gzip import GZipMiddleware
 from starlette.staticfiles import StaticFiles
+from starlette.types import Scope
 
 from app.api.allocation import router as allocation_router
 from app.api.audit import router as audit_router
@@ -41,12 +43,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Compress JSON and static payloads (big passability and plan responses shrink ~5-10x)
+app.add_middleware(GZipMiddleware, minimum_size=1024)
+
 # CORS middleware for frontend access
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origin_list,
     allow_credentials=False,
-    allow_methods=["GET", "POST", "OPTIONS"],
+    allow_methods=["GET", "POST", "DELETE", "OPTIONS"],
     allow_headers=["Authorization", "Content-Type", "X-Correlation-Id"],
     expose_headers=["X-Correlation-Id"],
 )
@@ -70,16 +75,36 @@ for _router in (
 ):
     app.include_router(_router, prefix=settings.api_prefix, dependencies=_protected)
 
-frontend_dist = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
-if frontend_dist.exists() and (frontend_dist / "index.html").exists():
-    app.mount("/ui", StaticFiles(directory=str(frontend_dist), html=True), name="ui")
+
+class SPAStaticFiles(StaticFiles):
+    """Serve the built React app: long-lived caching for hashed assets, SPA fallback for routes."""
+
+    async def get_response(self, path: str, scope: Scope):  # type: ignore[no-untyped-def]
+        path = path.replace("\\", "/")  # Starlette joins with os.sep on Windows
+        try:
+            response = await super().get_response(path, scope)
+        except StarletteHTTPException as exc:
+            if exc.status_code != 404 or path.startswith(("assets/", "api/")):
+                raise
+            response = await super().get_response("index.html", scope)
+        if path.startswith("assets/"):
+            response.headers["Cache-Control"] = "public, max-age=31536000, immutable"
+        else:
+            response.headers["Cache-Control"] = "no-cache"
+        return response
 
 
-@app.get("/")
-def root():
-    """Root entry point providing service identity."""
-    return {
-        "service": settings.app_name,
-        "version": settings.app_version,
-        "api_docs": f"{settings.api_prefix}/docs",
-    }
+_dist = settings.frontend_dist
+if (_dist / "index.html").exists():
+    # Mounted last so every /api/v1 route above keeps priority
+    app.mount("/", SPAStaticFiles(directory=str(_dist), html=True), name="ui")
+else:
+
+    @app.get("/", include_in_schema=False)
+    def root() -> dict[str, str]:
+        """Service identity when no built frontend is present."""
+        return {
+            "service": settings.app_name,
+            "version": settings.app_version,
+            "api_docs": f"{settings.api_prefix}/docs",
+        }

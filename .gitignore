@@ -85,3 +85,6 @@ artifacts/state/
 
 # CrisisBench instances are regenerated deterministically from the seeded generator
 data/bench/instances/
+
+# Deployment secrets
+deploy/users.json

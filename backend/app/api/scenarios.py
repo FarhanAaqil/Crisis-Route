@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Annotated, Any, Literal
 from uuid import UUID, uuid4
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from pydantic import BaseModel, StringConstraints, field_validator
 
 from app.core.config import settings
@@ -517,7 +517,11 @@ def get_scenario(scenario_id: UUID) -> ScenarioDetail:
 
 
 @router.get("/{scenario_id}/observations", response_model=list[ObservationResponse])
-def list_observations(scenario_id: UUID) -> list[ObservationResponse]:
+def list_observations(
+    scenario_id: UUID,
+    limit: int = Query(default=200, ge=1, le=1000),
+    offset: int = Query(default=0, ge=0),
+) -> list[ObservationResponse]:
     """List all road condition observations associated with a scenario."""
     sid = str(scenario_id)
     if sid not in SCENARIO_STORE:
@@ -525,8 +529,8 @@ def list_observations(scenario_id: UUID) -> list[ObservationResponse]:
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Scenario {scenario_id} not found",
         )
-    observations: list[ObservationResponse] = OBSERVATION_STORE.get(sid)
-    return observations
+    newest_first = list(reversed(OBSERVATION_STORE.get(sid)))
+    return newest_first[offset : offset + limit]
 
 
 @router.post(
@@ -563,6 +567,17 @@ def submit_observation(
     return obs
 
 
+def reseal_scenario(scenario: ScenarioDetail) -> None:
+    """Recompute the content hash after an edit so plans and caches tied to the old data lapse."""
+    content = scenario.model_dump(
+        mode="json", exclude={"scenario_id", "snapshot_id", "created_at", "active_plan_id"}
+    )
+    scenario.snapshot_id = hashlib.sha256(
+        json.dumps(content, sort_keys=True).encode("utf-8")
+    ).hexdigest()
+    SCENARIO_STORE.save(str(scenario.scenario_id))
+
+
 def _get_plan_or_404(plan_id: str) -> PlanResponse:
     plan = PLAN_STORE.get(plan_id)
     if plan is None:
@@ -573,7 +588,10 @@ def _get_plan_or_404(plan_id: str) -> PlanResponse:
 
 
 def _plan_is_stale(plan: PlanResponse) -> bool:
-    """A plan is stale when a field report arrived after it was generated."""
+    """Stale when a field report arrived after it, or the scenario data was edited."""
+    scenario = SCENARIO_STORE.get(str(plan.scenario_id))
+    if scenario is not None and scenario.snapshot_id != plan.snapshot_id:
+        return True
     latest = max((o.timestamp for o in OBSERVATION_STORE.get(str(plan.scenario_id))), default=None)
     return latest is not None and latest > plan.generated_at
 
@@ -620,7 +638,7 @@ def _decide_plan(
     if decision == "APPROVE" and _plan_is_stale(plan):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
-            detail="New field observations arrived since this plan was generated. Re-optimize.",
+            detail="Field data or scenario inputs changed since this plan. Re-optimize first.",
         )
 
     plan.approval_state.status = (
