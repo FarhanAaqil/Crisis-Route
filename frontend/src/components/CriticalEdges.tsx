@@ -42,7 +42,7 @@ export const CriticalEdges: React.FC<CriticalEdgesProps> = ({
               <th className="py-3 px-3">Rank</th>
               <th className="py-3 px-3">Edge ID</th>
               <th className="py-3 px-3">VOI Score</th>
-              <th className="py-3 px-3">Regret Reduction</th>
+              <th className="py-3 px-3">Minutes saved</th>
               <th className="py-3 px-3">Inspection Cost</th>
               <th className="py-3 px-3 text-right">Action</th>
             </tr>
@@ -62,7 +62,7 @@ export const CriticalEdges: React.FC<CriticalEdgesProps> = ({
                   {rec.voi_score.toFixed(3)}
                 </td>
                 <td className="py-2.5 px-3 text-palette-sage">
-                  -{rec.expected_regret_reduction.toFixed(1)}m
+                  {rec.expected_regret_reduction.toFixed(1)} min
                 </td>
                 <td className="py-2.5 px-3 text-palette-frost">
                   ${rec.inspection_cost.toFixed(1)}

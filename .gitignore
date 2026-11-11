@@ -88,3 +88,6 @@ data/bench/instances/
 
 # Deployment secrets
 deploy/users.json
+
+# Personal documents (kept local)
+user-guide/

@@ -36,10 +36,10 @@ test:
 	cd frontend && $(NPM) run test
 
 bench:
-	$(VPY) -m experiments.bench.manifest
+	PYTHONPATH=backend:. $(VPY) -m experiments.bench.manifest
 
 reproduce:
-	$(VPY) experiments/reproduce_all.py
+	PYTHONPATH=backend:. $(VPY) -m experiments.reproduce_all
 
 run:
 	$(VPY) -m uvicorn app.main:app --app-dir backend --reload --port 8000

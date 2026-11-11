@@ -26,7 +26,7 @@ export const ModelStatus: React.FC = () => {
     return (
       <div className="max-w-5xl mx-auto p-6 glass-card rounded-2xl text-xs text-palette-frost" role="status">
         <h1 className="text-xl font-extrabold text-palette-cream mb-2">Passability Model Calibration Status</h1>
-        No validated calibration report is available yet. Run <code>python experiments/reproduce_all.py</code> to
+        No validated calibration report is available yet. Run <code>make reproduce</code> to
         generate <code>reports/model_calibration.json</code>.
       </div>
     );

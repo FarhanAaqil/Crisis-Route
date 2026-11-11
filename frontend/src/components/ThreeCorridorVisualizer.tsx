@@ -557,7 +557,7 @@ export const ThreeCorridorVisualizer: React.FC<ThreeCorridorVisualizerProps> = (
                   </div>
                   <div className="glass-card-subtle p-2 rounded-xl">
                     <div className="text-[10px] text-palette-slate">Length</div>
-                    <div className="text-palette-cream">{edge.length_m ? `${edge.length_m}m` : '—'}</div>
+                    <div className="text-palette-cream">{edge.length_m ? `${(edge.length_m / 1000).toFixed(1)} km` : '—'}</div>
                   </div>
                 </div>
 

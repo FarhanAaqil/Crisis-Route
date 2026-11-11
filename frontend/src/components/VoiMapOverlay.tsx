@@ -53,7 +53,7 @@ export const VoiMapOverlay: React.FC<VoiMapOverlayProps> = ({
 
               <div className="flex items-center justify-between text-[11px] text-palette-frost mt-1 font-mono">
                 <span>
-                  Regret Reduction: <b className="text-palette-cream">-{tgt.expected_regret_reduction.toFixed(1)}m</b>
+                  Minutes saved by inspecting: <b className="text-palette-cream">{tgt.expected_regret_reduction.toFixed(1)} min</b>
                 </span>
                 <span>
                   Cost: <b className="text-palette-cream">${tgt.inspection_cost}</b>
