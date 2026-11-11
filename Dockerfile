@@ -21,7 +21,10 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     CRISISROUTE_ENVIRONMENT=production \
-    CRISISROUTE_STATE_DIR=/var/lib/crisisroute \n    CRISISROUTE_CONTRACTS_DIR=/srv/crisisroute/contracts \n    CRISISROUTE_REPORTS_DIR=/srv/crisisroute/reports \n    CRISISROUTE_FRONTEND_DIST=/srv/crisisroute/frontend/dist
+    CRISISROUTE_STATE_DIR=/var/lib/crisisroute \
+    CRISISROUTE_CONTRACTS_DIR=/srv/crisisroute/contracts \
+    CRISISROUTE_REPORTS_DIR=/srv/crisisroute/reports \
+    CRISISROUTE_FRONTEND_DIST=/srv/crisisroute/frontend/dist
 
 WORKDIR /srv/crisisroute
 
