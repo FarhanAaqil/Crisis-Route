@@ -37,9 +37,7 @@ def test_passability_endpoint_returns_network_and_calibration():
     # Verify summary
     summary = data["summary"]
     assert summary["total_edges"] == len(data["edges"])
-    classified = (
-        summary["passable_count"] + summary["moderate_count"] + summary["critical_count"]
-    )
+    classified = summary["passable_count"] + summary["moderate_count"] + summary["critical_count"]
     assert classified == len(data["edges"])
 
 

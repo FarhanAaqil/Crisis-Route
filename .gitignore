@@ -69,3 +69,15 @@ Thumbs.db
 # Research Blueprint (local only)
 CrisisRoute — Master Research Blueprint.md
 CrisisRoute - Master Research Blueprint.md
+
+# Planning and blueprint notes stay local
+*[Bb]lueprint*.md
+*[Bb]lueprint*.txt
+PLAN.md
+PLAN-*.md
+*-plan.md
+*_plan.md
+plans/
+.plans/
+.claude/
+CLAUDE.md

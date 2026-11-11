@@ -166,16 +166,21 @@ def build_reproducibility_manifest() -> dict[str, Any]:
         "stress_tests": [asdict(t) for t in stress_tests],
     }
 
+    return manifest
+
+
+def write_reproducibility_manifest(manifest: dict[str, Any]) -> Path:
+    """Persist the manifest to reports/. Kept separate so test runs never dirty tracked files."""
     out_file = Path("reports/reproducibility_manifest.json")
     out_file.parent.mkdir(parents=True, exist_ok=True)
     with open(out_file, "w", encoding="utf-8") as f:
         json.dump(manifest, f, indent=2)
-
-    return manifest
+    return out_file
 
 
 if __name__ == "__main__":
     man = build_reproducibility_manifest()
+    write_reproducibility_manifest(man)
     print(
         f"Reproducibility Manifest compiled: {len(man['scientific_claims'])} claims, "
         f"All Verified: {man['all_claims_verified']}"

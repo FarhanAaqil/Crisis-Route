@@ -6,12 +6,19 @@ on:
   pull_request:
     branches: [main, master]
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  backend-lint-and-test:
-    name: Backend Lint, Types & Unit Tests
+  backend:
+    name: Backend lint, types and tests
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up Python 3.12
@@ -19,34 +26,33 @@ jobs:
         with:
           python-version: "3.12"
           cache: "pip"
+          cache-dependency-path: backend/pyproject.toml
 
-      - name: Install uv and Dependencies
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install uv
-          uv pip install --system -e "./backend[dev]"
+          pip install -e "./backend[dev]"
 
-      - name: Run Ruff Linter
-        run: |
-          ruff check backend/
+      - name: Ruff lint
+        run: ruff check backend experiments
 
-      - name: Run Ruff Formatter Check
-        run: |
-          ruff format --check backend/
+      - name: Ruff format
+        run: ruff format --check backend experiments
 
-      - name: Run Mypy Strict Type Checks
-        run: |
-          mypy backend/app
+      - name: Mypy
+        run: mypy --config-file backend/pyproject.toml backend/app experiments
 
-      - name: Run Pytest Test Suite
-        run: |
-          PYTHONPATH=backend pytest backend/tests -v
+      - name: Pytest
+        run: pytest -q
 
-  frontend-check:
-    name: Frontend TypeScript & Contracts
+  frontend:
+    name: Frontend types, tests and build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
     steps:
-      - name: Checkout Repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up Node.js 20
@@ -54,20 +60,16 @@ jobs:
         with:
           node-version: "20"
           cache: "npm"
-          cache-dependency-path: frontend/package.json
+          cache-dependency-path: frontend/package-lock.json
 
-      - name: Install Frontend Dependencies
-        working-directory: frontend
-        run: |
-          npm ci || npm install
+      - name: Install dependencies
+        run: npm ci
 
-      - name: TypeScript Compile Check
-        working-directory: frontend
-        run: |
-          npm run typecheck
+      - name: Typecheck
+        run: npm run typecheck
 
-      - name: Frontend Vitest Smoke Tests
-        working-directory: frontend
-        run: |
-          npm run test
+      - name: Vitest
+        run: npm run test
 
+      - name: Production build
+        run: npm run build
