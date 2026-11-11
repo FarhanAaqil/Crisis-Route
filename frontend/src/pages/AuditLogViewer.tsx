@@ -133,7 +133,7 @@ export const AuditLogViewer: React.FC = () => {
                       </span>
                     </td>
                     <td className="py-3 px-4 text-palette-frost truncate max-w-xs">
-                      {log.details?.rationale || log.details?.notes || JSON.stringify(log.details) || '—'}
+                      {String(log.details?.rationale ?? log.details?.notes ?? JSON.stringify(log.details) ?? '—')}
                     </td>
                     <td className="py-3 px-4 font-mono text-[10px] text-palette-slate">
                       {log.resource_type}: {log.resource_id.slice(0, 8)}...

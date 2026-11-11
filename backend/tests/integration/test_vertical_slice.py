@@ -7,23 +7,17 @@ Verifies commodity conservation and non-negativity mathematical invariants.
 
 import json
 
-from fastapi.testclient import TestClient
-
 from app.domain.models import UserRole
 from app.ingestion.geojson_parser import parse_geojson_features
 from app.ingestion.snapshots import snapshot_repository
-from app.main import app
+from tests.helpers import auth_headers, make_client
 
 
 def test_full_operational_vertical_slice_e2e():
     """Verify entire humanitarian relief lifecycle end-to-end across all subsystem gates."""
-    client = TestClient(app)
-    analyst_headers = {"X-User-Role": UserRole.ANALYST.value, "X-User-Id": "analyst-lead"}
-    approver_headers = {
-        "X-User-Role": UserRole.APPROVER.value,
-        "X-User-Id": "district-collector",
-        "X-Username": "Farhan Aaqil",
-    }
+    client = make_client()
+    analyst_headers = auth_headers(UserRole.ANALYST.value, "analyst-lead")
+    approver_headers = auth_headers(UserRole.APPROVER.value, "district-collector", "Farhan Aaqil")
 
     # -------------------------------------------------------------------------
     # Step 1: Ingestion & Snapshot

@@ -1,11 +1,9 @@
 """Integration tests for production passability, intelligence, and ingestion endpoints."""
 
-from fastapi.testclient import TestClient
-
 from app.api.scenarios import seed_canonical_scenario
-from app.main import app
+from tests.helpers import make_client
 
-client = TestClient(app)
+client = make_client()
 
 
 def test_passability_endpoint_returns_network_and_calibration():

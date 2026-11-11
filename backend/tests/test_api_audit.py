@@ -1,12 +1,10 @@
 """Unit and integration tests for the audit trail endpoint."""
 
-from fastapi.testclient import TestClient
-
 from app.domain.models import UserRole
-from app.main import app
 from app.security.auth import record_audit_event
+from tests.helpers import auth_headers, make_client
 
-client = TestClient(app)
+client = make_client()
 
 
 def test_audit_list_authorized_analyst():
@@ -21,10 +19,7 @@ def test_audit_list_authorized_analyst():
 
     response = client.get(
         "/api/v1/audit",
-        headers={
-            "X-User-Role": UserRole.ANALYST.value,
-            "X-User-Id": "analyst-1",
-        },
+        headers=auth_headers(UserRole.ANALYST.value, "analyst-1"),
     )
     assert response.status_code == 200
     events = response.json()
@@ -36,10 +31,7 @@ def test_audit_list_forbidden_field_analyst():
     """Verify field analyst role cannot view the audit ledger (403)."""
     response = client.get(
         "/api/v1/audit",
-        headers={
-            "X-User-Role": UserRole.FIELD_ANALYST.value,
-            "X-User-Id": "field-1",
-        },
+        headers=auth_headers(UserRole.FIELD_ANALYST.value, "field-1"),
     )
     assert response.status_code == 403
 
@@ -56,10 +48,7 @@ def test_audit_list_filtering():
 
     response = client.get(
         "/api/v1/audit?action=APPROVAL_SIGN_OFF&resource_type=plan",
-        headers={
-            "X-User-Role": UserRole.APPROVER.value,
-            "X-User-Id": "approver-lead",
-        },
+        headers=auth_headers(UserRole.APPROVER.value, "approver-lead"),
     )
     assert response.status_code == 200
     events = response.json()

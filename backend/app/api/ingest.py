@@ -3,12 +3,15 @@
 import hashlib
 from typing import Any
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from pydantic import BaseModel, Field
 
+from app.core.config import settings
+from app.domain.models import UserRole
 from app.ingestion.csv_parser import parse_road_edges_csv
 from app.ingestion.geojson_parser import parse_geojson_features
 from app.ingestion.quarantine import IngestionReport, QuarantinedRecord
+from app.security.auth import CurrentUser, record_audit_event, require_role
 
 router = APIRouter(prefix="/ingest", tags=["Ingestion"])
 
@@ -30,6 +33,9 @@ async def upload_network_data(
     file: UploadFile | None = File(default=None),
     raw_content: str | None = Form(default=None),
     file_name: str | None = Form(default=None),
+    current_user: CurrentUser = Depends(
+        require_role([UserRole.ANALYST, UserRole.FIELD_ANALYST, UserRole.ADMIN])
+    ),
 ) -> IngestUploadResponse:
     """Ingest, validate, and hash road network data without silent data dropping.
 
@@ -37,7 +43,13 @@ async def upload_network_data(
     """
     if file is not None:
         filename = file.filename or "uploaded_network.csv"
-        content_bytes = await file.read()
+        limit = settings.max_upload_bytes
+        content_bytes = await file.read(limit + 1)
+        if len(content_bytes) > limit:
+            raise HTTPException(
+                status_code=413,
+                detail=f"Upload exceeds the {limit // (1024 * 1024)} MB limit",
+            )
         try:
             content = content_bytes.decode("utf-8")
         except UnicodeDecodeError:
@@ -45,6 +57,11 @@ async def upload_network_data(
     elif raw_content is not None:
         filename = file_name or "payload.csv"
         content = raw_content
+        if len(content.encode("utf-8")) > settings.max_upload_bytes:
+            raise HTTPException(
+                status_code=413,
+                detail=f"Payload exceeds the {settings.max_upload_bytes // (1024 * 1024)} MB limit",
+            )
     else:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -61,7 +78,7 @@ async def upload_network_data(
     if lower_name.endswith(".geojson") or lower_name.endswith(".json"):
         try:
             valid_edges, report = parse_geojson_features(file_content=content, file_name=filename)
-        except Exception as exc:
+        except (ValueError, KeyError, TypeError) as exc:
             # Entire file malformed -> quarantine whole payload
             report.total_rows = 1
             report.quarantined_rows = 1
@@ -97,6 +114,19 @@ async def upload_network_data(
                 "bridge": bool(e.get("bridge", False)),
             }
         )
+
+    record_audit_event(
+        user_id=current_user.user_id,
+        action="INGEST_UPLOAD",
+        resource_type="network_snapshot",
+        resource_id=snapshot_hash,
+        details={
+            "file_name": filename,
+            "total_rows": report.total_rows,
+            "valid_rows": report.valid_rows,
+            "quarantined_rows": report.quarantined_rows,
+        },
+    )
 
     return IngestUploadResponse(
         file_name=filename,

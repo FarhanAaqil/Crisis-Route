@@ -26,14 +26,24 @@ from app.domain.models import (
     UserRole,
     VehicleRoutePlan,
 )
+from app.persistence.json_store import ListStore, ModelStore
 from app.security.auth import CurrentUser, record_audit_event, require_role
 
 router = APIRouter(prefix="/scenarios", tags=["Scenarios"])
 
-# In-memory storage for active scenarios and observations
-SCENARIO_STORE: dict[str, ScenarioDetail] = {}
-OBSERVATION_STORE: dict[str, list[ObservationResponse]] = {}
-PLAN_STORE: dict[str, PlanResponse] = {}
+_STATE_ROOT = settings.state_dir if settings.persist_state else None
+
+
+def _state_dir(name: str):
+    return None if _STATE_ROOT is None else _STATE_ROOT / name
+
+
+# Durable storage (JSON files under CRISISROUTE_STATE_DIR) for scenarios, plans and observations
+SCENARIO_STORE: ModelStore[ScenarioDetail] = ModelStore(ScenarioDetail, _state_dir("scenarios"))
+OBSERVATION_STORE: ListStore[ObservationResponse] = ListStore(
+    ObservationResponse, _state_dir("observations")
+)
+PLAN_STORE: ModelStore[PlanResponse] = ModelStore(PlanResponse, _state_dir("plans"))
 
 
 def _load_canonical_fixture() -> dict[str, Any]:
@@ -434,16 +444,16 @@ def seed_canonical_scenario() -> ScenarioDetail:
     data = _load_canonical_fixture()
     benchmarks = _get_benchmark_scenarios_data()
 
-    if data:
-        canonical_scen = ScenarioDetail(**data)
-        SCENARIO_STORE[str(canonical_scen.scenario_id)] = canonical_scen
-    else:
-        canonical_scen = ScenarioDetail(**benchmarks[0])
-        SCENARIO_STORE[str(canonical_scen.scenario_id)] = canonical_scen
+    canonical_scen = ScenarioDetail(**(data or benchmarks[0]))
+    # Seed only what is missing so restarts keep active plans and edits. The returned object is
+    # always a pristine copy, so experiments never inherit state mutated through the API.
+    if str(canonical_scen.scenario_id) not in SCENARIO_STORE:
+        SCENARIO_STORE[str(canonical_scen.scenario_id)] = canonical_scen.model_copy(deep=True)
 
     for b_data in benchmarks[1:]:
         scen = ScenarioDetail(**b_data)
-        SCENARIO_STORE[str(scen.scenario_id)] = scen
+        if str(scen.scenario_id) not in SCENARIO_STORE:
+            SCENARIO_STORE[str(scen.scenario_id)] = scen
 
     return canonical_scen
 
@@ -515,7 +525,8 @@ def list_observations(scenario_id: UUID) -> list[ObservationResponse]:
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Scenario {scenario_id} not found",
         )
-    return OBSERVATION_STORE.get(sid, [])
+    observations: list[ObservationResponse] = OBSERVATION_STORE.get(sid)
+    return observations
 
 
 @router.post(
@@ -539,9 +550,7 @@ def submit_observation(
         )
 
     obs = ObservationResponse(**payload.model_dump())
-    if sid not in OBSERVATION_STORE:
-        OBSERVATION_STORE[sid] = []
-    OBSERVATION_STORE[sid].append(obs)
+    OBSERVATION_STORE.append(sid, obs)
 
     record_audit_event(
         user_id=current_user.user_id,
@@ -645,6 +654,7 @@ def generate_mock_plan(
 
     PLAN_STORE[str(plan_id)] = plan
     scenario.active_plan_id = plan_id
+    SCENARIO_STORE.save(sid)
 
     record_audit_event(
         user_id=current_user.user_id,
@@ -680,7 +690,7 @@ def approve_or_reject_plan(
 
     if not payload.rationale or len(payload.rationale.strip()) < 10:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=422,
             detail="A written operational rationale of at least 10 characters is mandatory.",
         )
 
@@ -697,6 +707,7 @@ def approve_or_reject_plan(
     )
     plan.approval_state.reviewed_by = current_user.username
     plan.approval_state.rationale = payload.rationale
+    PLAN_STORE.save(pid)
 
     record_audit_event(
         user_id=current_user.user_id,
@@ -742,7 +753,7 @@ def approve_scenario(
 
     if not payload.rationale or len(payload.rationale.strip()) < 10:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=422,
             detail="A written operational rationale of at least 10 characters is mandatory.",
         )
 
@@ -755,6 +766,7 @@ def approve_scenario(
         )
         plan.approval_state.reviewed_by = current_user.username
         plan.approval_state.rationale = payload.rationale
+        PLAN_STORE.save(str(scenario.active_plan_id))
 
     record_audit_event(
         user_id=current_user.user_id,

@@ -1,6 +1,6 @@
+import { useAuth } from '../auth/AuthContext';
 import React from 'react';
 import { useApp } from '../context/AppContext';
-import { Role } from '../auth/guards';
 import { NavigationTab } from '../App';
 import { ThreeTacticalRadar } from './ThreeTacticalRadar';
 import {
@@ -40,9 +40,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
     activeScenario,
     setActiveScenarioId,
     activeRole,
-    setActiveRole,
+    userName,
     isOnline,
   } = useApp();
+  const { signOut } = useAuth();
 
   const navItems: Array<{
     id: NavigationTab;
@@ -228,27 +229,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
               {/* Role Selector */}
               <div className="space-y-1.5">
                 <div className="flex items-center justify-between text-[11px] text-palette-frost">
-                  <label htmlFor="sidebar-role-select" className="font-semibold flex items-center space-x-1">
+                  <span className="font-semibold flex items-center space-x-1">
                     <ShieldCheck className="w-3.5 h-3.5 text-palette-frost" />
                     <span>Security Clearance</span>
-                  </label>
+                  </span>
                   <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-md bg-palette-steel/60 text-palette-cream border border-palette-frost/30 font-mono">
                     {activeRole.replace('_', ' ')}
                   </span>
                 </div>
 
-                <select
-                  id="sidebar-role-select"
-                  aria-label="Active system role"
-                  value={activeRole}
-                  onChange={(e) => setActiveRole(e.target.value as Role)}
-                  className="w-full glass-input rounded-xl px-2.5 py-1.5 text-xs text-palette-cream font-medium focus:outline-none focus:ring-2 focus:ring-palette-frost"
-                >
-                  <option value="analyst" className="bg-palette-deep">Logistics Coordinator (Analyst)</option>
-                  <option value="field_analyst" className="bg-palette-deep">Field Scout (Telemetry)</option>
-                  <option value="approver" className="bg-palette-deep">Incident Lead Approver</option>
-                  <option value="admin" className="bg-palette-deep">System Administrator</option>
-                </select>
+                <div className="flex items-center justify-between gap-2 text-xs">
+                  <span className="font-semibold text-palette-cream truncate" title={userName}>
+                    {userName}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => signOut()}
+                    className="px-2.5 py-1 rounded-lg glass-card-subtle border border-palette-frost/25 text-palette-frost hover:text-palette-cream min-h-[32px]"
+                  >
+                    Sign out
+                  </button>
+                </div>
               </div>
 
               {/* Equity Floor Invariant Indicator */}

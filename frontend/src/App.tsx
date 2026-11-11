@@ -9,6 +9,8 @@ import { MapPreview } from './components/MapPreview';
 import { ThreeCorridorVisualizer } from './components/ThreeCorridorVisualizer';
 import { Sidebar } from './components/Sidebar';
 import { AppProvider, useApp } from './context/AppContext';
+import { AuthProvider, useAuth } from './auth/AuthContext';
+import { Login } from './pages/Login';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import {
   fetchPassability,
@@ -441,12 +443,20 @@ const AppContent: React.FC = () => {
   );
 };
 
-export const App: React.FC = () => {
+export const AppRoutes: React.FC = () => {
+  const { user } = useAuth();
+  if (!user) return <Login />;
   return (
     <AppProvider>
       <AppContent />
     </AppProvider>
   );
 };
+
+export const App: React.FC = () => (
+  <AuthProvider>
+    <AppRoutes />
+  </AuthProvider>
+);
 
 export default App;

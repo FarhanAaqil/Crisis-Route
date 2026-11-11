@@ -1,14 +1,12 @@
 """Unit and integration tests for CP-SAT equitable allocation and diagnostic explanation."""
 
-from fastapi.testclient import TestClient
-
 from app.api.scenarios import seed_canonical_scenario
 from app.domain.models import DemandNodeModel, ScenarioDetail
 from app.graph.build import build_scenario_corridor_graph
-from app.main import app
 from app.optimization.baseline import solve_proportional_baseline
 from app.optimization.diagnostics import diagnose_scenario_feasibility
 from app.optimization.model import solve_equitable_allocation
+from tests.helpers import auth_headers, make_client
 
 
 def _create_5_demand_scenario() -> ScenarioDetail:
@@ -98,8 +96,8 @@ def test_api_optimize_endpoint_and_export():
     scenario = _create_5_demand_scenario()
     sid = str(scenario.scenario_id)
 
-    client = TestClient(app)
-    headers = {"X-User-Role": "analyst", "X-User-Id": "analyst-001"}
+    client = make_client()
+    headers = auth_headers("analyst", "analyst-001")
 
     # 1. Run optimization
     opt_res = client.post(f"/api/v1/scenarios/{sid}/plans/optimize?mode=robust", headers=headers)

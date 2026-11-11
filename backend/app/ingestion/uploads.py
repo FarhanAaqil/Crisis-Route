@@ -70,7 +70,7 @@ class UploadRegistry:
             total_bytes += len(chunk)
             if total_bytes > MAX_UPLOAD_BYTES:
                 raise HTTPException(
-                    status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                    status_code=413,
                     detail=f"Upload exceeded maximum permitted size of {MAX_UPLOAD_BYTES} bytes.",
                 )
             hasher.update(chunk)

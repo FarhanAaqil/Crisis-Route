@@ -214,7 +214,7 @@ def get_scenario_passability(scenario_id: UUID) -> PassabilityResponse:
     g = build_scenario_corridor_graph(scenario)
 
     # Apply any dynamic observations stored for this scenario
-    observations = OBSERVATION_STORE.get(sid, [])
+    observations = OBSERVATION_STORE.get(sid)
     for obs in observations:
         g, _, _ = ObservationGraphManager.apply_observation_to_graph(
             base_graph=g,

@@ -1,11 +1,9 @@
 """Integration tests for FastAPI endpoints and mock vertical slice."""
 
-from fastapi.testclient import TestClient
-
 from app.domain.models import UserRole
-from app.main import app
+from tests.helpers import auth_headers, make_client
 
-client = TestClient(app)
+client = make_client()
 
 
 def test_health_endpoint():
@@ -58,11 +56,7 @@ def test_submit_observation():
         "notes": "Debris clearance in progress by local rescue teams",
     }
 
-    headers = {
-        "X-User-Id": "field-analyst-02",
-        "X-User-Role": UserRole.FIELD_ANALYST.value,
-        "X-Username": "Field Officer Rajesh",
-    }
+    headers = auth_headers(UserRole.FIELD_ANALYST.value, "field-analyst-02", "Field Officer Rajesh")
 
     post_resp = client.post(
         f"/api/v1/scenarios/{scenario_id}/observations",
@@ -81,11 +75,7 @@ def test_mock_vertical_slice_generation_and_approval():
     scenario_id = list_resp.json()[0]["scenario_id"]
 
     # 1. Analyst generates mock plan
-    gen_headers = {
-        "X-User-Id": "analyst-farhan",
-        "X-User-Role": UserRole.ANALYST.value,
-        "X-Username": "Farhan Aaqil",
-    }
+    gen_headers = auth_headers(UserRole.ANALYST.value, "analyst-farhan", "Farhan Aaqil")
     plan_resp = client.post(f"/api/v1/scenarios/{scenario_id}/plans", headers=gen_headers)
     assert plan_resp.status_code == 200
     plan = plan_resp.json()
@@ -97,11 +87,7 @@ def test_mock_vertical_slice_generation_and_approval():
     plan_id = plan["plan_id"]
 
     # 2. Unauthorized role attempting approval is rejected (403)
-    unauth_headers = {
-        "X-User-Id": "analyst-farhan",
-        "X-User-Role": UserRole.ANALYST.value,
-        "X-Username": "Farhan Aaqil",
-    }
+    unauth_headers = auth_headers(UserRole.ANALYST.value, "analyst-farhan", "Farhan Aaqil")
     fail_approve = client.post(
         f"/api/v1/scenarios/plans/{plan_id}/approval",
         json={"decision": "APPROVE", "rationale": "Attempting sign-off without approver role"},
@@ -110,11 +96,9 @@ def test_mock_vertical_slice_generation_and_approval():
     assert fail_approve.status_code == 403
 
     # 3. Incident Lead Approver approves with mandatory rationale
-    approver_headers = {
-        "X-User-Id": "lead-approver-01",
-        "X-User-Role": UserRole.APPROVER.value,
-        "X-Username": "Incident Commander Nair",
-    }
+    approver_headers = auth_headers(
+        UserRole.APPROVER.value, "lead-approver-01", "Incident Commander Nair"
+    )
     rationale_text = (
         "High priority water deliveries verified via alternate SH54 route with secondary escort."
     )

@@ -7,12 +7,10 @@ Verifies:
 4. Operational safety invariants are enforced across all endpoints.
 """
 
-from fastapi.testclient import TestClient
-
 from app.domain.models import UserRole
-from app.main import app
+from tests.helpers import auth_headers, make_client
 
-client = TestClient(app)
+client = make_client()
 
 
 def test_user_ready_gate_signoff_and_audit_trail():
@@ -27,10 +25,7 @@ def test_user_ready_gate_signoff_and_audit_trail():
     # 2. Field Analyst attempts sign-off -> Must be Forbidden (403)
     field_resp = client.post(
         f"/api/v1/scenarios/{scenario_id}/approve",
-        headers={
-            "X-User-Role": UserRole.FIELD_ANALYST.value,
-            "X-User-Id": "field-agent-99",
-        },
+        headers=auth_headers(UserRole.FIELD_ANALYST.value, "field-agent-99"),
         json={"rationale": "Field inspection confirmed single-lane passability."},
     )
     assert field_resp.status_code == 403
@@ -38,10 +33,7 @@ def test_user_ready_gate_signoff_and_audit_trail():
     # 3. Logistics Coordinator (Analyst) attempts sign-off -> Must be Forbidden (403)
     analyst_resp = client.post(
         f"/api/v1/scenarios/{scenario_id}/approve",
-        headers={
-            "X-User-Role": UserRole.ANALYST.value,
-            "X-User-Id": "analyst-coordinator-01",
-        },
+        headers=auth_headers(UserRole.ANALYST.value, "analyst-coordinator-01"),
         json={"rationale": "All demand nodes covered above alpha threshold."},
     )
     assert analyst_resp.status_code == 403
@@ -49,10 +41,7 @@ def test_user_ready_gate_signoff_and_audit_trail():
     # 4. Approver attempts sign-off without adequate rationale (< 10 chars) -> 422 Unprocessable
     short_rationale_resp = client.post(
         f"/api/v1/scenarios/{scenario_id}/approve",
-        headers={
-            "X-User-Role": UserRole.APPROVER.value,
-            "X-User-Id": "incident-lead-42",
-        },
+        headers=auth_headers(UserRole.APPROVER.value, "incident-lead-42"),
         json={"rationale": "ok"},
     )
     assert short_rationale_resp.status_code == 422
@@ -63,10 +52,7 @@ def test_user_ready_gate_signoff_and_audit_trail():
     )
     approver_resp = client.post(
         f"/api/v1/scenarios/{scenario_id}/approve",
-        headers={
-            "X-User-Role": UserRole.APPROVER.value,
-            "X-User-Id": "incident-lead-42",
-        },
+        headers=auth_headers(UserRole.APPROVER.value, "incident-lead-42"),
         json={"rationale": valid_rationale},
     )
     assert approver_resp.status_code == 200
@@ -78,10 +64,7 @@ def test_user_ready_gate_signoff_and_audit_trail():
     # 6. Verify audit trail reflects the sign-off event
     audit_resp = client.get(
         "/api/v1/audit?action=PLAN_APPROVAL",
-        headers={
-            "X-User-Role": UserRole.APPROVER.value,
-            "X-User-Id": "incident-lead-42",
-        },
+        headers=auth_headers(UserRole.APPROVER.value, "incident-lead-42"),
     )
     assert audit_resp.status_code == 200
     events = audit_resp.json()

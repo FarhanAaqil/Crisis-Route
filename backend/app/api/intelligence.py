@@ -206,7 +206,7 @@ def get_route_alternatives(
         raw_routes = find_k_diverse_alternatives(g, source=origin_id, target=destination_id, k=k)
     except Exception as e:
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            status_code=422,
             detail=f"Failed to find route alternatives: {e}",
         ) from e
 
