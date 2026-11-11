@@ -95,4 +95,7 @@ jobs:
             sleep 2
           done
           curl -fsS http://127.0.0.1:8000/ | grep -qi "<div id=\"root\""
-          docker logs cr
+
+      - name: Container logs
+        if: always()
+        run: docker logs cr
