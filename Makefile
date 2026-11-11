@@ -1,53 +1,54 @@
-# ========================================================
-# CrisisRoute Project Makefile
-# Humanitarian Logistics & Equitable Multi-Commodity Routing
-# ========================================================
+# CrisisRoute developer shortcuts.
+# Works on Linux, macOS and Windows (Git Bash). Override PYTHON to use a specific interpreter.
+
+ifeq ($(OS),Windows_NT)
+VENV_BIN := .venv/Scripts
+else
+VENV_BIN := .venv/bin
+endif
 
 PYTHON ?= python
-PYTEST ?= pytest
-RUFF ?= ruff
-MYPY ?= mypy
+VPY := $(VENV_BIN)/python
 NPM ?= npm
 
-.PHONY: all setup install lint test bench reproduce run clean docker-build docker-up
+.PHONY: all setup lint format test bench reproduce run clean docker-build docker-up
 
 all: lint test
 
 setup:
 	$(PYTHON) -m venv .venv
-	.venv/Scripts/python -m pip install --upgrade pip
-	.venv/Scripts/pip install -e backend/
+	$(VPY) -m pip install --upgrade pip
+	$(VPY) -m pip install -e "backend/[dev]"
 	cd frontend && $(NPM) install
 
-install: setup
-
 lint:
-	$(RUFF) check backend experiments
-	$(MYPY) --config-file backend/pyproject.toml backend experiments
+	$(VPY) -m ruff check backend experiments
+	$(VPY) -m ruff format --check backend experiments
+	$(VPY) -m mypy --config-file backend/pyproject.toml backend/app experiments
 	cd frontend && $(NPM) run typecheck
 
+format:
+	$(VPY) -m ruff format backend experiments
+	$(VPY) -m ruff check --fix backend experiments
+
 test:
-	$(PYTEST)
+	$(VPY) -m pytest
 	cd frontend && $(NPM) run test
 
 bench:
-	$(PYTHON) -m experiments.bench.manifest
+	$(VPY) -m experiments.bench.manifest
 
 reproduce:
-	$(PYTHON) experiments/reproduce_all.py
+	$(VPY) experiments/reproduce_all.py
 
 run:
-	$(PYTHON) -m uvicorn app.main:app --app-dir backend --reload --port 8000
+	$(VPY) -m uvicorn app.main:app --app-dir backend --reload --port 8000
 
 docker-build:
 	docker build -t crisisroute:latest .
 
 docker-up:
-	docker compose up -d
+	docker compose up -d --build
 
 clean:
-	find . -type d -name "__pycache__" -exec rm -rf {} +
-	find . -type d -name ".pytest_cache" -exec rm -rf {} +
-	find . -type d -name ".mypy_cache" -exec rm -rf {} +
-	find . -type d -name ".ruff_cache" -exec rm -rf {} +
-
+	$(PYTHON) -c "import pathlib, shutil; [shutil.rmtree(p, ignore_errors=True) for n in ('__pycache__', '.pytest_cache', '.mypy_cache', '.ruff_cache') for p in pathlib.Path('.').rglob(n) if '.venv' not in p.parts and 'node_modules' not in p.parts]"
