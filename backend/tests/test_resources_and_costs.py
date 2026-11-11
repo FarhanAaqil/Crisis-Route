@@ -1,7 +1,6 @@
 """Unit tests for edge cost parameterization and scenario resource management."""
 
 import networkx as nx
-from fastapi.testclient import TestClient
 
 from app.api.scenarios import seed_canonical_scenario
 from app.graph.costs import (
@@ -11,7 +10,7 @@ from app.graph.costs import (
     summarize_path,
     sweep_risk_sensitivity,
 )
-from app.main import app
+from tests.helpers import auth_headers, make_client
 
 
 def test_edge_impedance_monotonicity():
@@ -77,8 +76,8 @@ def test_scenario_resource_endpoints():
     scenario = seed_canonical_scenario()
     sid = str(scenario.scenario_id)
 
-    client = TestClient(app)
-    headers = {"X-User-Role": "analyst", "X-User-Id": "analyst-001"}
+    client = make_client()
+    headers = auth_headers("analyst", "analyst-001")
 
     # 1. Get resources
     res = client.get(f"/api/v1/scenarios/{sid}/resources")

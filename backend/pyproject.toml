@@ -9,7 +9,6 @@ dependencies = [
     "uvicorn>=0.30.0",
     "pydantic>=2.9.0",
     "pydantic-settings>=2.4.0",
-    "sqlalchemy>=2.0.30",
     "networkx>=3.3",
     "numpy>=1.26.0",
     "scipy>=1.13.0",
@@ -18,7 +17,6 @@ dependencies = [
     "jsonschema>=4.23.0",
     "python-multipart>=0.0.9",
     "pyjwt>=2.9.0",
-    "passlib[bcrypt]>=1.7.4",
 ]
 
 [project.optional-dependencies]
@@ -29,8 +27,6 @@ dev = [
     "ruff>=0.6.0",
     "mypy>=1.11.0",
     "types-jsonschema>=4.23.0.20240813",
-    "types-passlib>=1.7.7.20240819",
-    "types-pyjwt>=1.7.1",
 ]
 
 [build-system]

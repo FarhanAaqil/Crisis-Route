@@ -47,7 +47,7 @@ def optimize_allocation_plan(
     g = build_scenario_corridor_graph(scenario)
 
     # 2. Replay active scenario observations onto the graph
-    obs_list = OBSERVATION_STORE.get(sid, [])
+    obs_list = OBSERVATION_STORE.get(sid)
     for obs in obs_list:
         g, _, _ = ObservationGraphManager.apply_observation_to_graph(g, obs)
 
@@ -72,13 +72,14 @@ def optimize_allocation_plan(
         if plan_opt is None:
             # Return clear diagnostic message with HTTP 422
             raise HTTPException(
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                status_code=422,
                 detail=diag,
             )
         plan = plan_opt
 
     PLAN_STORE[str(plan.plan_id)] = plan
     scenario.active_plan_id = plan.plan_id
+    SCENARIO_STORE.save(sid)
 
     record_audit_event(
         user_id=current_user.user_id,

@@ -1,14 +1,27 @@
 import { describe, it, expect } from 'vitest';
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import { App } from '../src/App';
 import { Dashboard } from '../src/pages/Dashboard';
 import { ObservationEditor } from '../src/components/ObservationEditor';
 import { RoleGuard, ApproverOnlyGuard } from '../src/auth/guards';
+import { AuthProvider } from '../src/auth/AuthContext';
+import { AppRoutes } from '../src/App';
+import type { Session } from '../src/auth/session';
+
+const analystSession: Session = {
+  token: 'test-token',
+  expiresAt: Date.now() + 60_000,
+  user: { user_id: 'analyst-001', username: 'analyst', display_name: 'Logistics Analyst', role: 'analyst' },
+};
+
+const renderShell = () =>
+  renderToString(
+    React.createElement(AuthProvider, { initialSession: analystSession }, React.createElement(AppRoutes))
+  );
 
 describe('WCAG 2.1 AA Accessibility & Viewport Conformance', () => {
   it('renders application shell with WAI-ARIA compliant tablist and tabs', () => {
-    const html = renderToString(React.createElement(App));
+    const html = renderShell();
 
     // Tablist navigation container
     expect(html).toContain('role="tablist"');
@@ -29,8 +42,14 @@ describe('WCAG 2.1 AA Accessibility & Viewport Conformance', () => {
     expect(html).toContain('min-h-[44px]');
   });
 
+  it('shows the sign-in form when no session exists', () => {
+    const html = renderToString(React.createElement(AuthProvider, null, React.createElement(AppRoutes)));
+    expect(html).toContain('Sign in');
+    expect(html).toContain('current-password');
+  });
+
   it('verifies mandatory operational safety invariant disclaimer is displayed prominently', () => {
-    const html = renderToString(React.createElement(App));
+    const html = renderShell();
     expect(html).toContain('Safety Invariant');
     expect(html).toContain(
       'CrisisRoute provides probabilistic decision support under road uncertainty. It does not certify route safety'

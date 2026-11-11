@@ -2,10 +2,10 @@
 
 from fastapi import APIRouter, Depends, Query
 
+from app.domain.audit import AuditEvent
 from app.domain.models import UserRole
+from app.persistence.audit_ledger import LEDGER
 from app.security.auth import (
-    AUDIT_TRAIL,
-    AuditEvent,
     CurrentUser,
     require_role,
 )
@@ -24,7 +24,7 @@ def list_audit_events(
     ),
 ) -> list[AuditEvent]:
     """Retrieve filtered operational audit logs in reverse chronological order."""
-    events = list(reversed(AUDIT_TRAIL))
+    events = list(reversed(LEDGER.events()))
 
     if action:
         events = [e for e in events if e.action.upper() == action.upper()]
@@ -34,3 +34,16 @@ def list_audit_events(
         events = [e for e in events if e.user_id == user_id]
 
     return events[:limit]
+
+
+@router.get("/verify")
+def verify_audit_chain(
+    current_user: CurrentUser = Depends(require_role([UserRole.APPROVER, UserRole.ADMIN])),
+) -> dict[str, object]:
+    """Recompute the hash chain and report whether the ledger is intact."""
+    events = LEDGER.events()
+    return {
+        "intact": LEDGER.verify(),
+        "event_count": len(events),
+        "head_hash": events[-1].event_hash if events else None,
+    }

@@ -6,6 +6,7 @@ import {
   PlanDetail,
 } from '../api/client';
 import { ToastMessage, ToastContainer } from '../components/Toast';
+import { useAuth } from '../auth/AuthContext';
 
 export type UserRole = 'analyst' | 'field_analyst' | 'approver' | 'admin';
 
@@ -15,7 +16,7 @@ export interface AppContextValue {
   activeScenario: ScenarioSummary | null;
   setActiveScenarioId: (id: string) => void;
   activeRole: UserRole;
-  setActiveRole: (role: UserRole) => void;
+  userName: string;
   activePlan: PlanDetail | null;
   setActivePlan: (plan: PlanDetail | null) => void;
   isLoadingScenarios: boolean;
@@ -38,7 +39,7 @@ const defaultContextValue: AppContextValue = {
   activeScenario: defaultScenario,
   setActiveScenarioId: () => {},
   activeRole: 'analyst',
-  setActiveRole: () => {},
+  userName: '',
   activePlan: null,
   setActivePlan: () => {},
   isLoadingScenarios: false,
@@ -52,7 +53,9 @@ const AppContext = createContext<AppContextValue | null>(null);
 export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [scenarios, setScenarios] = useState<ScenarioSummary[]>([defaultScenario]);
   const [activeScenarioId, setActiveScenarioId] = useState<string>(defaultScenario.scenario_id);
-  const [activeRole, setActiveRole] = useState<UserRole>('analyst');
+  const { user } = useAuth();
+  const activeRole: UserRole = user?.role ?? 'analyst';
+  const userName = user?.display_name ?? '';
   const [activePlan, setActivePlan] = useState<PlanDetail | null>(null);
   const [isLoadingScenarios, setIsLoadingScenarios] = useState<boolean>(true);
   const [isOnline, setIsOnline] = useState<boolean>(true);
@@ -128,7 +131,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
         activeScenario,
         setActiveScenarioId,
         activeRole,
-        setActiveRole,
+        userName,
         activePlan,
         setActivePlan,
         isLoadingScenarios,

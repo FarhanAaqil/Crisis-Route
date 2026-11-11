@@ -1,6 +1,14 @@
 /**
  * Typed API Client for CrisisRoute Backend
  */
+import { getToken, UNAUTHORIZED_EVENT, SessionUser } from '../auth/session';
+
+export interface LoginResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  user: SessionUser;
+}
 
 export interface ScenarioSummary {
   scenario_id: string;
@@ -165,7 +173,9 @@ export interface AuditEventRecord {
   action: string;
   resource_type: string;
   resource_id: string;
-  details: Record<string, any>;
+  details: Record<string, unknown>;
+  prev_hash?: string;
+  event_hash?: string;
 }
 
 export interface PassabilityEdgeItem {
@@ -279,56 +289,106 @@ export interface ObservationResponse {
   observed_at: string;
 }
 
+export interface PreviewEdge {
+  edge_id: string;
+  road_class: string;
+  length_m: number;
+  free_flow_sec: number;
+  passability_prob: number;
+  bridge: boolean;
+}
+
+export interface QuarantineRecord {
+  quarantine_id: string;
+  file_name: string;
+  row_index: number;
+  raw_data: Record<string, unknown>;
+  errors: Array<{ column: string; error_code: string; message: string; invalid_value?: unknown }>;
+}
+
+export interface ScenarioApprovalResult {
+  status: string;
+  approver_id: string;
+  rationale: string;
+  scenario_id: string;
+  plan_id: string | null;
+}
+
 export interface IngestUploadResponse {
   file_name: string;
   snapshot_hash: string;
   total_rows: number;
   valid_rows: number;
   quarantined_rows: number;
-  quarantine_records: any[];
-  valid_edges_preview: any[];
+  quarantine_records: QuarantineRecord[];
+  valid_edges_preview: PreviewEdge[];
 }
 
-const BASE_URL = (import.meta as any).env?.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api/v1';
+const BASE_URL: string = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+
+/** fetch wrapper that attaches the bearer token and signals the app when the session lapses. */
+async function apiFetch(url: string, init: RequestInit = {}): Promise<Response> {
+  const headers = new Headers(init.headers);
+  const token = getToken();
+  if (token) headers.set('Authorization', `Bearer ${token}`);
+  const res = await fetch(url, { ...init, headers });
+  if (res.status === 401 && token) {
+    window.dispatchEvent(new Event(UNAUTHORIZED_EVENT));
+  }
+  return res;
+}
+
+export async function login(username: string, password: string): Promise<LoginResponse> {
+  const res = await apiFetch(`${BASE_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password }),
+  });
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    throw new Error(typeof body.detail === 'string' ? body.detail : 'Sign-in failed');
+  }
+  return res.json();
+}
 
 export async function fetchHealth(): Promise<SystemHealth> {
-  const res = await fetch(`${BASE_URL}/health`);
+  const res = await apiFetch(`${BASE_URL}/health`);
   if (!res.ok) throw new Error('Health check failed');
   return res.json();
 }
 
 export async function fetchScenarios(): Promise<ScenarioSummary[]> {
-  const res = await fetch(`${BASE_URL}/scenarios`);
+  const res = await apiFetch(`${BASE_URL}/scenarios`);
   if (!res.ok) throw new Error('Failed to fetch scenarios');
   return res.json();
 }
 
 export async function fetchScenarioDetail(scenarioId: string): Promise<ScenarioDetail> {
-  const res = await fetch(`${BASE_URL}/scenarios/${scenarioId}`);
+  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}`);
   if (!res.ok) throw new Error(`Failed to fetch scenario ${scenarioId}`);
   return res.json();
 }
 
 export async function fetchScenarioResources(scenarioId: string): Promise<ScenarioResourcesResponse> {
-  const res = await fetch(`${BASE_URL}/scenarios/${scenarioId}/resources`);
+  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/resources`);
   if (!res.ok) throw new Error('Failed to fetch scenario resources');
   return res.json();
 }
 
 export async function fetchPassability(scenarioId: string): Promise<PassabilityResponse> {
-  const res = await fetch(`${BASE_URL}/scenarios/${scenarioId}/passability`);
+  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/passability`);
   if (!res.ok) throw new Error('Failed to fetch road passability data');
   return res.json();
 }
 
 export async function fetchVoiRankings(scenarioId: string, topK: number = 5): Promise<VoiRankingsResponse> {
-  const res = await fetch(`${BASE_URL}/scenarios/${scenarioId}/voi-rankings?top_k=${topK}`);
+  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/voi-rankings?top_k=${topK}`);
   if (!res.ok) throw new Error('Failed to fetch Value-of-Information rankings');
   return res.json();
 }
 
 export async function fetchScenarioFan(scenarioId: string, numSamples: number = 50): Promise<ScenarioFanResponse> {
-  const res = await fetch(`${BASE_URL}/scenarios/${scenarioId}/scenario-fan?num_samples=${numSamples}`);
+  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/scenario-fan?num_samples=${numSamples}`);
   if (!res.ok) throw new Error('Failed to fetch stochastic scenario fan');
   return res.json();
 }
@@ -345,17 +405,15 @@ export async function fetchRouteAlternatives(
   )}&destination_id=${encodeURIComponent(destinationId)}&k=${k}${
     vehicleId ? `&vehicle_id=${encodeURIComponent(vehicleId)}` : ''
   }`;
-  const res = await fetch(url);
+  const res = await apiFetch(url);
   if (!res.ok) throw new Error('Failed to fetch route alternatives');
   return res.json();
 }
 
 export async function generatePlan(scenarioId: string): Promise<PlanDetail> {
-  const res = await fetch(`${BASE_URL}/scenarios/${scenarioId}/plans`, {
+  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/plans`, {
     method: 'POST',
     headers: {
-      'X-User-Role': 'analyst',
-      'X-User-Id': 'analyst-frontend',
     },
   });
   if (!res.ok) throw new Error('Failed to generate relief plan');
@@ -366,11 +424,9 @@ export async function optimizePlan(
   scenarioId: string,
   mode: 'robust' | 'baseline' = 'robust'
 ): Promise<PlanDetail> {
-  const res = await fetch(`${BASE_URL}/scenarios/${scenarioId}/plans/optimize?mode=${mode}`, {
+  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/plans/optimize?mode=${mode}`, {
     method: 'POST',
     headers: {
-      'X-User-Role': 'analyst',
-      'X-User-Id': 'analyst-frontend',
     },
   });
   if (!res.ok) {
@@ -381,7 +437,7 @@ export async function optimizePlan(
 }
 
 export async function fetchActivePlan(scenarioId: string): Promise<PlanDetail> {
-  const res = await fetch(`${BASE_URL}/scenarios/${scenarioId}/plans/active`);
+  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/plans/active`);
   if (!res.ok) throw new Error('Failed to fetch active relief plan');
   return res.json();
 }
@@ -390,15 +446,12 @@ export async function submitPlanApproval(
   planId: string,
   decision: 'APPROVE' | 'REJECT',
   rationale: string,
-  approverName: string
+  _approverName?: string
 ): Promise<PlanDetail> {
-  const res = await fetch(`${BASE_URL}/scenarios/plans/${planId}/approval`, {
+  const res = await apiFetch(`${BASE_URL}/scenarios/plans/${planId}/approval`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-User-Role': 'approver',
-      'X-User-Id': 'lead-approver',
-      'X-Username': approverName,
     },
     body: JSON.stringify({ decision, rationale }),
   });
@@ -413,15 +466,12 @@ export async function approveScenarioDirectly(
   scenarioId: string,
   decision: 'APPROVE' | 'REJECT',
   rationale: string,
-  approverId: string = 'lead-approver'
-): Promise<any> {
-  const res = await fetch(`${BASE_URL}/scenarios/${scenarioId}/approve`, {
+  _approverId?: string
+): Promise<ScenarioApprovalResult> {
+  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/approve`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-User-Role': 'approver',
-      'X-User-Id': approverId,
-      'X-Username': approverId,
     },
     body: JSON.stringify({ decision, rationale }),
   });
@@ -433,7 +483,7 @@ export async function approveScenarioDirectly(
 }
 
 export async function fetchObservations(scenarioId: string): Promise<ObservationResponse[]> {
-  const res = await fetch(`${BASE_URL}/scenarios/${scenarioId}/observations`);
+  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/observations`);
   if (!res.ok) throw new Error('Failed to fetch observations');
   return res.json();
 }
@@ -447,14 +497,12 @@ export async function submitObservation(
     source_credibility: number;
     notes?: string;
   },
-  role: string = 'field_analyst'
+  _role?: string
 ): Promise<ObservationResponse> {
-  const res = await fetch(`${BASE_URL}/scenarios/${scenarioId}/observations`, {
+  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/observations`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'X-User-Role': role,
-      'X-User-Id': `user-${role}`,
     },
     body: JSON.stringify(payload),
   });
@@ -466,7 +514,7 @@ export async function submitObservation(
 }
 
 export async function uploadNetworkData(formData: FormData): Promise<IngestUploadResponse> {
-  const res = await fetch(`${BASE_URL}/ingest/upload`, {
+  const res = await apiFetch(`${BASE_URL}/ingest/upload`, {
     method: 'POST',
     body: formData,
   });
@@ -477,18 +525,16 @@ export async function uploadNetworkData(formData: FormData): Promise<IngestUploa
   return res.json();
 }
 
-export async function exportPlan(scenarioId: string, planId: string): Promise<any> {
-  const res = await fetch(`${BASE_URL}/scenarios/${scenarioId}/plans/${planId}/export`);
+export async function exportPlan(scenarioId: string, planId: string): Promise<Record<string, unknown>> {
+  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/plans/${planId}/export`);
   if (!res.ok) throw new Error('Export plan failed');
   return res.json();
 }
 
 export async function fetchAuditLogs(limit: number = 100, actionFilter?: string): Promise<AuditEventRecord[]> {
   const url = `${BASE_URL}/audit?limit=${limit}${actionFilter ? `&action=${encodeURIComponent(actionFilter)}` : ''}`;
-  const res = await fetch(url, {
+  const res = await apiFetch(url, {
     headers: {
-      'X-User-Role': 'analyst',
-      'X-User-Id': 'analyst-frontend',
     },
   });
   if (!res.ok) throw new Error('Failed to fetch audit trail');

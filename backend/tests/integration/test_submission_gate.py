@@ -2,16 +2,14 @@
 
 from pathlib import Path
 
-from fastapi.testclient import TestClient
-
 from app.api.scenarios import SCENARIO_STORE
 from app.domain.models import UserRole
 from app.graph.build import build_scenario_corridor_graph
 from app.graph.costs import compute_edge_impedance
-from app.main import app
 from app.optimization.recourse import solve_two_stage_recourse
+from tests.helpers import auth_headers, make_client
 
-client = TestClient(app)
+client = make_client()
 
 
 def test_submission_gate_all_phases_verified():
@@ -62,10 +60,7 @@ def test_submission_gate_all_phases_verified():
     # =========================================================================
     alloc_resp = client.post(
         f"/api/v1/scenarios/{scenario_id}/plans/optimize",
-        headers={
-            "X-User-Role": UserRole.ANALYST.value,
-            "X-User-Id": "analyst-lead",
-        },
+        headers=auth_headers(UserRole.ANALYST.value, "analyst-lead"),
     )
     assert alloc_resp.status_code == 201
     alloc_data = alloc_resp.json()
@@ -106,10 +101,7 @@ def test_submission_gate_all_phases_verified():
     # Verify Incident Lead sign-off governance
     signoff_resp = client.post(
         f"/api/v1/scenarios/{scenario_id}/approve",
-        headers={
-            "X-User-Role": UserRole.APPROVER.value,
-            "X-User-Id": "incident-lead-final-signoff",
-        },
+        headers=auth_headers(UserRole.APPROVER.value, "incident-lead-final-signoff"),
         json={
             "rationale": "Comprehensive Phase 8 submission gate verification and field sign-off."
         },
@@ -120,10 +112,7 @@ def test_submission_gate_all_phases_verified():
     # Verify audit ledger recorded the final sign-off
     audit_resp = client.get(
         "/api/v1/audit?action=PLAN_APPROVAL",
-        headers={
-            "X-User-Role": UserRole.APPROVER.value,
-            "X-User-Id": "incident-lead-final-signoff",
-        },
+        headers=auth_headers(UserRole.APPROVER.value, "incident-lead-final-signoff"),
     )
     assert audit_resp.status_code == 200
     assert any(e["user_id"] == "incident-lead-final-signoff" for e in audit_resp.json())
