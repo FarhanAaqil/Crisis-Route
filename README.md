@@ -9,6 +9,36 @@ CrisisRoute is a decision-support tool for post-disaster relief logistics. It es
 
 > **Safety notice.** CrisisRoute provides probabilistic decision support under road uncertainty. It does not certify route safety or replace ground situational reports.
 
+## Demo
+
+A walkthrough of one operation in the running app (Kerala monsoon corridor, development demo accounts).
+
+**1. Sign in.** Each operator gets a role that decides what they can do.
+
+![Sign-in](docs/screenshots/login.png)
+
+**2. Overview and sign-off.** The analyst generated a plan and submitted it. The Incident Lead sees the workflow progress, the key numbers from the API, and the approval form. Approve stays disabled until a written rationale of at least 10 characters is entered, and the plan's author is told they cannot approve their own plan.
+
+![Overview and sign-off](docs/screenshots/dashboard-signoff.png)
+
+**3. Passability and risk.** Every road link shows its estimated chance of being passable, in a 3D view or on a map.
+
+![Passability map](docs/screenshots/passability-map.png)
+
+**4. Field observations.** Field analysts search for a road link and file a report. The estimate for that link updates straight away and any existing plan becomes stale.
+
+![Field observations](docs/screenshots/observations.png)
+
+**5. Resource allocation.** The solver result, the uncertainty fan across sampled hazard worlds, the plan loss comparison and which road to inspect next.
+
+![Resource allocation](docs/screenshots/allocation.png)
+
+**6. Audit trail.** Every action is recorded in a hash-chained ledger. Approvers see a badge confirming the chain is intact.
+
+![Audit trail](docs/screenshots/audit.png)
+
+To reproduce the demo yourself: sign in as `field` and file a report, sign in as `analyst` and run the optimizer then submit, sign in as `approver` and approve, then open the audit trail (password for all demo accounts is `crisisroute-demo`).
+
 ## How it works
 
 ```
