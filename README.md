@@ -33,7 +33,7 @@ CrisisRoute is a decision-support tool for post-disaster relief logistics. It es
 
 ## What the results do and do not show
 
-Everything below is produced by `python experiments/reproduce_all.py` on a **synthetic** benchmark (CrisisBench-mini: 12 generated hazard events across Indian corridors) and three seeded corridors (Kerala, Uttarakhand, Assam). It is evidence that the methods behave as designed, not a field validation.
+Everything below is produced by `make reproduce` (`PYTHONPATH=backend:. python -m experiments.reproduce_all`) on a **synthetic** benchmark (CrisisBench-mini: 12 generated hazard events across Indian corridors) and three seeded corridors (Kerala, Uttarakhand, Assam). It is evidence that the methods behave as designed, not a field validation.
 
 | Check | Baseline | CrisisRoute | Test |
 |---|---|---|---|
