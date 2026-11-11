@@ -34,6 +34,10 @@
       "type": "string",
       "format": "date-time"
     },
+    "generated_by": {
+      "type": ["string", "null"],
+      "description": "User id of the analyst who generated the plan (cannot also approve it)"
+    },
     "solver_status": {
       "type": "string",
       "enum": ["OPTIMAL", "FEASIBLE", "NON_OPTIMAL_INCUMBENT", "INFEASIBLE", "MODEL_INVALID"]
@@ -49,6 +53,9 @@
         "required": ["vehicle_id", "chosen_path", "survival_probability", "estimated_travel_time_min", "alternative_paths"],
         "properties": {
           "vehicle_id": { "type": "string" },
+          "depot_id": { "type": ["string", "null"] },
+          "destination_node_id": { "type": ["string", "null"] },
+          "payload_kg": { "type": ["number", "null"], "minimum": 0 },
           "chosen_path": {
             "type": "array",
             "items": { "type": "string" }

@@ -9,6 +9,7 @@ from uuid import uuid4
 import networkx as nx
 from ortools.sat.python import cp_model
 
+from app.domain.groups import get_vulnerability_weight
 from app.domain.models import (
     AllocationItem,
     ApprovalRecord,
@@ -20,11 +21,8 @@ from app.domain.models import (
     VehicleRoutePlan,
 )
 from app.graph.routing import find_shortest_path
-from app.optimization.objective import (
-    equity_evaluation_to_dict,
-    evaluate_equity,
-    get_vulnerability_weight,
-)
+from app.optimization.floors import add_group_floors
+from app.optimization.objective import equity_evaluation_to_dict, evaluate_equity
 from app.optimization.scenarios_sampler import sample_hazard_scenarios
 
 
@@ -170,14 +168,7 @@ def solve_two_stage_recourse(
 
     # Protected Group Alpha-Floor (Enforced on Stage 1 Plan)
     alpha_floor = scenario.equity_parameters.min_group_service_floor_alpha
-    if alpha_floor > 0.0:
-        for n in demand_nodes:
-            if n.vulnerable_group.lower() != "general_population":
-                tot_req = sum(n.demand.values())
-                floor_target = int(math.floor(alpha_floor * tot_req))
-                all_allocs = [var for (_, nid, _, _), var in x_vars.items() if nid == n.id]
-                if all_allocs and floor_target > 0:
-                    model.add(sum(all_allocs) >= floor_target)
+    add_group_floors(model, scenario, x_vars)
 
     # Objective: Stage 1 dispatch cost + Average Stage 2 Recourse Deprivation Penalty
     objective_terms: list[Any] = []
@@ -215,7 +206,7 @@ def solve_two_stage_recourse(
     # Extract allocations
     allocations: list[AllocationItem] = []
     deliveries_by_node: dict[str, dict[str, int]] = {n.id: {} for n in demand_nodes}
-    active_pairs: dict[str, tuple[str, str]] = {}
+    payload_kg: dict[tuple[str, str, str], float] = {}
 
     for (d_id, n_id, c_id, v_id), x_var in x_vars.items():
         val = solver.value(x_var)
@@ -229,15 +220,21 @@ def solve_two_stage_recourse(
                 )
             )
             deliveries_by_node[n_id][c_id] = deliveries_by_node[n_id].get(c_id, 0) + val
-            active_pairs[v_id] = (d_id, n_id)
+            trip_key = (v_id, d_id, n_id)
+            payload_kg[trip_key] = payload_kg.get(trip_key, 0.0) + val * commodity_weights.get(
+                c_id, 1
+            )
 
-    # Vehicle routes
+    # Vehicle routes: one entry per trip so no leg of a multi-stop vehicle is dropped
     vehicle_routes: list[VehicleRoutePlan] = []
-    for v_id, (d_id, n_id) in active_pairs.items():
-        node_p, edge_p, t_min, p_surv = corridor_routes[(d_id, n_id)]
+    for (v_id, d_id, n_id), kg in sorted(payload_kg.items()):
+        _node_p, edge_p, t_min, p_surv = corridor_routes[(d_id, n_id)]
         vehicle_routes.append(
             VehicleRoutePlan(
                 vehicle_id=v_id,
+                depot_id=d_id,
+                destination_node_id=n_id,
+                payload_kg=round(kg, 1),
                 chosen_path=edge_p,
                 survival_probability=round(p_surv, 4),
                 estimated_travel_time_min=round(t_min, 2),

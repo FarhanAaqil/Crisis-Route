@@ -7,11 +7,14 @@ import networkx as nx
 from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import BaseModel
 
-from app.api.scenarios import PLAN_STORE, SCENARIO_STORE
-from app.domain.models import ReconnaissanceRecommendation
+from app.api.scenarios import OBSERVATION_STORE, PLAN_STORE, SCENARIO_STORE
+from app.domain.models import ReconnaissanceRecommendation, ScenarioDetail
 from app.graph.alternatives import find_k_diverse_alternatives
-from app.graph.build import build_scenario_corridor_graph
-from app.optimization.scenarios_sampler import sample_hazard_scenarios
+from app.graph.live import build_live_graph
+from app.optimization.evaluation import evaluate_plan_under_samples
+from app.optimization.model import solve_equitable_allocation
+from app.optimization.recourse import solve_two_stage_recourse
+from app.optimization.scenarios_sampler import ScenarioSampleBundle, sample_hazard_scenarios
 from app.optimization.voi import rank_reconnaissance_corridors
 
 router = APIRouter(prefix="/scenarios/{scenario_id}", tags=["Intelligence"])
@@ -77,7 +80,7 @@ def get_voi_rankings(
         )
 
     scenario = SCENARIO_STORE[sid]
-    g = build_scenario_corridor_graph(scenario)
+    g = build_live_graph(scenario, OBSERVATION_STORE.get(sid))
 
     # If an active plan exists, gather its traversed edge paths
     active_paths: list[list[str]] = []
@@ -113,6 +116,47 @@ def get_voi_rankings(
     )
 
 
+_RISK_CACHE: dict[tuple[str, str, int, int], tuple[float, float, float]] = {}
+
+
+def _plan_risk_comparison(
+    scenario: ScenarioDetail,
+    g: nx.DiGraph,
+    bundle: ScenarioSampleBundle,
+    sid: str,
+) -> tuple[float, float, float]:
+    """Expected deprivation of the nominal plan vs the recourse plan, plus the recourse CVaR(95).
+
+    Both plans are scored on the same sampled worlds. Results are cached per scenario version
+    and observation count because the two optimizations take a few seconds.
+    """
+    key = (sid, scenario.snapshot_id, len(OBSERVATION_STORE.get(sid)), bundle.num_samples)
+    if key in _RISK_CACHE:
+        return _RISK_CACHE[key]
+
+    nominal, _ = solve_equitable_allocation(scenario, g)
+    recourse = solve_two_stage_recourse(
+        scenario,
+        g,
+        num_samples=min(20, bundle.num_samples),
+        time_limit_sec=10.0,
+        random_seed=scenario.solver_parameters.random_seed,
+    )
+    det_loss = (
+        evaluate_plan_under_samples(scenario, nominal, bundle).expected_loss if nominal else 0.0
+    )
+    rec_profile = evaluate_plan_under_samples(scenario, recourse.plan, bundle)
+    result = (
+        round(det_loss, 1),
+        round(rec_profile.expected_loss, 1),
+        round(rec_profile.expected_shortfall(0.05), 1),
+    )
+    if len(_RISK_CACHE) >= 32:
+        _RISK_CACHE.pop(next(iter(_RISK_CACHE)))
+    _RISK_CACHE[key] = result
+    return result
+
+
 @router.get("/scenario-fan", response_model=ScenarioFanResponse)
 def get_scenario_fan(
     scenario_id: UUID,
@@ -127,7 +171,7 @@ def get_scenario_fan(
         )
 
     scenario = SCENARIO_STORE[sid]
-    g = build_scenario_corridor_graph(scenario)
+    g = build_live_graph(scenario, OBSERVATION_STORE.get(sid))
 
     t0 = time.perf_counter()
     bundle = sample_hazard_scenarios(
@@ -153,10 +197,7 @@ def get_scenario_fan(
     p05 = realization_rates[p05_idx]
     p95 = realization_rates[p95_idx]
 
-    # Baseline loss calculations
-    det_loss = round(42.5, 1)
-    rec_loss = round(18.2, 1)
-    cvar_95 = round(28.4, 1)
+    risk = _plan_risk_comparison(scenario, g, bundle, sid)
 
     return ScenarioFanResponse(
         scenario_id=scenario.scenario_id,
@@ -166,9 +207,9 @@ def get_scenario_fan(
         best_case_p95=round(p95, 3),
         sampling_duration_ms=sampling_duration_ms,
         sample_survival_rates=realization_rates,
-        deterministic_loss=det_loss,
-        recourse_loss=rec_loss,
-        expected_shortfall_95=cvar_95,
+        deterministic_loss=risk[0],
+        recourse_loss=risk[1],
+        expected_shortfall_95=risk[2],
     )
 
 
@@ -189,7 +230,7 @@ def get_route_alternatives(
         )
 
     scenario = SCENARIO_STORE[sid]
-    g = build_scenario_corridor_graph(scenario)
+    g = build_live_graph(scenario, OBSERVATION_STORE.get(sid))
 
     if origin_id not in g:
         raise HTTPException(

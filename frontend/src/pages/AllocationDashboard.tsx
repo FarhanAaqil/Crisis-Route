@@ -5,6 +5,7 @@ import {
   PlanDetail,
   optimizePlan,
   submitPlanApproval,
+  submitPlanForApproval,
   fetchRouteAlternatives,
   fetchScenarioFan,
   fetchVoiRankings,
@@ -98,7 +99,9 @@ export const AllocationDashboard: React.FC<AllocationDashboardProps> = ({
     setInfeasibilityDiag(null);
 
     try {
-      const plan = await optimizePlan(scenarioId, mode);
+      const generated = await optimizePlan(scenarioId, mode);
+      // A second person must sign it off, so hand it over right away
+      const plan = await submitPlanForApproval(generated.plan_id);
       setActivePlan(plan);
       setContextPlan(plan);
       setApprovalStatus(plan.approval_state.status);

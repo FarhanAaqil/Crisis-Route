@@ -1,34 +1,26 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "CrisisRoute Decision Support API",
-    "version": "1.0.0",
-    "description": "Uncertainty-Aware Decision Support for Humanitarian Relief Routing and Equitable Allocation in Post-Disaster Environments"
+    "title": "CrisisRoute Decision Support System",
+    "description": "Uncertainty-Aware Decision Support for Humanitarian Relief Routing and Equitable Allocation",
+    "version": "0.2.0"
   },
-  "servers": [
-    {
-      "url": "http://localhost:8000/api/v1",
-      "description": "Local development and testing environment"
-    }
-  ],
   "paths": {
-    "/health": {
+    "/api/v1/health": {
       "get": {
-        "summary": "System Health Status",
-        "description": "Returns operational status of the API, database connectivity, and graph engine readiness.",
+        "tags": [
+          "Health"
+        ],
+        "summary": "Get Health",
+        "description": "Return operational health status.",
+        "operationId": "get_health_api_v1_health_get",
         "responses": {
           "200": {
-            "description": "System operational",
+            "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object",
-                  "properties": {
-                    "status": { "type": "string" },
-                    "version": { "type": "string" },
-                    "graph_engine": { "type": "string" },
-                    "solver_engine": { "type": "string" }
-                  }
+                  "$ref": "#/components/schemas/HealthResponse"
                 }
               }
             }
@@ -36,17 +28,246 @@
         }
       }
     },
-    "/scenarios": {
-      "get": {
-        "summary": "List Scenarios",
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Login",
+        "description": "Exchange operator credentials for a short-lived bearer token.",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
-            "description": "List of planning scenarios",
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
+      "get": {
+        "tags": [
+          "Authentication"
+        ],
+        "summary": "Whoami",
+        "description": "Return the operator behind the presented token.",
+        "operationId": "whoami_api_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentUser"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/scenarios": {
+      "get": {
+        "tags": [
+          "Scenarios"
+        ],
+        "summary": "List Scenarios",
+        "description": "List all available relief planning scenarios.",
+        "operationId": "list_scenarios_api_v1_scenarios_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ScenarioSummary"
+                  },
+                  "type": "array",
+                  "title": "Response List Scenarios Api V1 Scenarios Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Scenarios"
+        ],
+        "summary": "Create Scenario",
+        "description": "Create a new relief planning scenario sealed with a content snapshot hash.",
+        "operationId": "create_scenario_api_v1_scenarios_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScenarioCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}": {
+      "get": {
+        "tags": [
+          "Scenarios"
+        ],
+        "summary": "Get Scenario",
+        "description": "Retrieve full details of a specific scenario.",
+        "operationId": "get_scenario_api_v1_scenarios__scenario_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioDetail"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/observations": {
+      "get": {
+        "tags": [
+          "Scenarios"
+        ],
+        "summary": "List Observations",
+        "description": "List all road condition observations associated with a scenario.",
+        "operationId": "list_observations_api_v1_scenarios__scenario_id__observations_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/ScenarioSummary" }
+                  "items": {
+                    "$ref": "#/components/schemas/ObservationResponse"
+                  },
+                  "title": "Response List Observations Api V1 Scenarios  Scenario Id  Observations Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -54,154 +275,1191 @@
         }
       },
       "post": {
-        "summary": "Create Scenario",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/ScenarioCreate" }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Scenario created successfully",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ScenarioDetail" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/scenarios/{scenario_id}": {
-      "get": {
-        "summary": "Get Scenario Details",
-        "parameters": [
-          { "name": "scenario_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        "tags": [
+          "Scenarios"
         ],
-        "responses": {
-          "200": {
-            "description": "Scenario definition and pinned snapshot details",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/ScenarioDetail" }
-              }
-            }
-          },
-          "404": { "description": "Scenario not found" }
-        }
-      }
-    },
-    "/scenarios/{scenario_id}/observations": {
-      "get": {
-        "summary": "List Scenario Observations",
-        "parameters": [
-          { "name": "scenario_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
+        "summary": "Submit Observation",
+        "description": "Register a new field or sensor observation on a road edge.",
+        "operationId": "submit_observation_api_v1_scenarios__scenario_id__observations_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
         ],
-        "responses": {
-          "200": {
-            "description": "List of recorded road observations",
-            "content": {
-              "application/json": {
-                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Observation" } }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "summary": "Submit Road Observation",
         "parameters": [
-          { "name": "scenario_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/ObservationCreate" }
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
             }
           }
-        },
-        "responses": {
-          "201": {
-            "description": "Observation registered and new graph version staged",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Observation" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/scenarios/{scenario_id}/routes": {
-      "post": {
-        "summary": "Compute Risk-Aware Routes",
-        "description": "Generates primary and Yen k-shortest diverse alternative routes with survival probabilities.",
-        "parameters": [
-          { "name": "scenario_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
-        ],
-        "responses": {
-          "200": {
-            "description": "Computed route alternatives",
-            "content": {
-              "application/json": {
-                "schema": { "type": "object" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/scenarios/{scenario_id}/plans": {
-      "post": {
-        "summary": "Generate Robust Relief Plan",
-        "description": "Triggers CP-SAT solver for equitable allocation across sampled road states.",
-        "parameters": [
-          { "name": "scenario_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
-        ],
-        "responses": {
-          "200": {
-            "description": "Generated plan with allocations, routes, and diagnostics",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Plan" }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/plans/{plan_id}/approval": {
-      "post": {
-        "summary": "Approve or Reject Relief Plan",
-        "description": "Mandatory sign-off action by Incident Lead with operational justification.",
-        "parameters": [
-          { "name": "plan_id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "required": ["decision", "rationale"],
-                "properties": {
-                  "decision": { "type": "string", "enum": ["APPROVE", "REJECT"] },
-                  "rationale": { "type": "string", "minLength": 10 }
+                "$ref": "#/components/schemas/ObservationCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObservationResponse"
                 }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios/plans/{plan_id}/submit": {
+      "post": {
+        "tags": [
+          "Scenarios"
+        ],
+        "summary": "Submit Plan For Approval",
+        "description": "Hand a draft plan to the Incident Lead for sign-off.",
+        "operationId": "submit_plan_for_approval_api_v1_scenarios_plans__plan_id__submit_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios/plans/{plan_id}/approval": {
+      "post": {
+        "tags": [
+          "Scenarios"
+        ],
+        "summary": "Approve Or Reject Plan",
+        "description": "Incident Lead mandatory approval sign-off with operational rationale.",
+        "operationId": "approve_or_reject_plan_api_v1_scenarios_plans__plan_id__approval_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprovalPayload"
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Plan decision recorded in audit log",
+            "description": "Successful Response",
             "content": {
               "application/json": {
-                "schema": { "type": "object" }
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/approve": {
+      "post": {
+        "tags": [
+          "Scenarios"
+        ],
+        "summary": "Approve Scenario",
+        "description": "Sign off the scenario's active plan (same rules as the per-plan endpoint).",
+        "operationId": "approve_scenario_api_v1_scenarios__scenario_id__approve_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprovalPayload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioApprovalResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/resources": {
+      "get": {
+        "tags": [
+          "Resources"
+        ],
+        "summary": "Get Scenario Resources",
+        "description": "Retrieve full consolidated resource inventory, fleet, and demand for a scenario.",
+        "operationId": "get_scenario_resources_api_v1_scenarios__scenario_id__resources_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioResourcesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/resources/demand-nodes": {
+      "post": {
+        "tags": [
+          "Resources"
+        ],
+        "summary": "Add Or Update Demand Node",
+        "description": "Add or update a relief demand cluster.",
+        "operationId": "add_or_update_demand_node_api_v1_scenarios__scenario_id__resources_demand_nodes_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DemandNodeModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DemandNodeModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/resources/demand-nodes/{node_id}": {
+      "delete": {
+        "tags": [
+          "Resources"
+        ],
+        "summary": "Delete Demand Node",
+        "description": "Remove a demand node from a scenario.",
+        "operationId": "delete_demand_node_api_v1_scenarios__scenario_id__resources_demand_nodes__node_id__delete",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "node_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Node Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/resources/depots": {
+      "post": {
+        "tags": [
+          "Resources"
+        ],
+        "summary": "Add Or Update Depot",
+        "description": "Add or update a relief supply depot.",
+        "operationId": "add_or_update_depot_api_v1_scenarios__scenario_id__resources_depots_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DepotModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DepotModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/resources/vehicles": {
+      "post": {
+        "tags": [
+          "Resources"
+        ],
+        "summary": "Add Or Update Vehicle",
+        "description": "Add or update a transport fleet vehicle.",
+        "operationId": "add_or_update_vehicle_api_v1_scenarios__scenario_id__resources_vehicles_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/VehicleModel"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VehicleModel"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/plans/optimize": {
+      "post": {
+        "tags": [
+          "Allocation & Plans"
+        ],
+        "summary": "Optimize Allocation Plan",
+        "description": "Generate an equitable humanitarian relief allocation plan using CP-SAT or baseline.",
+        "operationId": "optimize_allocation_plan_api_v1_scenarios__scenario_id__plans_optimize_post",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "pattern": "^(robust|baseline)$",
+              "default": "robust",
+              "title": "Mode"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/plans/active": {
+      "get": {
+        "tags": [
+          "Allocation & Plans"
+        ],
+        "summary": "Get Active Plan",
+        "description": "Retrieve the currently active plan for a scenario.",
+        "operationId": "get_active_plan_api_v1_scenarios__scenario_id__plans_active_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/plans/{plan_id}": {
+      "get": {
+        "tags": [
+          "Allocation & Plans"
+        ],
+        "summary": "Get Plan",
+        "description": "Retrieve a specific decision plan by its unique ID.",
+        "operationId": "get_plan_api_v1_scenarios__scenario_id__plans__plan_id__get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PlanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/plans/{plan_id}/export": {
+      "get": {
+        "tags": [
+          "Allocation & Plans"
+        ],
+        "summary": "Export Plan Manifest",
+        "description": "Export plan in standard JSON schema format for field deployment.",
+        "operationId": "export_plan_manifest_api_v1_scenarios__scenario_id__plans__plan_id__export_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "plan_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Plan Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Export Plan Manifest Api V1 Scenarios  Scenario Id  Plans  Plan Id  Export Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/audit": {
+      "get": {
+        "tags": [
+          "Audit Trail"
+        ],
+        "summary": "List Audit Events",
+        "description": "Retrieve filtered operational audit logs in reverse chronological order.",
+        "operationId": "list_audit_events_api_v1_audit_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "action",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Action"
+            }
+          },
+          {
+            "name": "resource_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Resource Type"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "default": 100,
+              "title": "Limit"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditEvent"
+                  },
+                  "title": "Response List Audit Events Api V1 Audit Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/audit/verify": {
+      "get": {
+        "tags": [
+          "Audit Trail"
+        ],
+        "summary": "Verify Audit Chain",
+        "description": "Recompute the hash chain and report whether the ledger is intact.",
+        "operationId": "verify_audit_chain_api_v1_audit_verify_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Verify Audit Chain Api V1 Audit Verify Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/passability": {
+      "get": {
+        "tags": [
+          "Passability"
+        ],
+        "summary": "Get Scenario Passability",
+        "description": "Retrieve full road network passability, active observations, and ML calibration state.",
+        "operationId": "get_scenario_passability_api_v1_scenarios__scenario_id__passability_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PassabilityResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/voi-rankings": {
+      "get": {
+        "tags": [
+          "Intelligence"
+        ],
+        "summary": "Get Voi Rankings",
+        "description": "Retrieve Value-of-Information prioritized reconnaissance targets for drone/ground patrol.",
+        "operationId": "get_voi_rankings_api_v1_scenarios__scenario_id__voi_rankings_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "top_k",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "minimum": 1,
+              "default": 5,
+              "title": "Top K"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VoiRankingsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/scenario-fan": {
+      "get": {
+        "tags": [
+          "Intelligence"
+        ],
+        "summary": "Get Scenario Fan",
+        "description": "Generate Monte Carlo hazard realizations and evaluate passability distributions.",
+        "operationId": "get_scenario_fan_api_v1_scenarios__scenario_id__scenario_fan_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "num_samples",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 10,
+              "default": 50,
+              "title": "Num Samples"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ScenarioFanResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/scenarios/{scenario_id}/routes": {
+      "get": {
+        "tags": [
+          "Intelligence"
+        ],
+        "summary": "Get Route Alternatives",
+        "description": "Generate k-diverse alternative routes between an origin and destination.",
+        "operationId": "get_route_alternatives_api_v1_scenarios__scenario_id__routes_get",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "scenario_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Scenario Id"
+            }
+          },
+          {
+            "name": "origin_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Origin Id"
+            }
+          },
+          {
+            "name": "destination_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Destination Id"
+            }
+          },
+          {
+            "name": "k",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 5,
+              "minimum": 1,
+              "default": 3,
+              "title": "K"
+            }
+          },
+          {
+            "name": "vehicle_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Vehicle Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RouteAlternativesResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/ingest/upload": {
+      "post": {
+        "tags": [
+          "Ingestion"
+        ],
+        "summary": "Upload Network Data",
+        "description": "Ingest, validate, and hash road network data without silent data dropping.\n\nAccepts multipart file upload or form-encoded text (CSV / GeoJSON).",
+        "operationId": "upload_network_data_api_v1_ingest_upload_post",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_network_data_api_v1_ingest_upload_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IngestUploadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "Root",
+        "description": "Root entry point providing service identity.",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
               }
             }
           }
@@ -211,47 +1469,2039 @@
   },
   "components": {
     "schemas": {
-      "ScenarioSummary": {
-        "type": "object",
+      "AllocationItem": {
         "properties": {
-          "scenario_id": { "type": "string", "format": "uuid" },
-          "name": { "type": "string" },
-          "region_name": { "type": "string" },
-          "created_at": { "type": "string", "format": "date-time" },
-          "active_plan_id": { "type": "string", "nullable": true }
-        }
-      },
-      "ScenarioCreate": {
+          "demand_node_id": {
+            "type": "string",
+            "title": "Demand Node Id"
+          },
+          "commodity_id": {
+            "type": "string",
+            "title": "Commodity Id"
+          },
+          "vehicle_id": {
+            "type": "string",
+            "title": "Vehicle Id"
+          },
+          "quantity_delivered": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Quantity Delivered"
+          }
+        },
         "type": "object",
-        "required": ["name", "region", "commodities", "depots", "vehicles", "demand_nodes"],
+        "required": [
+          "demand_node_id",
+          "commodity_id",
+          "vehicle_id",
+          "quantity_delivered"
+        ],
+        "title": "AllocationItem",
+        "description": "Commodity allocation delivered to a demand node."
+      },
+      "ApprovalPayload": {
         "properties": {
-          "name": { "type": "string" },
-          "region": { "type": "object" },
-          "commodities": { "type": "array" },
-          "depots": { "type": "array" },
-          "vehicles": { "type": "array" },
-          "demand_nodes": { "type": "array" }
-        }
+          "decision": {
+            "type": "string",
+            "enum": [
+              "APPROVE",
+              "REJECT"
+            ],
+            "title": "Decision"
+          },
+          "rationale": {
+            "type": "string",
+            "maxLength": 2000,
+            "minLength": 10,
+            "title": "Rationale"
+          }
+        },
+        "type": "object",
+        "required": [
+          "decision",
+          "rationale"
+        ],
+        "title": "ApprovalPayload",
+        "description": "Payload for plan approval / rejection."
       },
-      "ScenarioDetail": {
-        "type": "object"
+      "ApprovalRecord": {
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/ApprovalStatus",
+            "default": "DRAFT"
+          },
+          "reviewed_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed By"
+          },
+          "reviewed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reviewed At"
+          },
+          "rationale": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rationale"
+          }
+        },
+        "type": "object",
+        "title": "ApprovalRecord",
+        "description": "Human approver sign-off metadata."
       },
-      "Observation": {
-        "type": "object"
+      "ApprovalStatus": {
+        "type": "string",
+        "enum": [
+          "DRAFT",
+          "PENDING_APPROVAL",
+          "APPROVED",
+          "REJECTED"
+        ],
+        "title": "ApprovalStatus",
+        "description": "Human approval sign-off status."
+      },
+      "AuditEvent": {
+        "properties": {
+          "event_id": {
+            "type": "string",
+            "title": "Event Id"
+          },
+          "timestamp": {
+            "type": "string",
+            "title": "Timestamp"
+          },
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "resource_type": {
+            "type": "string",
+            "title": "Resource Type"
+          },
+          "resource_id": {
+            "type": "string",
+            "title": "Resource Id"
+          },
+          "details": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Details"
+          },
+          "prev_hash": {
+            "type": "string",
+            "title": "Prev Hash",
+            "default": ""
+          },
+          "event_hash": {
+            "type": "string",
+            "title": "Event Hash",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "event_id",
+          "timestamp",
+          "user_id",
+          "action",
+          "resource_type",
+          "resource_id",
+          "details"
+        ],
+        "title": "AuditEvent",
+        "description": "Immutable audit record for critical operational actions."
+      },
+      "Body_upload_network_data_api_v1_ingest_upload_post": {
+        "properties": {
+          "file": {
+            "anyOf": [
+              {
+                "type": "string",
+                "contentMediaType": "application/octet-stream"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File"
+          },
+          "raw_content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Raw Content"
+          },
+          "file_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "File Name"
+          }
+        },
+        "type": "object",
+        "title": "Body_upload_network_data_api_v1_ingest_upload_post"
+      },
+      "CalibrationBin": {
+        "properties": {
+          "bin_index": {
+            "type": "integer",
+            "title": "Bin Index"
+          },
+          "bin_range": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Bin Range"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence"
+          },
+          "accuracy": {
+            "type": "number",
+            "title": "Accuracy"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "calibration_gap": {
+            "type": "number",
+            "title": "Calibration Gap"
+          }
+        },
+        "type": "object",
+        "required": [
+          "bin_index",
+          "bin_range",
+          "confidence",
+          "accuracy",
+          "count",
+          "calibration_gap"
+        ],
+        "title": "CalibrationBin",
+        "description": "Reliability diagram evaluation bin."
+      },
+      "CommodityModel": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Name"
+          },
+          "unit_weight_kg": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Unit Weight Kg"
+          },
+          "priority_weight": {
+            "type": "number",
+            "maximum": 10.0,
+            "minimum": 1.0,
+            "title": "Priority Weight",
+            "default": 1.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "unit_weight_kg"
+        ],
+        "title": "CommodityModel",
+        "description": "Relief item specification."
+      },
+      "CurrentUser": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "username",
+          "role"
+        ],
+        "title": "CurrentUser",
+        "description": "Authenticated user context."
+      },
+      "DemandNodeModel": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Name"
+          },
+          "vulnerable_group": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Vulnerable Group"
+          },
+          "population": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Population",
+            "default": 100
+          },
+          "coordinates": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "maxItems": 2,
+            "minItems": 2,
+            "title": "Coordinates",
+            "description": "[lon, lat]"
+          },
+          "demand": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Demand"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "vulnerable_group",
+          "coordinates"
+        ],
+        "title": "DemandNodeModel",
+        "description": "Cluster of affected population requiring relief goods."
+      },
+      "DepotModel": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Name"
+          },
+          "coordinates": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "maxItems": 2,
+            "minItems": 2,
+            "title": "Coordinates",
+            "description": "[lon, lat]"
+          },
+          "inventory": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Inventory"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "coordinates"
+        ],
+        "title": "DepotModel",
+        "description": "Forward supply warehouse or staging depot."
+      },
+      "EquityParametersModel": {
+        "properties": {
+          "min_group_service_floor_alpha": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Min Group Service Floor Alpha",
+            "default": 0.3
+          },
+          "beta_tail_risk_weight": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Beta Tail Risk Weight",
+            "default": 0.2
+          }
+        },
+        "type": "object",
+        "title": "EquityParametersModel",
+        "description": "Fairness and group protection parameters."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "environment": {
+            "type": "string",
+            "title": "Environment"
+          },
+          "graph_engine": {
+            "type": "string",
+            "title": "Graph Engine"
+          },
+          "solver_engine": {
+            "type": "string",
+            "title": "Solver Engine"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "version",
+          "environment",
+          "graph_engine",
+          "solver_engine"
+        ],
+        "title": "HealthResponse",
+        "description": "System health check payload."
+      },
+      "IngestUploadResponse": {
+        "properties": {
+          "file_name": {
+            "type": "string",
+            "title": "File Name"
+          },
+          "snapshot_hash": {
+            "type": "string",
+            "title": "Snapshot Hash"
+          },
+          "total_rows": {
+            "type": "integer",
+            "title": "Total Rows"
+          },
+          "valid_rows": {
+            "type": "integer",
+            "title": "Valid Rows"
+          },
+          "quarantined_rows": {
+            "type": "integer",
+            "title": "Quarantined Rows"
+          },
+          "quarantine_records": {
+            "items": {
+              "$ref": "#/components/schemas/QuarantinedRecord"
+            },
+            "type": "array",
+            "title": "Quarantine Records"
+          },
+          "valid_edges_preview": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Valid Edges Preview"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file_name",
+          "snapshot_hash",
+          "total_rows",
+          "valid_rows",
+          "quarantined_rows",
+          "quarantine_records"
+        ],
+        "title": "IngestUploadResponse",
+        "description": "Result of file ingestion, schema validation, and quarantine buffering."
+      },
+      "LoginRequest": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 1,
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "LoginRequest",
+        "description": "Operator credentials."
+      },
+      "LoginResponse": {
+        "properties": {
+          "access_token": {
+            "type": "string",
+            "title": "Access Token"
+          },
+          "token_type": {
+            "type": "string",
+            "title": "Token Type",
+            "default": "bearer"
+          },
+          "expires_in": {
+            "type": "integer",
+            "title": "Expires In"
+          },
+          "user": {
+            "$ref": "#/components/schemas/SessionUser"
+          }
+        },
+        "type": "object",
+        "required": [
+          "access_token",
+          "expires_in",
+          "user"
+        ],
+        "title": "LoginResponse",
+        "description": "Bearer token and the operator it was issued to."
+      },
+      "ModelMetricsSummary": {
+        "properties": {
+          "model_version": {
+            "type": "string",
+            "title": "Model Version"
+          },
+          "model_type": {
+            "type": "string",
+            "title": "Model Type"
+          },
+          "evaluation": {
+            "type": "string",
+            "title": "Evaluation",
+            "default": ""
+          },
+          "brier_score": {
+            "type": "number",
+            "title": "Brier Score"
+          },
+          "expected_calibration_error": {
+            "type": "number",
+            "title": "Expected Calibration Error"
+          },
+          "roc_auc": {
+            "type": "number",
+            "title": "Roc Auc"
+          },
+          "total_samples": {
+            "type": "integer",
+            "title": "Total Samples"
+          },
+          "reliability_diagram": {
+            "items": {
+              "$ref": "#/components/schemas/CalibrationBin"
+            },
+            "type": "array",
+            "title": "Reliability Diagram"
+          }
+        },
+        "type": "object",
+        "required": [
+          "model_version",
+          "model_type",
+          "brier_score",
+          "expected_calibration_error",
+          "roc_auc",
+          "total_samples",
+          "reliability_diagram"
+        ],
+        "title": "ModelMetricsSummary",
+        "description": "Scientific calibration assessment and distribution shift metrics."
       },
       "ObservationCreate": {
-        "type": "object",
-        "required": ["edge_id", "status", "source_type"],
         "properties": {
-          "edge_id": { "type": "string" },
-          "status": { "type": "string" },
-          "source_type": { "type": "string" }
-        }
+          "edge_id": {
+            "type": "string",
+            "title": "Edge Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ObservationStatus"
+          },
+          "source_type": {
+            "$ref": "#/components/schemas/SourceType",
+            "default": "field_patrol"
+          },
+          "source_credibility": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Source Credibility",
+            "default": 0.8
+          },
+          "confidence_interval": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Confidence Interval"
+          },
+          "water_depth_cm": {
+            "type": "number",
+            "title": "Water Depth Cm",
+            "default": 0.0
+          },
+          "reported_by": {
+            "type": "string",
+            "title": "Reported By",
+            "default": "field_unit_01"
+          },
+          "notes": {
+            "type": "string",
+            "title": "Notes",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "edge_id",
+          "status"
+        ],
+        "title": "ObservationCreate",
+        "description": "Input payload for a field or sensor report on a road link."
       },
-      "Plan": {
-        "type": "object"
+      "ObservationResponse": {
+        "properties": {
+          "edge_id": {
+            "type": "string",
+            "title": "Edge Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ObservationStatus"
+          },
+          "source_type": {
+            "$ref": "#/components/schemas/SourceType",
+            "default": "field_patrol"
+          },
+          "source_credibility": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Source Credibility",
+            "default": 0.8
+          },
+          "confidence_interval": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Confidence Interval"
+          },
+          "water_depth_cm": {
+            "type": "number",
+            "title": "Water Depth Cm",
+            "default": 0.0
+          },
+          "reported_by": {
+            "type": "string",
+            "title": "Reported By",
+            "default": "field_unit_01"
+          },
+          "notes": {
+            "type": "string",
+            "title": "Notes",
+            "default": ""
+          },
+          "observation_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Observation Id"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "edge_id",
+          "status"
+        ],
+        "title": "ObservationResponse",
+        "description": "Stored observation with system timestamps and UUID."
+      },
+      "ObservationStatus": {
+        "type": "string",
+        "enum": [
+          "passable",
+          "impassable",
+          "partially_blocked",
+          "debris_cleared"
+        ],
+        "title": "ObservationStatus",
+        "description": "Road passability observation statuses."
+      },
+      "PassabilityEdgeItem": {
+        "properties": {
+          "edge_id": {
+            "type": "string",
+            "title": "Edge Id"
+          },
+          "u_node": {
+            "type": "string",
+            "title": "U Node"
+          },
+          "v_node": {
+            "type": "string",
+            "title": "V Node"
+          },
+          "u_coord": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "U Coord",
+            "description": "[lon, lat]"
+          },
+          "v_coord": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "V Coord",
+            "description": "[lon, lat]"
+          },
+          "road_class": {
+            "type": "string",
+            "title": "Road Class"
+          },
+          "bridge": {
+            "type": "boolean",
+            "title": "Bridge"
+          },
+          "length_m": {
+            "type": "number",
+            "title": "Length M"
+          },
+          "free_flow_sec": {
+            "type": "number",
+            "title": "Free Flow Sec"
+          },
+          "passability_prob": {
+            "type": "number",
+            "title": "Passability Prob"
+          },
+          "credible_interval": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Credible Interval",
+            "description": "[lower_95, upper_95]"
+          },
+          "stale_age_hours": {
+            "type": "number",
+            "title": "Stale Age Hours"
+          },
+          "risk_class": {
+            "type": "string",
+            "title": "Risk Class",
+            "description": "PASSABLE, MODERATE, or CRITICAL"
+          }
+        },
+        "type": "object",
+        "required": [
+          "edge_id",
+          "u_node",
+          "v_node",
+          "u_coord",
+          "v_coord",
+          "road_class",
+          "bridge",
+          "length_m",
+          "free_flow_sec",
+          "passability_prob",
+          "credible_interval",
+          "stale_age_hours",
+          "risk_class"
+        ],
+        "title": "PassabilityEdgeItem",
+        "description": "Calibrated passability evaluation for a specific directed road edge."
+      },
+      "PassabilityNodeItem": {
+        "properties": {
+          "node_id": {
+            "type": "string",
+            "title": "Node Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "node_type": {
+            "type": "string",
+            "title": "Node Type",
+            "description": "depot, demand, or junction"
+          },
+          "coordinates": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Coordinates",
+            "description": "[lon, lat]"
+          },
+          "vulnerable_group": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vulnerable Group"
+          },
+          "population": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Population"
+          }
+        },
+        "type": "object",
+        "required": [
+          "node_id",
+          "name",
+          "node_type",
+          "coordinates"
+        ],
+        "title": "PassabilityNodeItem",
+        "description": "Geographic network node in the disaster corridor."
+      },
+      "PassabilityResponse": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Scenario Id"
+          },
+          "region_name": {
+            "type": "string",
+            "title": "Region Name"
+          },
+          "edges": {
+            "items": {
+              "$ref": "#/components/schemas/PassabilityEdgeItem"
+            },
+            "type": "array",
+            "title": "Edges"
+          },
+          "nodes": {
+            "items": {
+              "$ref": "#/components/schemas/PassabilityNodeItem"
+            },
+            "type": "array",
+            "title": "Nodes"
+          },
+          "calibration_metrics": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ModelMetricsSummary"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Null until the experiments pipeline has produced a report"
+          },
+          "graph_source": {
+            "type": "string",
+            "title": "Graph Source",
+            "default": "synthetic_corridor"
+          },
+          "summary": {
+            "$ref": "#/components/schemas/PassabilitySummary"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "region_name",
+          "edges",
+          "nodes",
+          "summary"
+        ],
+        "title": "PassabilityResponse",
+        "description": "Consolidated passability, network topology, and ML calibration state."
+      },
+      "PassabilitySummary": {
+        "properties": {
+          "total_edges": {
+            "type": "integer",
+            "title": "Total Edges"
+          },
+          "passable_count": {
+            "type": "integer",
+            "title": "Passable Count"
+          },
+          "moderate_count": {
+            "type": "integer",
+            "title": "Moderate Count"
+          },
+          "critical_count": {
+            "type": "integer",
+            "title": "Critical Count"
+          },
+          "bridges_count": {
+            "type": "integer",
+            "title": "Bridges Count"
+          },
+          "average_passability": {
+            "type": "number",
+            "title": "Average Passability"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_edges",
+          "passable_count",
+          "moderate_count",
+          "critical_count",
+          "bridges_count",
+          "average_passability"
+        ],
+        "title": "PassabilitySummary",
+        "description": "Network-wide passability breakdown."
+      },
+      "PlanResponse": {
+        "properties": {
+          "plan_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Plan Id"
+          },
+          "scenario_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "title": "Snapshot Id"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At"
+          },
+          "generated_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Generated By"
+          },
+          "solver_status": {
+            "$ref": "#/components/schemas/SolverStatus",
+            "default": "FEASIBLE"
+          },
+          "solve_time_seconds": {
+            "type": "number",
+            "title": "Solve Time Seconds",
+            "default": 0.0
+          },
+          "vehicle_routes": {
+            "items": {
+              "$ref": "#/components/schemas/VehicleRoutePlan"
+            },
+            "type": "array",
+            "title": "Vehicle Routes"
+          },
+          "allocations": {
+            "items": {
+              "$ref": "#/components/schemas/AllocationItem"
+            },
+            "type": "array",
+            "title": "Allocations"
+          },
+          "unmet_demands": {
+            "items": {
+              "$ref": "#/components/schemas/UnmetDemandItem"
+            },
+            "type": "array",
+            "title": "Unmet Demands"
+          },
+          "equity_evaluation": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Equity Evaluation"
+          },
+          "reconnaissance_recommendations": {
+            "items": {
+              "$ref": "#/components/schemas/ReconnaissanceRecommendation"
+            },
+            "type": "array",
+            "title": "Reconnaissance Recommendations"
+          },
+          "approval_state": {
+            "$ref": "#/components/schemas/ApprovalRecord"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "snapshot_id"
+        ],
+        "title": "PlanResponse",
+        "description": "Complete decision support relief plan."
+      },
+      "QuarantinedRecord": {
+        "properties": {
+          "quarantine_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Quarantine Id"
+          },
+          "file_name": {
+            "type": "string",
+            "title": "File Name"
+          },
+          "row_index": {
+            "type": "integer",
+            "title": "Row Index"
+          },
+          "raw_data": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Raw Data"
+          },
+          "errors": {
+            "items": {
+              "$ref": "#/components/schemas/RowValidationError"
+            },
+            "type": "array",
+            "title": "Errors"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file_name",
+          "row_index",
+          "raw_data",
+          "errors"
+        ],
+        "title": "QuarantinedRecord",
+        "description": "An unparsed or invalid row retained in quarantine for review."
+      },
+      "ReconnaissanceRecommendation": {
+        "properties": {
+          "edge_id": {
+            "type": "string",
+            "title": "Edge Id"
+          },
+          "expected_regret_reduction": {
+            "type": "number",
+            "title": "Expected Regret Reduction"
+          },
+          "inspection_cost": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Inspection Cost"
+          },
+          "voi_score": {
+            "type": "number",
+            "title": "Voi Score"
+          },
+          "priority_rank": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Priority Rank"
+          }
+        },
+        "type": "object",
+        "required": [
+          "edge_id",
+          "expected_regret_reduction",
+          "inspection_cost",
+          "voi_score",
+          "priority_rank"
+        ],
+        "title": "ReconnaissanceRecommendation",
+        "description": "Value-of-Information (VOI) candidate for field inspection."
+      },
+      "RegionModel": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 2,
+            "title": "Name"
+          },
+          "country": {
+            "type": "string",
+            "title": "Country",
+            "default": "India"
+          },
+          "bbox": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "maxItems": 4,
+            "minItems": 4,
+            "title": "Bbox",
+            "description": "[min_lon, min_lat, max_lon, max_lat]"
+          },
+          "crs": {
+            "type": "string",
+            "title": "Crs",
+            "default": "EPSG:4326"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "bbox"
+        ],
+        "title": "RegionModel",
+        "description": "Geographic region bounding box and coordinate reference definition."
+      },
+      "RouteAlternative": {
+        "properties": {
+          "path": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Path"
+          },
+          "survival_probability": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Survival Probability"
+          },
+          "estimated_travel_time_min": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Estimated Travel Time Min"
+          },
+          "jaccard_overlap_with_primary": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Jaccard Overlap With Primary",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "path",
+          "survival_probability",
+          "estimated_travel_time_min"
+        ],
+        "title": "RouteAlternative",
+        "description": "A loopless alternative route option generated via Yen's algorithm."
+      },
+      "RouteAlternativesResponse": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Scenario Id"
+          },
+          "origin_id": {
+            "type": "string",
+            "title": "Origin Id"
+          },
+          "destination_id": {
+            "type": "string",
+            "title": "Destination Id"
+          },
+          "vehicle_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicle Id"
+          },
+          "destination_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Name"
+          },
+          "routes": {
+            "items": {
+              "$ref": "#/components/schemas/RouteOption"
+            },
+            "type": "array",
+            "title": "Routes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "origin_id",
+          "destination_id",
+          "routes"
+        ],
+        "title": "RouteAlternativesResponse",
+        "description": "Route comparison between primary path and k-1 diverse alternatives."
+      },
+      "RouteOption": {
+        "properties": {
+          "rank": {
+            "type": "integer",
+            "title": "Rank"
+          },
+          "node_path": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Node Path"
+          },
+          "edge_path": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Edge Path"
+          },
+          "travel_time_min": {
+            "type": "number",
+            "title": "Travel Time Min"
+          },
+          "survival_prob": {
+            "type": "number",
+            "title": "Survival Prob"
+          },
+          "jaccard_overlap_with_primary": {
+            "type": "number",
+            "title": "Jaccard Overlap With Primary"
+          },
+          "eta_inflation_pct": {
+            "type": "number",
+            "title": "Eta Inflation Pct"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rank",
+          "node_path",
+          "edge_path",
+          "travel_time_min",
+          "survival_prob",
+          "jaccard_overlap_with_primary",
+          "eta_inflation_pct"
+        ],
+        "title": "RouteOption",
+        "description": "A loopless candidate delivery route generated via Yen's k-shortest algorithm."
+      },
+      "RowValidationError": {
+        "properties": {
+          "column": {
+            "type": "string",
+            "title": "Column"
+          },
+          "error_code": {
+            "type": "string",
+            "title": "Error Code"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          },
+          "invalid_value": {
+            "title": "Invalid Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "column",
+          "error_code",
+          "message"
+        ],
+        "title": "RowValidationError",
+        "description": "Specific column or field validation failure in a row."
+      },
+      "ScenarioApprovalResponse": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "approver_id": {
+            "type": "string",
+            "title": "Approver Id"
+          },
+          "rationale": {
+            "type": "string",
+            "title": "Rationale"
+          },
+          "scenario_id": {
+            "type": "string",
+            "title": "Scenario Id"
+          },
+          "plan_id": {
+            "type": "string",
+            "title": "Plan Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "approver_id",
+          "rationale",
+          "scenario_id",
+          "plan_id"
+        ],
+        "title": "ScenarioApprovalResponse",
+        "description": "Response model for scenario approval sign-off."
+      },
+      "ScenarioCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 3,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "region": {
+            "$ref": "#/components/schemas/RegionModel"
+          },
+          "time_horizon_hours": {
+            "type": "number",
+            "maximum": 168.0,
+            "minimum": 1.0,
+            "title": "Time Horizon Hours",
+            "default": 24.0
+          },
+          "commodities": {
+            "items": {
+              "$ref": "#/components/schemas/CommodityModel"
+            },
+            "type": "array",
+            "title": "Commodities"
+          },
+          "depots": {
+            "items": {
+              "$ref": "#/components/schemas/DepotModel"
+            },
+            "type": "array",
+            "title": "Depots"
+          },
+          "vehicles": {
+            "items": {
+              "$ref": "#/components/schemas/VehicleModel"
+            },
+            "type": "array",
+            "title": "Vehicles"
+          },
+          "demand_nodes": {
+            "items": {
+              "$ref": "#/components/schemas/DemandNodeModel"
+            },
+            "type": "array",
+            "title": "Demand Nodes"
+          },
+          "equity_parameters": {
+            "$ref": "#/components/schemas/EquityParametersModel"
+          },
+          "solver_parameters": {
+            "$ref": "#/components/schemas/SolverParametersModel"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "region",
+          "commodities",
+          "depots",
+          "vehicles",
+          "demand_nodes"
+        ],
+        "title": "ScenarioCreate",
+        "description": "Request payload to create a new relief scenario."
+      },
+      "ScenarioDetail": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 3,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "default": ""
+          },
+          "region": {
+            "$ref": "#/components/schemas/RegionModel"
+          },
+          "time_horizon_hours": {
+            "type": "number",
+            "maximum": 168.0,
+            "minimum": 1.0,
+            "title": "Time Horizon Hours",
+            "default": 24.0
+          },
+          "commodities": {
+            "items": {
+              "$ref": "#/components/schemas/CommodityModel"
+            },
+            "type": "array",
+            "title": "Commodities"
+          },
+          "depots": {
+            "items": {
+              "$ref": "#/components/schemas/DepotModel"
+            },
+            "type": "array",
+            "title": "Depots"
+          },
+          "vehicles": {
+            "items": {
+              "$ref": "#/components/schemas/VehicleModel"
+            },
+            "type": "array",
+            "title": "Vehicles"
+          },
+          "demand_nodes": {
+            "items": {
+              "$ref": "#/components/schemas/DemandNodeModel"
+            },
+            "type": "array",
+            "title": "Demand Nodes"
+          },
+          "equity_parameters": {
+            "$ref": "#/components/schemas/EquityParametersModel"
+          },
+          "solver_parameters": {
+            "$ref": "#/components/schemas/SolverParametersModel"
+          },
+          "scenario_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Scenario Id"
+          },
+          "snapshot_id": {
+            "type": "string",
+            "maxLength": 64,
+            "minLength": 64,
+            "title": "Snapshot Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "active_plan_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Plan Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "region",
+          "commodities",
+          "depots",
+          "vehicles",
+          "demand_nodes",
+          "snapshot_id"
+        ],
+        "title": "ScenarioDetail",
+        "description": "Full scenario response model with generated identifiers and metadata."
+      },
+      "ScenarioFanResponse": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Scenario Id"
+          },
+          "num_samples": {
+            "type": "integer",
+            "title": "Num Samples"
+          },
+          "mean_passability": {
+            "type": "number",
+            "title": "Mean Passability"
+          },
+          "worst_case_p05": {
+            "type": "number",
+            "title": "Worst Case P05"
+          },
+          "best_case_p95": {
+            "type": "number",
+            "title": "Best Case P95"
+          },
+          "sampling_duration_ms": {
+            "type": "integer",
+            "title": "Sampling Duration Ms"
+          },
+          "sample_survival_rates": {
+            "items": {
+              "type": "number"
+            },
+            "type": "array",
+            "title": "Sample Survival Rates"
+          },
+          "deterministic_loss": {
+            "type": "number",
+            "title": "Deterministic Loss"
+          },
+          "recourse_loss": {
+            "type": "number",
+            "title": "Recourse Loss"
+          },
+          "expected_shortfall_95": {
+            "type": "number",
+            "title": "Expected Shortfall 95"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "num_samples",
+          "mean_passability",
+          "worst_case_p05",
+          "best_case_p95",
+          "sampling_duration_ms",
+          "sample_survival_rates",
+          "deterministic_loss",
+          "recourse_loss",
+          "expected_shortfall_95"
+        ],
+        "title": "ScenarioFanResponse",
+        "description": "Monte Carlo uncertainty fan evaluated across stochastic realizations."
+      },
+      "ScenarioResourcesResponse": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Scenario Id"
+          },
+          "depots": {
+            "items": {
+              "$ref": "#/components/schemas/DepotModel"
+            },
+            "type": "array",
+            "title": "Depots"
+          },
+          "demand_nodes": {
+            "items": {
+              "$ref": "#/components/schemas/DemandNodeModel"
+            },
+            "type": "array",
+            "title": "Demand Nodes"
+          },
+          "vehicles": {
+            "items": {
+              "$ref": "#/components/schemas/VehicleModel"
+            },
+            "type": "array",
+            "title": "Vehicles"
+          },
+          "commodities": {
+            "items": {
+              "$ref": "#/components/schemas/CommodityModel"
+            },
+            "type": "array",
+            "title": "Commodities"
+          },
+          "total_demand_by_commodity": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Total Demand By Commodity"
+          },
+          "total_supply_by_commodity": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Total Supply By Commodity"
+          },
+          "total_fleet_capacity_kg": {
+            "type": "number",
+            "title": "Total Fleet Capacity Kg"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "depots",
+          "demand_nodes",
+          "vehicles",
+          "commodities",
+          "total_demand_by_commodity",
+          "total_supply_by_commodity",
+          "total_fleet_capacity_kg"
+        ],
+        "title": "ScenarioResourcesResponse",
+        "description": "Consolidated inventory and resource state for an active scenario."
+      },
+      "ScenarioSummary": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Scenario Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "region_name": {
+            "type": "string",
+            "title": "Region Name"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "active_plan_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Plan Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "name",
+          "region_name",
+          "created_at"
+        ],
+        "title": "ScenarioSummary",
+        "description": "Condensed scenario model for dashboard listings."
+      },
+      "SessionUser": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "username": {
+            "type": "string",
+            "title": "Username"
+          },
+          "display_name": {
+            "type": "string",
+            "title": "Display Name"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "username",
+          "display_name",
+          "role"
+        ],
+        "title": "SessionUser",
+        "description": "Identity returned to the client after sign-in."
+      },
+      "SolverParametersModel": {
+        "properties": {
+          "time_limit_seconds": {
+            "type": "integer",
+            "maximum": 120.0,
+            "minimum": 5.0,
+            "title": "Time Limit Seconds",
+            "default": 30
+          },
+          "scenario_samples_s": {
+            "type": "integer",
+            "maximum": 200.0,
+            "minimum": 10.0,
+            "title": "Scenario Samples S",
+            "default": 50
+          },
+          "random_seed": {
+            "type": "integer",
+            "title": "Random Seed",
+            "default": 42
+          }
+        },
+        "type": "object",
+        "title": "SolverParametersModel",
+        "description": "OR-Tools and scenario sampling parameters."
+      },
+      "SolverStatus": {
+        "type": "string",
+        "enum": [
+          "OPTIMAL",
+          "FEASIBLE",
+          "NON_OPTIMAL_INCUMBENT",
+          "INFEASIBLE",
+          "MODEL_INVALID"
+        ],
+        "title": "SolverStatus",
+        "description": "Optimization solver terminal states."
+      },
+      "SourceType": {
+        "type": "string",
+        "enum": [
+          "field_patrol",
+          "drone_recon",
+          "satellite_radar",
+          "local_authority",
+          "citizen_report"
+        ],
+        "title": "SourceType",
+        "description": "Source type for road observations."
+      },
+      "UnmetDemandItem": {
+        "properties": {
+          "demand_node_id": {
+            "type": "string",
+            "title": "Demand Node Id"
+          },
+          "commodity_id": {
+            "type": "string",
+            "title": "Commodity Id"
+          },
+          "unmet_quantity": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Unmet Quantity"
+          },
+          "vulnerable_group": {
+            "type": "string",
+            "title": "Vulnerable Group"
+          }
+        },
+        "type": "object",
+        "required": [
+          "demand_node_id",
+          "commodity_id",
+          "unmet_quantity",
+          "vulnerable_group"
+        ],
+        "title": "UnmetDemandItem",
+        "description": "Recorded unmet demand slack."
+      },
+      "UserRole": {
+        "type": "string",
+        "enum": [
+          "analyst",
+          "field_analyst",
+          "approver",
+          "admin"
+        ],
+        "title": "UserRole",
+        "description": "System authorization roles."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "VehicleModel": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Name"
+          },
+          "depot_id": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Depot Id"
+          },
+          "capacity_kg": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Capacity Kg"
+          },
+          "average_speed_kmh": {
+            "type": "number",
+            "exclusiveMinimum": 0.0,
+            "title": "Average Speed Kmh",
+            "default": 30.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "depot_id",
+          "capacity_kg"
+        ],
+        "title": "VehicleModel",
+        "description": "Transport fleet unit assigned to a depot."
+      },
+      "VehicleRoutePlan": {
+        "properties": {
+          "vehicle_id": {
+            "type": "string",
+            "title": "Vehicle Id"
+          },
+          "depot_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Depot Id"
+          },
+          "destination_node_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Destination Node Id"
+          },
+          "payload_kg": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Payload Kg"
+          },
+          "chosen_path": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Chosen Path"
+          },
+          "survival_probability": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Survival Probability"
+          },
+          "estimated_travel_time_min": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Estimated Travel Time Min"
+          },
+          "alternative_paths": {
+            "items": {
+              "$ref": "#/components/schemas/RouteAlternative"
+            },
+            "type": "array",
+            "title": "Alternative Paths"
+          }
+        },
+        "type": "object",
+        "required": [
+          "vehicle_id",
+          "chosen_path",
+          "survival_probability",
+          "estimated_travel_time_min"
+        ],
+        "title": "VehicleRoutePlan",
+        "description": "Routing decision for a single vehicle."
+      },
+      "VoiRankingsResponse": {
+        "properties": {
+          "scenario_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Scenario Id"
+          },
+          "targets": {
+            "items": {
+              "$ref": "#/components/schemas/ReconnaissanceRecommendation"
+            },
+            "type": "array",
+            "title": "Targets"
+          },
+          "total_candidates_evaluated": {
+            "type": "integer",
+            "title": "Total Candidates Evaluated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "scenario_id",
+          "targets",
+          "total_candidates_evaluated"
+        ],
+        "title": "VoiRankingsResponse",
+        "description": "Ranked high-value reconnaissance corridors for field inspection."
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "type": "http",
+        "description": "JWT obtained from POST /auth/login",
+        "scheme": "bearer"
       }
     }
   }
 }
-

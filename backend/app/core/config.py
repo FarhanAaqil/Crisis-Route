@@ -44,6 +44,7 @@ class Settings(BaseSettings):
     contracts_dir: Path = _REPO_ROOT / "contracts"
     artifacts_dir: Path = _REPO_ROOT / "artifacts"
     data_dir: Path = _REPO_ROOT / "data"
+    reports_dir: Path = _REPO_ROOT / "reports"
     state_dir: Path = _REPO_ROOT / "artifacts" / "state"
     persist_state: bool = True
     frontend_dist: Path = _REPO_ROOT / "frontend" / "dist"

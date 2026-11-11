@@ -99,11 +99,17 @@ def test_submission_gate_all_phases_verified():
     # Phase 7 Gate: UI Accessibility & Operational Walkthrough Ready
     # =========================================================================
     # Verify Incident Lead sign-off governance
+    submit_resp = client.post(
+        f"/api/v1/scenarios/plans/{alloc_data['plan_id']}/submit",
+        headers=auth_headers(UserRole.ANALYST.value, "analyst-lead"),
+    )
+    assert submit_resp.status_code == 200
     signoff_resp = client.post(
         f"/api/v1/scenarios/{scenario_id}/approve",
         headers=auth_headers(UserRole.APPROVER.value, "incident-lead-final-signoff"),
         json={
-            "rationale": "Comprehensive Phase 8 submission gate verification and field sign-off."
+            "decision": "APPROVE",
+            "rationale": "Comprehensive Phase 8 submission gate verification and field sign-off.",
         },
     )
     assert signoff_resp.status_code == 200

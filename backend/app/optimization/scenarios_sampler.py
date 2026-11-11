@@ -46,6 +46,30 @@ def compute_edge_midpoints(g: nx.DiGraph) -> tuple[list[str], np.ndarray, np.nda
     return edge_ids, np.array(coords, dtype=np.float64), np.array(passabilities, dtype=np.float64)
 
 
+def _random_fourier_field(
+    metric_coords: np.ndarray,
+    num_samples: int,
+    length_scale_m: float,
+    rng: np.random.Generator,
+    num_features: int = 512,
+) -> np.ndarray:
+    """Approximate the exponential-kernel Gaussian field in O(n * features) time and memory.
+
+    Random Fourier features for the exponential kernel exp(-d / l) draw frequencies from a
+    bivariate Student-t distribution with one degree of freedom (a Cauchy-like spectrum). Each
+    sample is a random combination of cosines, so nearby edges stay correlated even when the
+    dense covariance matrix would be too large to factorise.
+    """
+    gauss = rng.standard_normal((num_features, 2))
+    chi = np.sqrt(rng.chisquare(df=1.0, size=(num_features, 1)))
+    omega = gauss / np.maximum(chi, 1e-6) / length_scale_m
+    phase = rng.uniform(0.0, 2.0 * math.pi, size=num_features)
+    basis = np.sqrt(2.0 / num_features) * np.cos(metric_coords @ omega.T + phase)  # (n, F)
+    weights = rng.standard_normal((num_features, num_samples))
+    field = (basis @ weights).T  # (S, n), unit marginal variance in expectation
+    return np.asarray(field, dtype=np.float64)
+
+
 def sample_hazard_scenarios(
     g: nx.DiGraph,
     num_samples: int = 50,
@@ -57,6 +81,9 @@ def sample_hazard_scenarios(
     Uses an exponential spatial covariance kernel:
     K(i, j) = exp(-d(i, j) / length_scale)
     Followed by Gaussian Copula thresholding to match each edge's marginal passability probability.
+
+    Networks above 2,500 edges switch from the exact Cholesky sampler to random Fourier
+    features, which keeps spatial correlation at a fraction of the cost.
 
     Meets Gate Criterion 1: Runs S=50 samples in < 5.0s on 4 CPU cores.
     """
@@ -103,9 +130,7 @@ def sample_hazard_scenarios(
             standard_normal = rng.standard_normal((num_edges, num_samples))
             correlated_gaussian = (l_factor @ standard_normal).T
     else:
-        # Fast spatial clustering / localized noise approximation for ultra-large networks
-        base_noise = rng.standard_normal((num_samples, num_edges))
-        correlated_gaussian = base_noise
+        correlated_gaussian = _random_fourier_field(metric_coords, num_samples, length_scale_m, rng)
 
     # Gaussian Copula probability transform: uniform in [0, 1]
     from scipy.special import ndtr

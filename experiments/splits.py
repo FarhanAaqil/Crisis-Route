@@ -9,6 +9,18 @@ from app.core.config import settings
 from app.ml.features import EdgeFeatureExtractor
 
 from experiments.bench.hazard import compute_hazard_intensity, get_event_by_id
+from experiments.bench.manifest import generate_crisisbench_mini
+
+
+def _benchmark_is_materialised(manifest_path: Path) -> bool:
+    """True when the manifest exists and its first instance file contains real road edges."""
+    if not manifest_path.exists():
+        return False
+    first = manifest_path.parent / "instances" / "inst_ev01_01.json"
+    if not first.exists():
+        return False
+    with open(first, encoding="utf-8") as handle:
+        return bool(json.load(handle).get("edges"))
 
 
 def load_split_data(
@@ -16,6 +28,9 @@ def load_split_data(
 ) -> dict[str, dict[str, Any]]:
     """Compile feature matrices and binary ground-truth labels for train/val/test splits."""
     path = manifest_path or (settings.data_dir / "bench" / "manifest.json")
+    if manifest_path is None and not _benchmark_is_materialised(path):
+        # Instance files are generated deterministically (seed 42) and are not kept in git
+        generate_crisisbench_mini(output_dir=path.parent)
     if not path.exists():
         raise FileNotFoundError(f"CrisisBench manifest not found at {path}")
 

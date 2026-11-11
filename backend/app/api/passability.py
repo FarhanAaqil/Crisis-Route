@@ -1,13 +1,15 @@
 """Road network passability, dynamic observation propagation, and model calibration metrics."""
 
+import json
+from functools import lru_cache
 from uuid import UUID
 
 from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 
 from app.api.scenarios import OBSERVATION_STORE, SCENARIO_STORE
-from app.domain.observations import ObservationGraphManager
-from app.graph.build import build_scenario_corridor_graph
+from app.core.config import settings
+from app.graph.live import build_live_graph
 
 router = APIRouter(prefix="/scenarios/{scenario_id}/passability", tags=["Passability"])
 
@@ -57,6 +59,7 @@ class ModelMetricsSummary(BaseModel):
 
     model_version: str
     model_type: str
+    evaluation: str = ""
     brier_score: float
     expected_calibration_error: float
     roc_auc: float
@@ -82,7 +85,10 @@ class PassabilityResponse(BaseModel):
     region_name: str
     edges: list[PassabilityEdgeItem]
     nodes: list[PassabilityNodeItem]
-    calibration_metrics: ModelMetricsSummary
+    calibration_metrics: ModelMetricsSummary | None = Field(
+        default=None, description="Null until the experiments pipeline has produced a report"
+    )
+    graph_source: str = Field(default="synthetic_corridor")
     summary: PassabilitySummary
 
 
@@ -104,100 +110,26 @@ def _get_risk_class(prob: float) -> str:
     return "CRITICAL"
 
 
-def _build_calibration_metrics() -> ModelMetricsSummary:
-    """Return verified empirical calibration table for GBDT + Isotonic regression pipeline."""
-    diagram: list[CalibrationBin] = [
-        CalibrationBin(
-            bin_index=0,
-            bin_range=[0.0, 0.1],
-            confidence=0.05,
-            accuracy=0.06,
-            count=180,
-            calibration_gap=0.01,
-        ),
-        CalibrationBin(
-            bin_index=1,
-            bin_range=[0.1, 0.2],
-            confidence=0.15,
-            accuracy=0.14,
-            count=140,
-            calibration_gap=-0.01,
-        ),
-        CalibrationBin(
-            bin_index=2,
-            bin_range=[0.2, 0.3],
-            confidence=0.25,
-            accuracy=0.26,
-            count=160,
-            calibration_gap=0.01,
-        ),
-        CalibrationBin(
-            bin_index=3,
-            bin_range=[0.3, 0.4],
-            confidence=0.35,
-            accuracy=0.33,
-            count=120,
-            calibration_gap=-0.02,
-        ),
-        CalibrationBin(
-            bin_index=4,
-            bin_range=[0.4, 0.5],
-            confidence=0.45,
-            accuracy=0.47,
-            count=110,
-            calibration_gap=0.02,
-        ),
-        CalibrationBin(
-            bin_index=5,
-            bin_range=[0.5, 0.6],
-            confidence=0.55,
-            accuracy=0.54,
-            count=130,
-            calibration_gap=-0.01,
-        ),
-        CalibrationBin(
-            bin_index=6,
-            bin_range=[0.6, 0.7],
-            confidence=0.65,
-            accuracy=0.68,
-            count=150,
-            calibration_gap=0.03,
-        ),
-        CalibrationBin(
-            bin_index=7,
-            bin_range=[0.7, 0.8],
-            confidence=0.75,
-            accuracy=0.73,
-            count=170,
-            calibration_gap=-0.02,
-        ),
-        CalibrationBin(
-            bin_index=8,
-            bin_range=[0.8, 0.9],
-            confidence=0.85,
-            accuracy=0.84,
-            count=200,
-            calibration_gap=-0.01,
-        ),
-        CalibrationBin(
-            bin_index=9,
-            bin_range=[0.9, 1.0],
-            confidence=0.95,
-            accuracy=0.96,
-            count=240,
-            calibration_gap=0.01,
-        ),
-    ]
-
-    return ModelMetricsSummary(
-        model_version="v1.0.0-gbdt-isotonic",
-        model_type="Gradient-Boosted Trees + Isotonic Post-Hoc Calibrator",
-        brier_score=0.088,
-        expected_calibration_error=0.042,
-        roc_auc=0.865,
-        total_samples=1600,
-        reliability_diagram=diagram,
-    )
+@lru_cache(maxsize=1)
+def _load_calibration_metrics() -> ModelMetricsSummary | None:
+    """Held-out calibration metrics written by the experiments pipeline, if available."""
+    path = settings.reports_dir / "model_calibration.json"
+    if not path.exists():
+        return None
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return ModelMetricsSummary(
+            model_version=data["model_version"],
+            model_type=data["model_type"],
+            evaluation=data.get("evaluation", ""),
+            brier_score=data["brier_score"],
+            expected_calibration_error=data["expected_calibration_error"],
+            roc_auc=data["roc_auc"],
+            total_samples=data["total_samples"],
+            reliability_diagram=[CalibrationBin(**b) for b in data["reliability_diagram"]],
+        )
+    except (KeyError, ValueError, OSError):
+        return None
 
 
 @router.get("", response_model=PassabilityResponse)
@@ -211,16 +143,7 @@ def get_scenario_passability(scenario_id: UUID) -> PassabilityResponse:
         )
 
     scenario = SCENARIO_STORE[sid]
-    g = build_scenario_corridor_graph(scenario)
-
-    # Apply any dynamic observations stored for this scenario
-    observations = OBSERVATION_STORE.get(sid)
-    for obs in observations:
-        g, _, _ = ObservationGraphManager.apply_observation_to_graph(
-            base_graph=g,
-            observation=obs,
-            existing_observations=observations,
-        )
+    g = build_live_graph(scenario, OBSERVATION_STORE.get(sid))
 
     # Build node list
     nodes: list[PassabilityNodeItem] = []
@@ -312,6 +235,6 @@ def get_scenario_passability(scenario_id: UUID) -> PassabilityResponse:
         region_name=scenario.region.name,
         edges=edges,
         nodes=nodes,
-        calibration_metrics=_build_calibration_metrics(),
+        calibration_metrics=_load_calibration_metrics(),
         summary=summary,
     )

@@ -64,3 +64,46 @@ def test_marginal_passability_calibration():
 
     # Target is 0.85, 500 samples standard error is ~ sqrt(0.85*0.15/500) = ~0.016
     assert abs(empirical_p - 0.85) < 0.05
+
+
+def _grid_graph(side: int):
+    """A side x side lattice of short roads, big enough to trigger the large-network sampler."""
+    import networkx as nx
+
+    g = nx.DiGraph()
+    for i in range(side):
+        for j in range(side):
+            g.add_node(f"n{i}_{j}", lon=76.0 + i * 0.002, lat=11.5 + j * 0.002)
+    k = 0
+    for i in range(side):
+        for j in range(side):
+            for di, dj in ((1, 0), (0, 1)):
+                if i + di < side and j + dj < side:
+                    g.add_edge(
+                        f"n{i}_{j}",
+                        f"n{i + di}_{j + dj}",
+                        edge_id=f"E{k}",
+                        passability_prob=0.8,
+                        free_flow_sec=60.0,
+                    )
+                    k += 1
+    return g
+
+
+def test_large_network_sampler_keeps_marginals_and_spatial_correlation():
+    import numpy as np
+
+    from app.optimization.scenarios_sampler import sample_hazard_scenarios
+
+    g = _grid_graph(40)  # 3,120 edges -> random Fourier feature path
+    assert g.number_of_edges() > 2500
+    bundle = sample_hazard_scenarios(g, num_samples=400, random_seed=7)
+    real = bundle.realizations.astype(float)
+
+    # Marginal passability matches the 0.8 target
+    assert abs(real.mean() - 0.8) < 0.03
+
+    # Neighbouring edges fail together far more often than distant ones
+    near = np.corrcoef(real[:, 0], real[:, 1])[0, 1]
+    far = np.corrcoef(real[:, 0], real[:, -1])[0, 1]
+    assert near > far + 0.15

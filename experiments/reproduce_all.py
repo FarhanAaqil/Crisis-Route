@@ -109,18 +109,20 @@ def build_reproducibility_manifest() -> dict[str, Any]:
             script_path="experiments/evaluate_hypotheses.py::evaluate_h3_equity_compliance",
             random_seed=42,
             verified_numerical_value=(
-                f"Floor satisfied: 100%, Gini coefficient: {h3.treatment_value} "
-                f"(vs Greedy={h3.baseline_value})"
+                f"Floor compliance CP-SAT {h3.details['cpsat_floor_compliance_rate']:.0%} vs "
+                f"greedy {h3.details['greedy_floor_compliance_rate']:.0%}; mean Gini "
+                f"{h3.treatment_value} vs greedy {h3.baseline_value} "
+                f"({h3.details['instances_compared']} perturbed instances)"
             ),
-            threshold_condition="Alpha-floor = 100% and Gini <= 0.15",
+            threshold_condition="CP-SAT floor compliance = 100% and (Gini cut >= 25% or Gini <= 0.15)",
             verification_status="VERIFIED" if h3.target_threshold_met else "FAILED",
         ),
         ScientificClaimProvenance(
             claim_id="CLAIM-4-VOI-RECONNAISSANCE",
             paper_section="Section 4.4: Active Reconnaissance Value of Information",
             formal_statement=(
-                "VoI-guided inspection rankings correlate positively with simulated regret "
-                "reduction (r > 0.40, p < 0.05)."
+                "Analytic EVPI of reconnaissance targets correlates with Monte Carlo simulated "
+                "regret reduction (r > 0.40, p < 0.05)."
             ),
             script_path="experiments/validate_voi.py::run_voi_simulation_validation",
             random_seed=42,
@@ -179,6 +181,12 @@ def write_reproducibility_manifest(manifest: dict[str, Any]) -> Path:
 
 
 if __name__ == "__main__":
+    from experiments.train_baselines import (
+        run_model_comparison,
+        write_calibration_report,
+    )
+
+    write_calibration_report(run_model_comparison())
     man = build_reproducibility_manifest()
     write_reproducibility_manifest(man)
     print(

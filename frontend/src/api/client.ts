@@ -149,8 +149,12 @@ export interface PlanDetail {
   snapshot_id: string;
   solver_status: 'OPTIMAL' | 'FEASIBLE' | 'NON_OPTIMAL_INCUMBENT' | 'INFEASIBLE' | 'MODEL_INVALID';
   solve_time_seconds: number;
+  generated_by?: string | null;
   vehicle_routes: Array<{
     vehicle_id: string;
+    depot_id?: string | null;
+    destination_node_id?: string | null;
+    payload_kg?: number | null;
     chosen_path: string[];
     survival_probability: number;
     estimated_travel_time_min: number;
@@ -162,6 +166,7 @@ export interface PlanDetail {
   approval_state: {
     status: 'DRAFT' | 'PENDING_APPROVAL' | 'APPROVED' | 'REJECTED';
     reviewed_by?: string;
+    reviewed_at?: string | null;
     rationale?: string;
   };
 }
@@ -213,6 +218,7 @@ export interface CalibrationBin {
 }
 
 export interface ModelMetricsSummary {
+  evaluation?: string;
   model_version: string;
   model_type: string;
   brier_score: number;
@@ -236,7 +242,8 @@ export interface PassabilityResponse {
   region_name: string;
   edges: PassabilityEdgeItem[];
   nodes: PassabilityNodeItem[];
-  calibration_metrics: ModelMetricsSummary;
+  calibration_metrics: ModelMetricsSummary | null;
+  graph_source: string;
   summary: PassabilitySummary;
 }
 
@@ -410,16 +417,6 @@ export async function fetchRouteAlternatives(
   return res.json();
 }
 
-export async function generatePlan(scenarioId: string): Promise<PlanDetail> {
-  const res = await apiFetch(`${BASE_URL}/scenarios/${scenarioId}/plans`, {
-    method: 'POST',
-    headers: {
-    },
-  });
-  if (!res.ok) throw new Error('Failed to generate relief plan');
-  return res.json();
-}
-
 export async function optimizePlan(
   scenarioId: string,
   mode: 'robust' | 'baseline' = 'robust'
@@ -432,6 +429,15 @@ export async function optimizePlan(
   if (!res.ok) {
     const errorData = await res.json();
     throw new Error(JSON.stringify(errorData.detail || errorData));
+  }
+  return res.json();
+}
+
+export async function submitPlanForApproval(planId: string): Promise<PlanDetail> {
+  const res = await apiFetch(`${BASE_URL}/scenarios/plans/${planId}/submit`, { method: 'POST' });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(typeof errorData.detail === 'string' ? errorData.detail : 'Could not submit plan');
   }
   return res.json();
 }

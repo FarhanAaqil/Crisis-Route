@@ -8,12 +8,12 @@ from uuid import uuid4
 import networkx as nx
 from ortools.sat.python import cp_model
 
+from app.domain.groups import get_vulnerability_weight
 from app.domain.models import (
     AllocationItem,
     ApprovalRecord,
     ApprovalStatus,
     PlanResponse,
-    ReconnaissanceRecommendation,
     ScenarioDetail,
     SolverStatus,
     UnmetDemandItem,
@@ -21,11 +21,9 @@ from app.domain.models import (
 )
 from app.graph.routing import find_shortest_path
 from app.optimization.diagnostics import diagnose_scenario_feasibility, format_infeasibility_message
-from app.optimization.objective import (
-    equity_evaluation_to_dict,
-    evaluate_equity,
-    get_vulnerability_weight,
-)
+from app.optimization.floors import add_group_floors
+from app.optimization.objective import equity_evaluation_to_dict, evaluate_equity
+from app.optimization.voi import rank_reconnaissance_corridors
 
 
 def solve_equitable_allocation(
@@ -137,28 +135,25 @@ def solve_equitable_allocation(
         if trip_payload_terms:
             model.add(sum(trip_payload_terms) <= veh_cap * y_var)
 
-    # 4. Vehicle Time Horizon Limits
+    # 4. Vehicle Time Horizon Limits: each trip is a round trip, rounded up to whole minutes
     max_minutes = int(scenario.time_horizon_hours * 60)
     for v in vehicles:
         assigned_y = [
-            int(pair_paths[(d_id, n_id)][1]) * y_var
+            int(math.ceil(2.0 * pair_paths[(d_id, n_id)][1])) * y_var
             for (d_id, n_id, v_id), y_var in y_vars.items()
             if v_id == v.id and (d_id, n_id) in pair_paths
         ]
         if assigned_y:
             model.add(sum(assigned_y) <= max_minutes)
 
-    # 5. Protected Vulnerable Group Alpha Service Floor
-    if alpha_floor > 0.0:
-        for n in demand_nodes:
-            if n.vulnerable_group.lower() != "general_population":
-                total_dem = sum(n.demand.values())
-                floor_target = int(math.floor(alpha_floor * total_dem))
-                node_deliveries = [
-                    var for (_, node_id, _, _), var in x_vars.items() if node_id == n.id
-                ]
-                if node_deliveries and floor_target > 0:
-                    model.add(sum(node_deliveries) >= floor_target)
+    # 5. Protected group service floor, enforced per commodity
+    floor_problems = add_group_floors(model, scenario, x_vars)
+    if floor_problems:
+        floor_diag = format_infeasibility_message(diagnose_scenario_feasibility(scenario, g))
+        floor_diag["explanations"] = floor_problems + list(floor_diag["explanations"])
+        floor_diag["primary_cause"] = floor_problems[0]
+        floor_diag["detail"] = "; ".join(floor_diag["explanations"])
+        return None, floor_diag
 
     # 6. Objective Function: Minimize Deprivation and Routing Penalties
     objective_terms: list[Any] = []
@@ -201,7 +196,7 @@ def solve_equitable_allocation(
     # Reconstruct allocations and routes
     allocations: list[AllocationItem] = []
     deliveries_by_node: dict[str, dict[str, int]] = {n.id: {} for n in demand_nodes}
-    active_routes: dict[str, tuple[str, str]] = {}
+    payload_kg: dict[tuple[str, str, str], float] = {}
 
     for (d_id, n_id, c_id, v_id), x_var in x_vars.items():
         val = solver.value(x_var)
@@ -215,14 +210,19 @@ def solve_equitable_allocation(
                 )
             )
             deliveries_by_node[n_id][c_id] = deliveries_by_node[n_id].get(c_id, 0) + val
-            active_routes[v_id] = (d_id, n_id)
+            key = (v_id, d_id, n_id)
+            payload_kg[key] = payload_kg.get(key, 0.0) + val * commodity_weights.get(c_id, 1)
 
+    # One route entry per trip, so a vehicle serving several nodes keeps every leg in the plan
     vehicle_routes: list[VehicleRoutePlan] = []
-    for v_id, (d_id, n_id) in active_routes.items():
+    for (v_id, d_id, n_id), kg in sorted(payload_kg.items()):
         edge_path, travel_min, p_surv = pair_paths[(d_id, n_id)]
         vehicle_routes.append(
             VehicleRoutePlan(
                 vehicle_id=v_id,
+                depot_id=d_id,
+                destination_node_id=n_id,
+                payload_kg=round(kg, 1),
                 chosen_path=edge_path,
                 survival_probability=round(p_surv, 4),
                 estimated_travel_time_min=round(travel_min, 2),
@@ -256,35 +256,10 @@ def solve_equitable_allocation(
         beta_tail_risk=scenario.equity_parameters.beta_tail_risk_weight,
     )
 
-    # Critical bottleneck edges for reconnaissance
-    recommendations: list[ReconnaissanceRecommendation] = []
-    ranked_bottlenecks: list[tuple[str, float]] = []
-    for plan in vehicle_routes:
-        for eid in plan.chosen_path:
-            # find edge data
-            for _u, _v, d in g.edges(data=True):
-                if str(d.get("edge_id")) == eid:
-                    p = float(d.get("passability_prob", 1.0))
-                    if p < 0.85:
-                        ranked_bottlenecks.append((eid, 1.0 - p))
-                    break
-
-    ranked_bottlenecks.sort(key=lambda item: item[1], reverse=True)
-    seen_edges: set[str] = set()
-    rank = 1
-    for eid, uncertainty in ranked_bottlenecks:
-        if eid not in seen_edges and rank <= 5:
-            seen_edges.add(eid)
-            recommendations.append(
-                ReconnaissanceRecommendation(
-                    edge_id=eid,
-                    expected_regret_reduction=round(uncertainty * 15.0, 2),
-                    inspection_cost=10.0,
-                    voi_score=round(uncertainty * 1.5, 3),
-                    priority_rank=rank,
-                )
-            )
-            rank += 1
+    # Reconnaissance targets ranked by expected value of perfect information on the planned routes
+    recommendations = rank_reconnaissance_corridors(
+        g, active_paths=[r.chosen_path for r in vehicle_routes], top_k=5
+    )
 
     plan_response = PlanResponse(
         plan_id=uuid4(),
