@@ -12,7 +12,23 @@ export default defineConfig({
       '/api': { target: 'http://127.0.0.1:8000', changeOrigin: true },
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        // Heavy vendor libraries get their own long-lived chunks, loaded only by the screens that need them
+        manualChunks(id: string) {
+          if (!id.includes('node_modules')) return undefined;
+          if (id.includes('/three/')) return 'three';
+          if (id.includes('/maplibre-gl/')) return 'maplibre';
+          if (id.includes('/react-dom/') || id.includes('/react/') || id.includes('/scheduler/')) return 'react';
+          return undefined;
+        },
+      },
+    },
+  },
   test: {
-    environment: 'node',
+    environment: 'jsdom',
+    setupFiles: ['./tests/setup.ts'],
+    globals: false,
   },
 });

@@ -1,8 +1,9 @@
 import { useAuth } from '../auth/AuthContext';
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { useApp } from '../context/AppContext';
-import { NavigationTab } from '../App';
-import { ThreeTacticalRadar } from './ThreeTacticalRadar';
+import type { NavigationTab } from '../hooks/useHashRoute';
+// The 3D radar pulls in three.js, so it loads after first paint instead of blocking it
+const ThreeTacticalRadar = lazy(() => import('./ThreeTacticalRadar').then((m) => ({ default: m.ThreeTacticalRadar })));
 import {
   LayoutDashboard,
   UploadCloud,
@@ -19,7 +20,6 @@ import {
 
 interface SidebarProps {
   activeTab: NavigationTab;
-  onSelectTab: (tab: NavigationTab) => void;
   isCollapsed: boolean;
   onToggleCollapse: () => void;
   isMobileOpen: boolean;
@@ -28,7 +28,6 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({
   activeTab,
-  onSelectTab,
   isCollapsed,
   onToggleCollapse,
   isMobileOpen,
@@ -38,6 +37,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     scenarios,
     activeScenarioId,
     activeScenario,
+    scenarioDetail,
     setActiveScenarioId,
     activeRole,
     userName,
@@ -96,7 +96,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     }`}
                   />
                   <span className="text-[10px] text-palette-frost font-mono tracking-wide uppercase">
-                    {isOnline ? 'Tactical Ops Nominal' : 'Local Cache Active'}
+                    {isOnline ? 'Connected' : 'Offline'}
                   </span>
                 </div>
               </div>
@@ -125,7 +125,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Tactical 3D Mini Radar */}
         {!isCollapsed && (
           <div className="px-4 py-3 bg-palette-deep/40 border-b border-palette-slate/20 flex flex-col items-center justify-center">
-            <ThreeTacticalRadar size={110} activeRegion={activeScenario?.region_name || 'India Sector'} />
+            <Suspense fallback={<div className="h-[110px] w-[110px]" aria-hidden="true" />}>
+              <ThreeTacticalRadar size={110} activeRegion={activeScenario?.region_name || 'India Sector'} />
+            </Suspense>
           </div>
         )}
 
@@ -164,28 +166,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         )}
 
-        {/* WAI-ARIA Navigation Tabs */}
-        <nav
-          role="tablist"
-          aria-label="Main Navigation Tabs"
-          className="flex-1 p-2 space-y-1.5 overflow-y-auto overflow-x-hidden"
-        >
+        {/* Navigation: real links so the URL hash, back button and middle-click all work */}
+        <nav aria-label="Main navigation" className="flex-1 p-2 space-y-1.5 overflow-y-auto overflow-x-hidden">
           {navItems.map((item) => {
             const isSelected = activeTab === item.id;
             const Icon = item.icon;
 
             return (
-              <button
+              <a
                 key={item.id}
-                role="tab"
                 id={`tab-${item.id}`}
-                aria-selected={isSelected}
-                aria-controls={`panel-${item.id}`}
-                tabIndex={isSelected ? 0 : -1}
-                onClick={() => {
-                  onSelectTab(item.id);
-                  onCloseMobile();
-                }}
+                href={`#/${item.id}`}
+                aria-current={isSelected ? 'page' : undefined}
+                onClick={onCloseMobile}
                 className={`w-full flex items-center rounded-xl transition-all duration-200 min-h-[44px] group focus:outline-none focus:ring-2 focus:ring-palette-frost ${
                   isCollapsed ? 'justify-center px-2 py-2.5' : 'px-3.5 py-2.5 space-x-3'
                 } ${
@@ -200,24 +193,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     isSelected ? 'text-palette-cream' : 'text-palette-frost group-hover:text-palette-cream'
                   }`}
                 />
-
                 {!isCollapsed && (
                   <div className="flex-1 flex items-center justify-between text-xs tracking-wide">
                     <span>{item.label}</span>
                     {item.badge && (
-                      <span
-                        className={`text-[10px] px-2 py-0.5 rounded-md font-mono font-bold tracking-wider ${
-                          isSelected
-                            ? 'bg-palette-deep/80 text-palette-cream border border-palette-frost/40'
-                            : 'bg-palette-steel/40 text-palette-frost border border-palette-slate/40'
-                        }`}
-                      >
+                      <span className="text-[10px] px-2 py-0.5 rounded-md font-mono font-bold tracking-wider bg-palette-steel/40 text-palette-frost border border-palette-slate/40">
                         {item.badge}
                       </span>
                     )}
                   </div>
                 )}
-              </button>
+              </a>
             );
           })}
         </nav>
@@ -258,11 +244,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   <Activity className="w-3.5 h-3.5 text-palette-frost shrink-0" />
                   <span>Floor Equity Guarantee</span>
                 </div>
-                <span className="font-mono font-bold text-palette-cream">α ≥ 40%</span>
+                <span className="font-mono font-bold text-palette-cream">
+                  α ≥ {scenarioDetail ? Math.round(scenarioDetail.equity_parameters.min_group_service_floor_alpha * 100) : '--'}%
+                </span>
               </div>
             </>
           ) : (
-            <div className="flex flex-col items-center space-y-2 py-1" title="Equity Guarantee: α ≥ 40%">
+            <div className="flex flex-col items-center space-y-2 py-1" title="Minimum service floor for protected groups">
               <div className="w-8 h-8 rounded-xl bg-palette-steel/40 border border-palette-frost/25 flex items-center justify-center text-palette-cream">
                 <Activity className="w-4 h-4" />
               </div>

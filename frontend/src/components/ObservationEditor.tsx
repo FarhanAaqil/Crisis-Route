@@ -14,6 +14,7 @@ interface ObservationEditorProps {
   initialStatus?: 'passable' | 'impassable' | 'partially_blocked' | 'debris_cleared';
   onSubmit: (data: ObservationFormData) => void;
   onCancel?: () => void;
+  disabled?: boolean;
 }
 
 export const ObservationEditor: React.FC<ObservationEditorProps> = ({
@@ -21,6 +22,7 @@ export const ObservationEditor: React.FC<ObservationEditorProps> = ({
   initialStatus = 'partially_blocked',
   onSubmit,
   onCancel,
+  disabled = false,
 }) => {
   const [status, setStatus] = useState(initialStatus);
   const [sourceType, setSourceType] = useState<ObservationFormData['source_type']>('field_patrol');
@@ -149,9 +151,10 @@ export const ObservationEditor: React.FC<ObservationEditorProps> = ({
         )}
         <button
           type="submit"
-          className="px-6 py-2.5 glass-btn-primary hover:border-palette-frost/60 active:scale-95 text-palette-cream font-bold rounded-2xl shadow-glass-card min-h-[44px] transition-all"
+          disabled={disabled}
+          className="disabled:opacity-50 px-6 py-2.5 glass-btn-primary hover:border-palette-frost/60 active:scale-95 text-palette-cream font-bold rounded-2xl shadow-glass-card min-h-[44px] transition-all"
         >
-          Publish &amp; Advance Graph Version
+          Save observation
         </button>
       </div>
     </form>
